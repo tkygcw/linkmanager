@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -11,10 +9,10 @@ import 'package:share/share.dart';
 class HomeListView extends StatelessWidget {
   final Url url;
   final Function(String) showToast;
-  final Function(Url) onClick;
-  final String domain = 'https://lkmng.com/';
+  final Function(Url, String) onClick;
+  final String domain;
 
-  HomeListView({this.url, this.showToast, this.onClick});
+  HomeListView({this.domain, this.url, this.showToast, this.onClick});
 
   @override
   Widget build(BuildContext context) {
@@ -33,29 +31,37 @@ class HomeListView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(30, 0, 20, 0),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(url.label,
-                              maxLines: 1,
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.bold)),
-                          Text(getUrl(url.name),
-                              maxLines: 1,
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.blueAccent)),
-                        ],
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(url.label,
+                                maxLines: 1,
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.black54,
+                                    fontWeight: FontWeight.bold)),
+                            Text(getUrl(url.name),
+                                maxLines: 1,
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.blueAccent)),
+                          ],
+                        ),
                       ),
+                      IconButton(
+                          icon: Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                          onPressed: () => this.onClick(url, 'delete')),
                       IconButton(
                           icon: Icon(
                             Icons.edit,
                             color: Colors.grey,
                           ),
-                          onPressed: () => this.onClick(url))
+                          onPressed: () => this.onClick(url, 'edit'))
                     ],
                   ),
                 ),
@@ -125,8 +131,13 @@ class HomeListView extends StatelessWidget {
                                 TextStyle(fontSize: 12, color: Colors.black87),
                           ),
                           Text(
-                            '0',
-                            style: TextStyle(fontSize: 20),
+                            url.status == 0 ? 'Active' : 'Deactive',
+                            style: TextStyle(
+                                fontSize: 14,
+                                color: url.status == 0
+                                    ? Colors.lightGreen
+                                    : Colors.redAccent,
+                                fontWeight: FontWeight.bold),
                           ),
                           Icon(
                             Icons.graphic_eq_rounded,

@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/shareWidget/toast.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
+import 'package:linkmanager/utils/sharePreference.dart';
 
 class UrlDialog extends StatefulWidget {
   final Function(String) onClick;
@@ -23,12 +25,16 @@ class _UrlDialogState extends State<UrlDialog> {
   bool isUpdate = false;
   var labelController = TextEditingController();
   var urlController = TextEditingController();
+  var domain;
   int urlType = 0;
+
+  bool isActive = true;
 
   @override
   void initState() {
     // TODO: implement initState
     refreshStream = StreamController();
+    getDomain();
     /**
      * create action
      */
@@ -58,7 +64,7 @@ class _UrlDialogState extends State<UrlDialog> {
       ),
       child: AlertDialog(
           title: new Text(
-              '${AppLocalizations.of(context).translate('create_url')}'),
+              '${AppLocalizations.of(context).translate(isUpdate ? 'update_url' : 'create_url')}'),
           actions: <Widget>[
             FlatButton(
               child:
@@ -69,7 +75,7 @@ class _UrlDialogState extends State<UrlDialog> {
             ),
             FlatButton(
               child: Text(
-                '${AppLocalizations.of(context).translate('create')}',
+                '${AppLocalizations.of(context).translate(isUpdate ? 'update' : 'create')}',
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () {
@@ -84,7 +90,7 @@ class _UrlDialogState extends State<UrlDialog> {
                   return mainContent();
                 }
                 return Container(
-                    height: 270, width: 270, child: CustomProgressBar());
+                    height: 320, width: 270, child: CustomProgressBar());
               })),
     );
   }
@@ -92,7 +98,7 @@ class _UrlDialogState extends State<UrlDialog> {
   Widget mainContent() {
     return Container(
       width: 270,
-      height: 270,
+      height: 320,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -132,7 +138,7 @@ class _UrlDialogState extends State<UrlDialog> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  getDomain(),
+                  domain,
                   style: TextStyle(color: Colors.black54, fontSize: 16),
                 ),
                 Expanded(
@@ -199,6 +205,28 @@ class _UrlDialogState extends State<UrlDialog> {
           Text(
             AppLocalizations.of(context).translate('url_type_description'),
             style: TextStyle(color: Colors.black54, fontSize: 12),
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context).translate('url_status'),
+                style: TextStyle(color: Colors.black87),
+              ),
+              Switch(
+                value: isActive,
+                onChanged: (value) {
+                  setState(() {
+                    isActive = value;
+                  });
+                },
+                activeTrackColor: Colors.deepPurpleAccent,
+                activeColor: Colors.deepPurple,
+              ),
+            ],
           )
         ],
       ),
@@ -232,6 +260,7 @@ class _UrlDialogState extends State<UrlDialog> {
       'merchant_id': '1',
       'name': urlController.text,
       'label': labelController.text,
+      'status': isActive ? '0' : '1',
       'type': urlType.toString()
     });
 
@@ -250,6 +279,7 @@ class _UrlDialogState extends State<UrlDialog> {
       'url_id': widget.url.id.toString(),
       'name': urlController.text,
       'label': labelController.text,
+      'status': isActive ? '0' : '1',
       'type': urlType.toString()
     });
 
@@ -265,8 +295,10 @@ class _UrlDialogState extends State<UrlDialog> {
       showToast('something_went_wrong');
   }
 
-  getDomain() {
-    return 'lkmng.com/';
+  getDomain() async {
+    this.domain =
+        Merchant.fromJson(await SharePreferences().read("merchant")).domain + '/';
+    setState(() {});
   }
 
   showToast(message) {

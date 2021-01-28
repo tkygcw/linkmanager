@@ -17,11 +17,17 @@
   "no_network_found": "No Network Found!",
   "no_network_found_description": "We can\\'t detect any network connection from your device...",
   "create_url": "Create URL",
+  "update_url": "Update URL",
+  "delete_url_desc": "Confirm to delete this URL?\n*Noted All the item inside will be removed as well!",
+  "delete_request": "Delete Request",
+  "delete_success": "Delete Successfully!",
+  "url_status": "URL Status",
   "no_url": "No any URL is found...",
   "no_url_description": "Tap the + icon below to create one!",
 
   "cancel": "Cancel",
   "create": "Create",
+  "update": "Update",
   "label": "Label",
   "label_hint": "My First URL",
   "your_url": "Your URL",
@@ -34,5 +40,11 @@
 
   "missing_input": "All fields above are required!",
   "url_existed": "This url already existed!",
-  "something_went_wrong": "Something Went Wrong!"
+  "something_went_wrong": "Something Went Wrong!",
+
+  "account_disable_description": "Unable access into your account..please contact our administrator for future support!",
+
+  "new_update": "New Version Available",
+  "later": "Later",
+  "update_now": "Update Now"
 }

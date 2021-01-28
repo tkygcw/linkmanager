@@ -4,14 +4,17 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/page/home/home_list_view.dart';
 import 'package:linkmanager/page/home/url_dialog.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
+import 'package:linkmanager/shareWidget/snack_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
+import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,6 +27,7 @@ class HomePage extends StatefulWidget {
 class _ListState extends State<HomePage> {
   int itemPerPage = 8, currentPage = 1;
   bool itemFinish = false;
+  String domain = '';
   String query = '';
 
   List<Url> urls = [];
@@ -44,6 +48,7 @@ class _ListState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getDomain();
     connectivity = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
@@ -155,13 +160,23 @@ class _ListState extends State<HomePage> {
       controller: listScrollController,
       itemBuilder: (c, i) => HomeListView(
         url: urls[i],
+        domain: domain,
         showToast: (message) {
           showSnackBar(message, 'close');
         },
-        onClick: (Url url) => openUrlDialog(context, true, url),
+        onClick: (Url url, action) {
+          if (action == 'edit')
+            openUrlDialog(context, true, url);
+          else
+            deleteURL(url);
+        },
       ),
       itemCount: urls.length,
     );
+  }
+
+  getDomain() async {
+    this.domain = Merchant.fromJson(await SharePreferences().read("merchant")).domain + '/';
   }
 
   _onRefresh() async {
@@ -220,6 +235,53 @@ class _ListState extends State<HomePage> {
             onClick: (message) {
               showSnackBar(message, 'close');
             });
+      },
+    );
+  }
+
+  /*
+  * delete url
+  * */
+  deleteURL(Url url) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return alert dialog object
+        return AlertDialog(
+          title: Text(AppLocalizations.of(context).translate('delete_request')),
+          content: Text(
+            AppLocalizations.of(context).translate('delete_url_desc'),
+            style: TextStyle(color: Colors.black87, fontSize: 15),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text(
+                'Confirm',
+                style: TextStyle(color: Colors.red),
+              ),
+              onPressed: () async {
+                Map data = await Domain.callApi(
+                    Domain.url, {'delete': '1', 'url_id': url.id.toString()});
+
+                if (data['status'] == '1') {
+                  Navigator.of(context).pop();
+                  await Future.delayed(Duration(milliseconds: 300));
+                  showSnackBar('delete_success', 'close');
+                  setState(() {
+                    urls.remove(url);
+                  });
+                } else
+                  showSnackBar('something_went_wrong', 'close');
+              },
+            ),
+          ],
+        );
       },
     );
   }
