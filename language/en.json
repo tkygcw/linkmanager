@@ -3,5 +3,36 @@
   "branch": "Branch",
   "report": "Report",
   "about": "About",
-  "setting": "Setting"
+  "setting": "Setting",
+
+  "link_lick": "Link Clicks",
+  "total_link": "Total Links",
+  "status": "Status",
+  "copy_link": "Copy Link",
+  "share_link": "Share Link",
+
+  "copy_to_clipboard": "Copy to clipboard!",
+  "close": "Close",
+  "retry": "Retry",
+  "no_network_found": "No Network Found!",
+  "no_network_found_description": "We can\\'t detect any network connection from your device...",
+  "create_url": "Create URL",
+  "no_url": "No any URL is found...",
+  "no_url_description": "Tap the + icon below to create one!",
+
+  "cancel": "Cancel",
+  "create": "Create",
+  "label": "Label",
+  "label_hint": "My First URL",
+  "your_url": "Your URL",
+  "time_based": "Time Based",
+  "location_based": "Branch Based",
+  "url_type": "URL Type",
+  "url_type_description": "The way how you assign the enquires by this URL whether by time or branch.",
+  "create_success": "Create Successfully",
+  "update_success": "Update Successfully",
+
+  "missing_input": "All fields above are required!",
+  "url_existed": "This url already existed!",
+  "something_went_wrong": "Something Went Wrong!"
 }

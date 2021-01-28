@@ -7,9 +7,8 @@ class Domain {
 
   static var url = domain + 'url/index.php';
 
-  callApi() async {
-    var response =
-        await http.post(Domain.url, body: {'read': '1', 'merchant_id': '1'});
+  static callApi(url, Map<String, String> params) async {
+    var response = await http.post(url, body: params);
     return jsonDecode(response.body);
   }
 }

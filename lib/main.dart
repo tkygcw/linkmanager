@@ -2,6 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/page/home/home.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/translation/appLanguage.dart';
@@ -43,7 +44,10 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primaryColor: Colors.white,
-            accentColor: Colors.orange,
+            accentColor: Colors.deepPurple,
+            textTheme: GoogleFonts.notoSansTextTheme(
+              Theme.of(context).textTheme,
+            ),
           ),
           routes: {
             '/': (context) => HomePage(),
