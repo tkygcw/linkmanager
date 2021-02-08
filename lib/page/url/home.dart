@@ -6,16 +6,17 @@ import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
-import 'package:linkmanager/page/home/home_list_view.dart';
-import 'package:linkmanager/page/home/url_dialog.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
+import 'package:linkmanager/page/url/url_dialog.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
-import 'package:linkmanager/shareWidget/snack_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
+import 'home_list_view.dart';
+import 'link/link.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = '/home';
@@ -167,8 +168,10 @@ class _ListState extends State<HomePage> {
         onClick: (Url url, action) {
           if (action == 'edit')
             openUrlDialog(context, true, url);
-          else
+          else if (action == 'delete')
             deleteURL(url);
+          else
+            openLinkPage(url);
         },
       ),
       itemCount: urls.length,
@@ -176,7 +179,9 @@ class _ListState extends State<HomePage> {
   }
 
   getDomain() async {
-    this.domain = Merchant.fromJson(await SharePreferences().read("merchant")).domain + '/';
+    this.domain =
+        Merchant.fromJson(await SharePreferences().read("merchant")).domain +
+            '/';
   }
 
   _onRefresh() async {
@@ -232,10 +237,22 @@ class _ListState extends State<HomePage> {
         // return alert dialog object
         return UrlDialog(
             url: url,
-            onClick: (message) {
+            onClick: (message) async {
+              await Future.delayed(Duration(milliseconds: 300));
               showSnackBar(message, 'close');
+              setState(() {});
             });
       },
+    );
+  }
+
+  openLinkPage(Url url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => LinkPage(
+                url: url,
+              )),
     );
   }
 

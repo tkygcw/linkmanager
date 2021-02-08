@@ -20,7 +20,7 @@ class HomeListView extends StatelessWidget {
       margin: EdgeInsets.all(10),
       elevation: 2,
       child: InkWell(
-        onTap: () => null,
+        onTap: () => onClick(url, 'open_link_page'),
         child: Container(
           height: 250,
           padding: const EdgeInsets.fromLTRB(10, 20, 10, 0),
@@ -126,23 +126,14 @@ class HomeListView extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            '${AppLocalizations.of(context).translate('status')}',
-                            style:
-                                TextStyle(fontSize: 12, color: Colors.black87),
-                          ),
-                          Text(
                             url.status == 0 ? 'Active' : 'Deactive',
                             style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 15,
                                 color: url.status == 0
                                     ? Colors.lightGreen
                                     : Colors.redAccent,
                                 fontWeight: FontWeight.bold),
                           ),
-                          Icon(
-                            Icons.graphic_eq_rounded,
-                            color: Colors.grey,
-                          )
                         ],
                       ),
                     ))
@@ -166,7 +157,8 @@ class HomeListView extends StatelessWidget {
                           style: TextStyle(color: Colors.blue),
                         )),
                     FlatButton.icon(
-                        onPressed: () => Share.share(getUrl(url.name)),
+                        onPressed: () =>
+                            Share.share(getUrl(url.name), subject: url.label),
                         icon: Icon(
                           Icons.share,
                           color: Colors.green,

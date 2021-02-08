@@ -6,6 +6,8 @@ class Domain {
   static var domain = 'https://api.lkmng.com/';
 
   static var url = domain + 'url/index.php';
+  static var link = domain + 'link/index.php';
+  static var iconPath = domain + 'link/icon/';
   static var merchant = domain + 'merchant/index.php';
 
   static callApi(url, Map<String, String> params) async {

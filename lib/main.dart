@@ -1,15 +1,13 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:linkmanager/page/home/home.dart';
 import 'package:linkmanager/page/loading.dart';
+import 'package:linkmanager/page/url/home.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/translation/appLanguage.dart';
 import 'package:provider/provider.dart';
 
-//tsting only hah
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AppLanguage appLanguage = AppLanguage();

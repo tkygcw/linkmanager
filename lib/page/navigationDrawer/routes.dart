@@ -1,4 +1,4 @@
-import 'package:linkmanager/page/home/home.dart';
+import 'package:linkmanager/page/url/home.dart';
 
 class Routes {
   static const String home = HomePage.routeName;

@@ -21,7 +21,7 @@ class NotFound extends StatelessWidget {
         children: <Widget>[
           Image.asset(drawable),
           SizedBox(
-            height: 20,
+            height: 10,
           ),
           Text(
             title,
@@ -32,7 +32,7 @@ class NotFound extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 10,
+            height: 5,
           ),
           Padding(
             padding: const EdgeInsets.all(12.0),
@@ -43,7 +43,7 @@ class NotFound extends StatelessWidget {
             ),
           ),
           SizedBox(
-            height: 10,
+            height: 5,
           ),
           Visibility(
             visible: showButton,

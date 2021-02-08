@@ -19,6 +19,7 @@
   "create_url": "Create URL",
   "update_url": "Update URL",
   "delete_url_desc": "Confirm to delete this URL?\n*Noted All the item inside will be removed as well!",
+  "delete_link_desc": "Confirm to delete this link?",
   "delete_request": "Delete Request",
   "delete_success": "Delete Successfully!",
   "url_status": "URL Status",
@@ -37,6 +38,7 @@
   "url_type_description": "The way how you assign the enquires by this URL whether by time or branch.",
   "create_success": "Create Successfully",
   "update_success": "Update Successfully",
+  "duplicate_success": "Duplicate Successfully",
 
   "missing_input": "All fields above are required!",
   "url_existed": "This url already existed!",
@@ -46,5 +48,30 @@
 
   "new_update": "New Version Available",
   "later": "Later",
-  "update_now": "Update Now"
+  "update_now": "Update Now",
+
+  "no_link": "Urgh..no links is created so far..",
+
+  "edit": "Edit",
+  "duplicate": "Duplicate",
+  "delete_link": "Delete Link",
+
+  "new_channel": "New Channel",
+  "edit_channel": "Edit Channel",
+  "whatsapp": "WhatsApp",
+  "email": "Email",
+  "phone" : "Phone",
+  "telegram": "Telegram",
+  "line": "Line",
+  "website": "Website URL",
+  "messenger": "Messenger",
+  "Facebook": "Facebook",
+  "sms": "SMS",
+  "google_map": "Google Map",
+  "twitter": "Twitter",
+  "preview": "Preview",
+  "select_channel": "Select Channel",
+  "create_channel": "Create Channel",
+  "update_channel": "Update Channel",
+  "channel_description": "Please select the channel that you want redirect to. *Note you can select different channel in one URL"
 }

@@ -51,6 +51,7 @@ class _UrlDialogState extends State<UrlDialog> {
       urlController.text = widget.url.name;
       labelController.text = widget.url.label;
       urlType = widget.url.type;
+      isActive = widget.url.status == 0;
       refreshStream.add('display');
     }
     super.initState();
@@ -145,6 +146,7 @@ class _UrlDialogState extends State<UrlDialog> {
                   child: TextField(
                     controller: urlController,
                     decoration: InputDecoration.collapsed(
+                      hintText: '',
                       border: InputBorder.none,
                     ),
                   ),
@@ -283,8 +285,7 @@ class _UrlDialogState extends State<UrlDialog> {
       'type': urlType.toString()
     });
 
-    print(widget.url.id.toString());
-    print(labelController.text);
+    widget.url.status = isActive ? 0 : 1;
 
     if (data['status'] == '1') {
       widget.onClick('update_success');
@@ -297,7 +298,8 @@ class _UrlDialogState extends State<UrlDialog> {
 
   getDomain() async {
     this.domain =
-        Merchant.fromJson(await SharePreferences().read("merchant")).domain + '/';
+        Merchant.fromJson(await SharePreferences().read("merchant")).domain +
+            '/';
     setState(() {});
   }
 
