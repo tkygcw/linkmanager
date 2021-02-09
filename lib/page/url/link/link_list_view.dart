@@ -23,7 +23,7 @@ class LinkListView extends StatelessWidget {
         child: InkWell(
           onTap: () => onClick(link, 'edit'),
           child: Container(
-            height: 110,
+            height: 120,
             padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
             child: Row(
               children: [
@@ -62,6 +62,28 @@ class LinkListView extends StatelessWidget {
                                   fontSize: 13, color: Colors.blueAccent)),
                         ),
                       ],
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Visibility(
+                      visible: link.sequence == 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.lightBlue,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 5,
+                              offset: Offset(1, 3), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        padding: EdgeInsets.all(2),
+                          child: Text(
+                            AppLocalizations.of(context).translate('default'),
+                            style: TextStyle(color: Colors.white, fontSize: 10),
+                          )),
                     ),
                   ],
                 )),

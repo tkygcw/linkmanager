@@ -78,7 +78,7 @@ class _LoadingPageState extends State<LoadingPage> {
         Merchant.fromJson(await SharePreferences().read("merchant")).merchantId;
     Map data = await Domain.callApi(
         Domain.merchant, {'read': '1', 'merchant_id': merchantId.toString()});
-
+    print(data);
     if (data['status'] == '1') {
       /*
       * version checking
@@ -105,8 +105,6 @@ class _LoadingPageState extends State<LoadingPage> {
     if (merchantStatus == '0') {
       Merchant merchant =
           Merchant.fromJson(await SharePreferences().read('merchant'));
-
-      print('merchant ${merchant.email}');
       merchant.merchantId != null
           ? Navigator.pushReplacementNamed(context, Routes.home)
           : Navigator.pushReplacementNamed(context, '/login');

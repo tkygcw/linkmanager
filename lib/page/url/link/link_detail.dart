@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:ffi';
+import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -7,11 +7,14 @@ import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/channel.dart';
 import 'package:linkmanager/object/link.dart';
+import 'package:linkmanager/object/merchant.dart';
+import 'package:linkmanager/page/url/link/day_picker.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
+import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LinkDetailPage extends StatefulWidget {
@@ -41,10 +44,15 @@ class _ListState extends State<LinkDetailPage> {
   StreamSubscription<ConnectivityResult> connectivity;
   bool networkConnection = true;
   String type = 'WhatsApp';
+  int allowDayTime;
+  List workingDay = [0, 0, 0, 0, 0, 0, 0];
+
+  int allowBranch;
 
   @override
   void initState() {
     super.initState();
+    getPreData();
     connectivity = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
@@ -61,6 +69,7 @@ class _ListState extends State<LinkDetailPage> {
       url.text = widget.link.url;
       preMessage.text = widget.link.preMessage;
       labelController.text = widget.link.label;
+      workingDay = widget.link.workingDay;
     }
     fetchChannel();
   }
@@ -91,7 +100,10 @@ class _ListState extends State<LinkDetailPage> {
               )),
           actions: <Widget>[
             FlatButton.icon(
-              icon: Icon(Icons.launch, color: Colors.blueGrey,),
+              icon: Icon(
+                Icons.launch,
+                color: Colors.blueGrey,
+              ),
               label: Text(
                 AppLocalizations.of(context).translate('preview'),
                 style: TextStyle(fontSize: 14),
@@ -214,6 +226,11 @@ class _ListState extends State<LinkDetailPage> {
                   SizedBox(
                     height: 30,
                   ),
+                  Visibility(
+                      visible: allowDayTime == 1, child: dateTimeLayout()),
+                  SizedBox(
+                    height: allowDayTime == 1 ? 30 : 0,
+                  ),
                   SizedBox(
                     width: double.infinity,
                     height: 50.0,
@@ -293,6 +310,26 @@ class _ListState extends State<LinkDetailPage> {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  Widget dateTimeLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          AppLocalizations.of(context).translate('working_day'),
+          style: TextStyle(fontSize: 15),
+        ),
+        Text(
+          AppLocalizations.of(context).translate('working_day_description'),
+          style: TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        DayPickers(workingDays: widget.link == null ? workingDay : widget.link.workingDay)
       ],
     );
   }
@@ -380,7 +417,7 @@ class _ListState extends State<LinkDetailPage> {
       'create': '1',
       'branch_id': '0',
       'working_time': '[]',
-      'working_day': '[0, 0, 0, 0, 0, 0, 0]',
+      'working_day': workingDay.toString(),
       'url_id': widget.urlId,
       'label': labelController.text,
       'pre_message': preMessage.text,
@@ -403,7 +440,7 @@ class _ListState extends State<LinkDetailPage> {
       'link_id': widget.link.linkId.toString(),
       'branch_id': '0',
       'working_time': '[]',
-      'working_day': '[0, 0, 0, 0, 0, 0, 0]',
+      'working_day': workingDay.toString(),
       'label': labelController.text,
       'pre_message': preMessage.text,
       'url': url.text,
@@ -435,6 +472,17 @@ class _ListState extends State<LinkDetailPage> {
         drawable: networkConnection
             ? 'drawable/no_link.png'
             : 'drawable/no_signal.png');
+  }
+
+  getPreData() async {
+    this.allowDayTime =
+        Merchant.fromJson(await SharePreferences().read("merchant"))
+            .allowDateTime;
+
+    this.allowBranch =
+        Merchant.fromJson(await SharePreferences().read("merchant"))
+            .allowBranch;
+    setState(() {});
   }
 
   showSnackBar(preMessage, button) {

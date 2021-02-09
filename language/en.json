@@ -70,8 +70,20 @@
   "google_map": "Google Map",
   "twitter": "Twitter",
   "preview": "Preview",
+  "default": "Default Link",
   "select_channel": "Select Channel",
   "create_channel": "Create Channel",
   "update_channel": "Update Channel",
-  "channel_description": "Please select the channel that you want redirect to. *Note you can select different channel in one URL"
+  "channel_description": "Please select the channel that you want redirect to. *Note you can select different channel in one URL",
+
+  "day1": "Sun",
+  "day2": "Mon",
+  "day3": "Tue",
+  "day4": "Wed",
+  "day5": "Thur",
+  "day6": "Fri",
+  "day7": "Sat",
+
+  "working_day": "Working Day",
+  "working_day_description": "You may customize the operation day for this channel.\nPurple = active, White = disable"
 }

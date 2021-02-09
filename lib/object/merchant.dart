@@ -1,20 +1,21 @@
 class Merchant {
   int merchantId;
   String name, email, domain, phonePrefix, phone;
-  int maxLink, maxUrl, manualGenerate, status;
+  int maxLink, maxUrl, manualGenerate, allowDateTime, allowBranch, status;
 
-  Merchant({
-    this.merchantId,
-    this.name,
-    this.email,
-    this.domain,
-    this.phonePrefix,
-    this.phone,
-    this.maxLink,
-    this.maxUrl,
-    this.manualGenerate,
-    this.status,
-  });
+  Merchant(
+      {this.merchantId,
+      this.name,
+      this.email,
+      this.domain,
+      this.phonePrefix,
+      this.phone,
+      this.maxLink,
+      this.maxUrl,
+      this.manualGenerate,
+      this.status,
+      this.allowDateTime,
+      this.allowBranch});
 
   Merchant.fromJson(Map<String, dynamic> json)
       : merchantId = json['merchant_id'] as int,
@@ -25,6 +26,8 @@ class Merchant {
         phone = json['phone'],
         maxLink = json['max_link'] as int,
         maxUrl = json['max_url'] as int,
+        allowDateTime = json['allow_date_time'] as int,
+        allowBranch = json['allow_branch'] as int,
         manualGenerate = json['manual_generate'] as int,
         status = json['status'] as int;
 
@@ -33,12 +36,13 @@ class Merchant {
         'domain': domain,
         'name': name,
         'email': email,
-        'phonePrefix': phonePrefix,
+        'phone_prefix': phonePrefix,
         'phone': phone,
-        'maxLink': maxLink,
-        'maxUrl': maxUrl,
-        'manualGenerate': manualGenerate,
+        'max_link': maxLink,
+        'max_url': maxUrl,
+        'allow_date_time': allowDateTime,
+        'allow_branch': allowBranch,
+        'manual_generate': manualGenerate,
         'status': status,
       };
-
 }
