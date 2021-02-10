@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +8,7 @@ import 'package:linkmanager/object/channel.dart';
 import 'package:linkmanager/object/link.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/page/url/link/day_picker.dart';
+import 'package:linkmanager/page/url/link/time_picker.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 
@@ -47,6 +47,7 @@ class _ListState extends State<LinkDetailPage> {
   String type = 'WhatsApp';
   int allowDayTime;
   List workingDay = [0, 0, 0, 0, 0, 0, 0];
+  List workingTime = [];
 
   int allowBranch;
 
@@ -330,7 +331,26 @@ class _ListState extends State<LinkDetailPage> {
         SizedBox(
           height: 10,
         ),
-        DayPickers(workingDays: widget.link == null ? workingDay : widget.link.workingDay)
+        DayPickers(
+            workingDays:
+                widget.link == null ? workingDay : widget.link.workingDay),
+        SizedBox(
+          height: 30,
+        ),
+        Text(
+          AppLocalizations.of(context).translate('working_time'),
+          style: TextStyle(fontSize: 15),
+        ),
+        Text(
+          AppLocalizations.of(context).translate('working_time_description'),
+          style: TextStyle(fontSize: 12, color: Colors.grey),
+        ),
+        TimePickers(
+            workingTimes:
+                widget.link == null ? workingTime : widget.link.workingTime),
+        SizedBox(
+          height: 50,
+        ),
       ],
     );
   }

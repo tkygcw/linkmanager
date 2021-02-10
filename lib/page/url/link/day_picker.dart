@@ -22,6 +22,7 @@ class _DayPickersState extends State<DayPickers> {
   Widget build(BuildContext context) {
     return Container(
         child: GridView.builder(
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: widget.workingDays.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

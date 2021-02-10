@@ -85,5 +85,12 @@
   "day7": "Sat",
 
   "working_day": "Working Day",
-  "working_day_description": "You may customize the operation day for this channel.\nPurple = active, White = disable"
+  "working_day_description": "You may customize the operation day for this channel.\nPurple = active, White = disable",
+  "working_time": "Working Time",
+  "working_time_description": "You may customize the operation time for this channel.\n",
+  "from_time": "From",
+  "to_time": "To",
+  "add_time": "Add Time",
+  "label_from_time": "Start Time",
+  "label_to_time": "End Time"
 }
