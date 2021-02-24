@@ -25,7 +25,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.analytics,
               text: AppLocalizations.of(context).translate('report'),
               onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.home)),
+                  Navigator.pushReplacementNamed(context, Routes.report)),
           Divider(),
           createDrawerBodyItem(
               icon: Icons.info,

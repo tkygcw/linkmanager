@@ -77,7 +77,10 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         children: [
           Expanded(
-            child: Image.asset('drawable/channelsoft.png'),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Image.asset('drawable/white-logo.png' ),
+            ),
             flex: 2,
           ),
           Expanded(

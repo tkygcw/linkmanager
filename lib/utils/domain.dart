@@ -11,6 +11,7 @@ class Domain {
   static var iconPath = domain + 'link/icon/';
   static var merchant = domain + 'merchant/index.php';
   static var branch = domain + 'branch/index.php';
+  static var report = domain + 'report/index.php';
 
   static callApi(url, Map<String, String> params) async {
     var response = await http.post(url, body: params);

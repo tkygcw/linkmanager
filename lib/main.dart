@@ -7,6 +7,7 @@ import 'package:linkmanager/page/about/about.dart';
 import 'package:linkmanager/page/branch/branch.dart';
 import 'package:linkmanager/page/loading.dart';
 import 'package:linkmanager/page/registration/login.dart';
+import 'package:linkmanager/page/report.dart';
 import 'package:linkmanager/page/url/home.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/translation/appLanguage.dart';
@@ -70,7 +71,8 @@ class MyApp extends StatelessWidget {
             '/home': (context) => HomePage(),
             '/branch': (context) => BranchPage(),
             '/about': (context) => AboutPage(),
-            '/login': (context) => LoginPage()
+            '/login': (context) => LoginPage(),
+            '/report': (context) => ReportPage()
           },
         );
       }),
