@@ -15,7 +15,7 @@ import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'home_list_view.dart';
+import 'home_list_view_v2.dart';
 import 'link/link.dart';
 
 class HomePage extends StatefulWidget {

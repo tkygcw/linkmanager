@@ -38,6 +38,7 @@ dependencies:
   http: ^0.12.2
   share: ^0.6.5+4
   package_info: ^0.4.1
+  get_version: ^0.2.2
   #url
   url_launcher: ^5.4.10
   #progress bar
@@ -47,6 +48,8 @@ dependencies:
   #date picker
   flutter_datetime_picker: ^1.4.0
   intl: ^0.16.1
+  refreshable_reorderable_list: ^0.0.1
+  smart_select: ^4.3.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

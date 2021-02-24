@@ -1,19 +1,32 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkmanager/page/about/about.dart';
+import 'package:linkmanager/page/branch/branch.dart';
 import 'package:linkmanager/page/loading.dart';
+import 'package:linkmanager/page/registration/login.dart';
 import 'package:linkmanager/page/url/home.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/translation/appLanguage.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  statusBarColor();
   WidgetsFlutterBinding.ensureInitialized();
   AppLanguage appLanguage = AppLanguage();
   await appLanguage.fetchLocale();
   runApp(MyApp(
     appLanguage: appLanguage,
+  ));
+}
+
+statusBarColor(){
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    statusBarColor: Colors.white, // status bar color
+    statusBarBrightness: Brightness.dark,//status bar brigtness
+    statusBarIconBrightness:Brightness.dark ,
   ));
 }
 
@@ -48,10 +61,16 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.notoSansTextTheme(
               Theme.of(context).textTheme,
             ),
+            appBarTheme: Theme.of(context)
+                .appBarTheme
+                .copyWith(brightness: Brightness.light),
           ),
           routes: {
             '/': (context) => LoadingPage(),
-            '/home': (context) => HomePage()
+            '/home': (context) => HomePage(),
+            '/branch': (context) => BranchPage(),
+            '/about': (context) => AboutPage(),
+            '/login': (context) => LoginPage()
           },
         );
       }),

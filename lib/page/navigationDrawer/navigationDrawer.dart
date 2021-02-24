@@ -20,7 +20,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.location_city,
               text: AppLocalizations.of(context).translate('branch'),
               onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.home)),
+                  Navigator.pushReplacementNamed(context, Routes.branch)),
           createDrawerBodyItem(
               icon: Icons.analytics,
               text: AppLocalizations.of(context).translate('report'),
@@ -31,7 +31,7 @@ class NavigationDrawer extends StatelessWidget {
               icon: Icons.info,
               text: AppLocalizations.of(context).translate('about'),
               onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.home)),
+                  Navigator.pushReplacementNamed(context, Routes.about)),
           createDrawerBodyItem(
               icon: Icons.settings,
               text: AppLocalizations.of(context).translate('setting'),

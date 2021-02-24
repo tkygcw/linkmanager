@@ -139,8 +139,8 @@ class HomeListView extends StatelessWidget {
                     ))
                   ],
                 ),
-                ButtonBar(
-                  alignment: MainAxisAlignment.spaceAround,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     FlatButton.icon(
                         onPressed: () {
@@ -165,6 +165,17 @@ class HomeListView extends StatelessWidget {
                         ),
                         label: Text(
                           AppLocalizations.of(context).translate('share_link'),
+                          style: TextStyle(color: Colors.green),
+                        )),
+                    FlatButton.icon(
+                        onPressed: () =>
+                            Share.share(getUrl(url.name), subject: url.label),
+                        icon: Icon(
+                          Icons.launch,
+                          color: Colors.green,
+                        ),
+                        label: Text(
+                          AppLocalizations.of(context).translate('preview'),
                           style: TextStyle(color: Colors.green),
                         )),
                   ],

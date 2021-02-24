@@ -12,7 +12,6 @@ import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'navigationDrawer/routes.dart';
 
 class LoadingPage extends StatefulWidget {
   @override
@@ -61,8 +60,6 @@ class _LoadingPageState extends State<LoadingPage> {
   void checkMerchantInformation() async {
     await Future.delayed(Duration(milliseconds: 500));
     try {
-      await SharePreferences().save('merchant', Merchant(merchantId: 1));
-
       var data = await SharePreferences().read('merchant');
       if (data != null) {
         launchChecking();
@@ -106,7 +103,7 @@ class _LoadingPageState extends State<LoadingPage> {
       Merchant merchant =
           Merchant.fromJson(await SharePreferences().read('merchant'));
       merchant.merchantId != null
-          ? Navigator.pushReplacementNamed(context, Routes.home)
+          ? Navigator.pushReplacementNamed(context, '/home')
           : Navigator.pushReplacementNamed(context, '/login');
     } else
       openDisableDialog();

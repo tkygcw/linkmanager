@@ -27,8 +27,11 @@ class _UrlDialogState extends State<UrlDialog> {
   var urlController = TextEditingController();
   var domain;
   int urlType = 0;
-
   bool isActive = true;
+
+  //0 = deactive
+  int manualUrl = 0;
+  int allowBranch = 0;
 
   @override
   void initState() {
@@ -91,15 +94,17 @@ class _UrlDialogState extends State<UrlDialog> {
                   return mainContent();
                 }
                 return Container(
-                    height: 320, width: 270, child: CustomProgressBar());
+                    height: allowBranch == 1 ? 320 : 250,
+                    width: 1000,
+                    child: CustomProgressBar());
               })),
     );
   }
 
   Widget mainContent() {
     return Container(
-      width: 270,
-      height: 320,
+      width: 1000,
+      height: allowBranch == 1 ? 320 : 250,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -116,7 +121,7 @@ class _UrlDialogState extends State<UrlDialog> {
               hintStyle: TextStyle(color: Colors.black26),
               border: new OutlineInputBorder(
                   borderRadius: BorderRadius.circular(5.0),
-                  borderSide: new BorderSide(color: Colors.teal)),
+                  borderSide: new BorderSide(color: Colors.red)),
             ),
           ),
           SizedBox(
@@ -145,6 +150,7 @@ class _UrlDialogState extends State<UrlDialog> {
                 Expanded(
                   child: TextField(
                     controller: urlController,
+                    enabled: manualUrl == 1,
                     decoration: InputDecoration.collapsed(
                       hintText: '',
                       border: InputBorder.none,
@@ -168,48 +174,56 @@ class _UrlDialogState extends State<UrlDialog> {
           SizedBox(
             height: 20,
           ),
-          Container(
-            width: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                    child: Text(
-                  AppLocalizations.of(context).translate('url_type'),
-                  style: TextStyle(color: Colors.black54),
-                )),
-                Expanded(
-                  flex: 2,
-                  child: DropdownButton(
-                      value: urlType,
-                      isExpanded: true,
-                      style: TextStyle(fontSize: 15, color: Colors.black87),
-                      items: [
-                        DropdownMenuItem(
-                          child: Text(AppLocalizations.of(context)
-                              .translate('time_based')),
-                          value: 0,
-                        ),
-                        DropdownMenuItem(
-                          child: Text(AppLocalizations.of(context)
-                              .translate('location_based')),
-                          value: 1,
+          Visibility(
+            visible: allowBranch == 1,
+            child: Container(
+                width: double.infinity,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                            child: Text(
+                          AppLocalizations.of(context).translate('url_type'),
+                          style: TextStyle(color: Colors.black54),
+                        )),
+                        Expanded(
+                          flex: 2,
+                          child: DropdownButton(
+                              value: urlType,
+                              isExpanded: true,
+                              style: TextStyle(
+                                  fontSize: 15, color: Colors.black87),
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text(AppLocalizations.of(context)
+                                      .translate('time_based')),
+                                  value: 0,
+                                ),
+                                DropdownMenuItem(
+                                  child: Text(AppLocalizations.of(context)
+                                      .translate('location_based')),
+                                  value: 1,
+                                )
+                              ],
+                              onChanged: (value) {
+                                urlType = value;
+                                refreshStream.add('display');
+                              }),
                         )
                       ],
-                      onChanged: (value) {
-                        urlType = value;
-                        refreshStream.add('display');
-                      }),
-                )
-              ],
-            ),
-          ),
-          Text(
-            AppLocalizations.of(context).translate('url_type_description'),
-            style: TextStyle(color: Colors.black54, fontSize: 12),
-          ),
-          SizedBox(
-            height: 20,
+                    ),
+                    Text(
+                      AppLocalizations.of(context)
+                          .translate('url_type_description'),
+                      style: TextStyle(color: Colors.black54, fontSize: 12),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                  ],
+                )),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -300,6 +314,16 @@ class _UrlDialogState extends State<UrlDialog> {
     this.domain =
         Merchant.fromJson(await SharePreferences().read("merchant")).domain +
             '/';
+
+    this.manualUrl =
+        Merchant.fromJson(await SharePreferences().read("merchant"))
+            .manualGenerate;
+
+    this.allowBranch =
+        Merchant.fromJson(await SharePreferences().read("merchant"))
+            .allowBranch;
+    print('allow branch: $allowBranch');
+
     setState(() {});
   }
 

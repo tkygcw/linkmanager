@@ -5,39 +5,30 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:linkmanager/object/link.dart';
-import 'package:linkmanager/object/url.dart';
-import 'package:linkmanager/page/url/link/link_detail.dart';
+import 'package:linkmanager/object/branch.dart';
+import 'package:linkmanager/object/merchant.dart';
+import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
+import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:refreshable_reorderable_list/refreshable_reorderable_list.dart';
-import 'package:share/share.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import 'link_list_view.dart';
-
-class LinkPage extends StatefulWidget {
-  final Url url;
-
-  LinkPage({this.url});
+class BranchPage extends StatefulWidget {
+  static const String routeName = '/branch';
 
   @override
   _ListState createState() => _ListState();
 }
 
-class _ListState extends State<LinkPage> {
-  String query = '';
-  List<Link> links = [];
+class _ListState extends State<BranchPage> {
+  List<Branch> branches = [];
   bool itemLoad = false;
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
 
   final ScrollController listScrollController = ScrollController();
-
   final key = new GlobalKey<ScaffoldState>();
+  final TextEditingController branchName = TextEditingController();
 
   /*
      * network checking purpose
@@ -56,7 +47,7 @@ class _ListState extends State<LinkPage> {
             result == ConnectivityResult.wifi);
       });
     });
-    fetchLink();
+    fetchBranch();
   }
 
   // Be sure to cancel subscription after you are done
@@ -71,10 +62,10 @@ class _ListState extends State<LinkPage> {
     return Scaffold(
         key: key,
         appBar: AppBar(
-          centerTitle: false,
+          centerTitle: true,
           elevation: 2,
-          title: Text(widget.url.label,
-              textAlign: TextAlign.left,
+          title: Text(AppLocalizations.of(context).translate('branch'),
+              textAlign: TextAlign.center,
               style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
@@ -90,36 +81,19 @@ class _ListState extends State<LinkPage> {
               onPressed: () {
                 _onRefresh();
               },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.cleaning_services_outlined,
-                color: Colors.deepPurple,
-              ),
-              onPressed: () {
-                clearHistory(widget.url);
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.launch,
-                color: Colors.deepPurple,
-              ),
-              onPressed: () {
-                preview();
-              },
-            ),
+            )
           ],
         ),
-        body: links.length > 0 && networkConnection
-            ? customListView()
+        drawer: NavigationDrawer(),
+        body: branches.length > 0 && networkConnection
+            ? mainContent()
             : loadingView(),
         floatingActionButton: FloatingActionButton(
           elevation: 5,
           backgroundColor: Colors.deepPurpleAccent,
           onPressed: () {
-            //create new Link
-            openLinkDetailPage(null);
+            //create new Branch
+            branchDetailDialog(null);
           },
           child: Icon(
             Icons.add,
@@ -139,36 +113,12 @@ class _ListState extends State<LinkPage> {
     }
   }
 
-  Widget customListView() {
+  Widget mainContent() {
     return RefreshableReorderableListView(
       physics: AlwaysScrollableScrollPhysics(),
-      children: links
+      children: branches
           .asMap()
-          .map((index, link) => MapEntry(
-              index,
-              LinkListView(
-                link: link,
-                key: ValueKey(link.linkId),
-                onClick: (Link link, type) {
-                  switch (type) {
-                    case 'delete':
-                      deleteLink(link);
-                      break;
-                    case 'share':
-                      Share.share(link.url, subject: link.label);
-                      break;
-                    case 'launch':
-                      previewChannel(link);
-                      break;
-                    case 'duplicate':
-                      duplicate(link.linkId);
-                      break;
-                    case 'edit':
-                      openLinkDetailPage(link);
-                      break;
-                  }
-                },
-              )))
+          .map((index, link) => MapEntry(index, listView(link)))
           .values
           .toList(),
       onReorder: _onReorder,
@@ -176,23 +126,23 @@ class _ListState extends State<LinkPage> {
   }
 
   _onReorder(int oldIndex, int newIndex) async {
-    if (newIndex > links.length) newIndex = links.length;
+    if (newIndex > branches.length) newIndex = branches.length;
     if (oldIndex < newIndex) newIndex--;
 
-    Link categoryObject = links[oldIndex];
-    links.removeAt(oldIndex);
-    links.insert(newIndex, categoryObject);
+    Branch categoryObject = branches[oldIndex];
+    branches.removeAt(oldIndex);
+    branches.insert(newIndex, categoryObject);
 
     setState(() {});
     await updateLinkSequence();
   }
 
   Future updateLinkSequence() async {
-    for (int i = 0; i < links.length; i++) {
-      links[i].sequence = i + 1;
+    for (int i = 0; i < branches.length; i++) {
+      branches[i].sequence = i + 1;
     }
-    Map data = await Domain.callApi(
-        Domain.link, {'update_sequence': '1', 'sequence': jsonEncode(links)});
+    Map data = await Domain.callApi(Domain.branch,
+        {'update_sequence': '1', 'sequence': jsonEncode(branches)});
 
     if (data['status'] == '1') {
       showSnackBar('update_success', 'close');
@@ -202,57 +152,66 @@ class _ListState extends State<LinkPage> {
     setState(() {});
   }
 
-  previewChannel(Link link) {
-    String previewLink =
-        '${Domain.link}?preview=1&channel=${link.type}&url=${link.url}&pre_message=${link.preMessage}';
-    launch(previewLink);
-  }
-
-  preview() {
-    if(links.length > 0){
-      String previewLink = '${Domain.domain}${widget.url.name}';
-      launch(previewLink);
-    }
-    else {
-      showSnackBar('no_channel_found', 'close');
-    }
-  }
-
-  Future duplicate(linkID) async {
-    Map data = await Domain.callApi(
-        Domain.link, {'duplicate': '1', 'link_id': linkID.toString()});
-
-    if (data['status'] == '1') {
-      showSnackBar('duplicate_success', 'close');
-      _onRefresh();
-    } else {
-      showSnackBar('something_went_wrong', 'close');
-    }
-    setState(() {});
+  Widget listView(Branch branch) {
+    return Card(
+        key: ValueKey(branch.branchId.toString()),
+        elevation: 2,
+        child: Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                  child: Icon(
+                    Icons.unfold_more,
+                    size: 35,
+                    color: Colors.black26,
+                  ),
+                ),
+                Expanded(
+                    child: Text(
+                  branch.name,
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87),
+                  maxLines: 1,
+                )),
+                IconButton(
+                    icon: Icon(
+                      Icons.edit,
+                      color: Colors.blueGrey,
+                    ),
+                    onPressed: () => branchDetailDialog(branch)),
+                IconButton(
+                    icon: Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                    ),
+                    onPressed: () => deleteBranch(branch))
+              ],
+            )));
   }
 
   _onRefresh() async {
-    // monitor network fetch
-    if (mounted)
-      setState(() {
-        itemLoad = false;
-        links.clear();
-        fetchLink();
-        _refreshController.resetNoData();
-      });
-    // if failed,use refreshFailed()
-    _refreshController.refreshCompleted();
+    setState(() {
+      itemLoad = false;
+      branches.clear();
+      fetchBranch();
+    });
   }
 
-  Future fetchLink() async {
-    Map data = await Domain.callApi(Domain.link,
-        {'read': '1', 'url_id': widget.url.id.toString(), 'query': ''});
-
+  Future fetchBranch() async {
+    Map data = await Domain.callApi(Domain.branch, {
+      'read': '1',
+      'merchant_id':
+          Merchant.fromJson(await SharePreferences().read("merchant"))
+              .merchantId
+              .toString()
+    });
     if (data['status'] == '1') {
-      List responseJson = data['link'];
-      links.addAll(responseJson.map((e) => Link.fromJson(e)));
-    } else {
-      _refreshController.loadNoData();
+      List responseJson = data['branch'];
+      branches.addAll(responseJson.map((e) => Branch.fromJson(e)));
     }
     setState(() {
       itemLoad = true;
@@ -260,26 +219,9 @@ class _ListState extends State<LinkPage> {
   }
 
   /*
-  * edit link detail dialog
+  * delete Branch
   * */
-  openLinkDetailPage(Link link) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => LinkDetailPage(
-                link: link,
-                urlId: widget.url.id.toString(),
-                refresh: () {
-                  _onRefresh();
-                },
-              )),
-    );
-  }
-
-  /*
-  * delete Link
-  * */
-  deleteLink(Link link) {
+  deleteBranch(Branch branch) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -287,7 +229,7 @@ class _ListState extends State<LinkPage> {
         return AlertDialog(
           title: Text(AppLocalizations.of(context).translate('delete_request')),
           content: Text(
-            AppLocalizations.of(context).translate('delete_link_desc'),
+            AppLocalizations.of(context).translate('delete_branch_description'),
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
@@ -303,15 +245,15 @@ class _ListState extends State<LinkPage> {
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
-                Map data = await Domain.callApi(Domain.link,
-                    {'delete': '1', 'link_id': link.linkId.toString()});
-
+                Map data = await Domain.callApi(Domain.branch,
+                    {'delete': '1', 'branch_id': branch.branchId.toString()});
+                print(data);
                 if (data['status'] == '1') {
                   Navigator.of(context).pop();
                   await Future.delayed(Duration(milliseconds: 300));
                   showSnackBar('delete_success', 'close');
                   setState(() {
-                    links.remove(link);
+                    branches.remove(branch);
                   });
                 } else
                   showSnackBar('something_went_wrong', 'close');
@@ -324,18 +266,42 @@ class _ListState extends State<LinkPage> {
   }
 
   /*
-  * clear all browsing data
+  * create n update branch
   * */
-  clearHistory(Url url) {
+  branchDetailDialog(Branch branch) {
+    if (branch != null)
+      branchName.text = branch.name;
+    else
+      branchName.clear();
+    //show dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return alert dialog object
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('clear_history')),
-          content: Text(
-            AppLocalizations.of(context).translate('clear_history_description'),
-            style: TextStyle(color: Colors.black87, fontSize: 15),
+          title: Text(AppLocalizations.of(context)
+              .translate(branch == null ? 'create_branch' : 'edit_branch')),
+          content: Theme(
+            data: new ThemeData(
+              primaryColor: Colors.purpleAccent,
+              primaryColorDark: Colors.purpleAccent,
+            ),
+            child: TextField(
+              controller: branchName,
+              maxLines: 1,
+              textAlign: TextAlign.start,
+              maxLengthEnforced: true,
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context).translate('label'),
+                floatingLabelBehavior: FloatingLabelBehavior.always,
+                labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                hintText: 'Branch A',
+                hintStyle: TextStyle(color: Colors.black26),
+                border: new OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(5.0),
+                ),
+              ),
+            ),
           ),
           actions: <Widget>[
             FlatButton(
@@ -350,14 +316,45 @@ class _ListState extends State<LinkPage> {
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
-                Map data = await Domain.callApi(Domain.link,
-                    {'clear': '1', 'url_id': url.id.toString()});
+                Map data;
+                /**
+                 * create new branch
+                 */
+                if (branch == null) {
+                  data = await Domain.callApi(Domain.branch, {
+                    'create': '1',
+                    'merchant_id': Merchant.fromJson(
+                            await SharePreferences().read("merchant"))
+                        .merchantId
+                        .toString(),
+                    'name': branchName.text
+                  });
+                }
+                /*
+                * update branch
+                * */
+                else {
+                  data = await Domain.callApi(Domain.branch, {
+                    'update': '1',
+                    'branch_id': branch.branchId.toString(),
+                    'name': branchName.text
+                  });
+                }
 
                 if (data['status'] == '1') {
                   Navigator.of(context).pop();
                   await Future.delayed(Duration(milliseconds: 300));
-                  showSnackBar('clear_success', 'close');
-                  _onRefresh();
+                  showSnackBar(
+                      branch == null ? 'create_success' : 'update_success',
+                      'close');
+
+                  setState(() {
+                    if (branch == null)
+                      _onRefresh();
+                    else {
+                      branch.name = branchName.text;
+                    }
+                  });
                 } else
                   showSnackBar('something_went_wrong', 'close');
               },
@@ -374,7 +371,7 @@ class _ListState extends State<LinkPage> {
             ? '${AppLocalizations.of(context).translate('no_link')}'
             : '${AppLocalizations.of(context).translate('no_network_found')}',
         description: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_url_description')}'
+            ? '${AppLocalizations.of(context).translate('no_branch_description')}'
             : '${AppLocalizations.of(context).translate('no_network_found_description')}',
         showButton: true,
         refresh: () {

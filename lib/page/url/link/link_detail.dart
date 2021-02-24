@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkmanager/object/branch.dart';
 import 'package:linkmanager/object/channel.dart';
 import 'package:linkmanager/object/link.dart';
 import 'package:linkmanager/object/merchant.dart';
@@ -15,6 +18,7 @@ import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
+import 'package:smart_select/smart_select.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 //testing
@@ -47,9 +51,11 @@ class _ListState extends State<LinkDetailPage> {
   String type = 'WhatsApp';
   int allowDayTime;
   List workingDay = [0, 0, 0, 0, 0, 0, 0];
-  List workingTime = [];
+  List<String> workingTime = [];
 
   int allowBranch;
+  List<int> selectedBranch = [];
+  List<Branch> branch = [];
 
   @override
   void initState() {
@@ -63,6 +69,7 @@ class _ListState extends State<LinkDetailPage> {
             result == ConnectivityResult.wifi);
 
         fetchChannel();
+        fetchBranch();
       });
     });
     if (widget.link != null) {
@@ -72,6 +79,8 @@ class _ListState extends State<LinkDetailPage> {
       preMessage.text = widget.link.preMessage;
       labelController.text = widget.link.label;
       workingDay = widget.link.workingDay;
+      workingTime = widget.link.workingTime;
+      selectedBranch = widget.link.branch;
     }
     fetchChannel();
   }
@@ -199,12 +208,14 @@ class _ListState extends State<LinkDetailPage> {
                               channelLabel = channel;
                               selectedChannel = await getSelectChannel();
                               //clear data if change channel
-                              if (channelLabel != widget.link.type) {
-                                url.clear();
-                                preMessage.clear();
-                              } else {
-                                url.text = widget.link.url;
-                                preMessage.text = widget.link.preMessage;
+                              if (widget.link != null) {
+                                if (channelLabel != widget.link.type) {
+                                  url.clear();
+                                  preMessage.clear();
+                                } else {
+                                  url.text = widget.link.url;
+                                  preMessage.text = widget.link.preMessage;
+                                }
                               }
                               setState(() {});
                             }),
@@ -229,7 +240,7 @@ class _ListState extends State<LinkDetailPage> {
                     height: 30,
                   ),
                   Visibility(
-                      visible: allowDayTime == 1, child: dateTimeLayout()),
+                      visible: allowDayTime == 1, child: expansionView()),
                   SizedBox(
                     height: allowDayTime == 1 ? 30 : 0,
                   ),
@@ -248,6 +259,28 @@ class _ListState extends State<LinkDetailPage> {
                       color: Colors.deepPurpleAccent,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5)),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  Visibility(
+                    visible: widget.link != null,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 50.0,
+                      child: OutlineButton(
+                        onPressed: () {
+                          deleteLink(widget.link);
+                        },
+                        child: Text(
+                          '${AppLocalizations.of(context).translate('delete_channel')}',
+                          style: TextStyle(color: Colors.red),
+                        ),
+                        borderSide: BorderSide(width: 1, color: Colors.red),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)),
+                      ),
                     ),
                   ),
                 ],
@@ -271,6 +304,7 @@ class _ListState extends State<LinkDetailPage> {
       children: [
         TextField(
           controller: url,
+          keyboardType: selectedChannel.inputType,
           maxLines: 1,
           textAlign: TextAlign.start,
           maxLengthEnforced: true,
@@ -316,42 +350,131 @@ class _ListState extends State<LinkDetailPage> {
     );
   }
 
+  Widget expansionView() {
+    return Card(
+      elevation: 1,
+      child: Theme(
+        data: ThemeData.light().copyWith(
+            accentColor: Colors.blueAccent,
+            unselectedWidgetColor: Colors.black26),
+        child: ExpansionTile(
+          leading: Icon(Icons.settings),
+          title: Text(
+            AppLocalizations.of(context).translate('advance_setting'),
+            style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ),
+          children: <Widget>[
+            if (branch.length > 0) branchWidget(),
+            if (branch.length > 0)
+              SizedBox(
+                height: 30,
+              ),
+            dateTimeLayout()
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget dateTimeLayout() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          AppLocalizations.of(context).translate('working_day'),
-          style: TextStyle(fontSize: 15),
-        ),
-        Text(
-          AppLocalizations.of(context).translate('working_day_description'),
-          style: TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        SizedBox(
-          height: 10,
-        ),
-        DayPickers(
-            workingDays:
-                widget.link == null ? workingDay : widget.link.workingDay),
-        SizedBox(
-          height: 30,
-        ),
-        Text(
-          AppLocalizations.of(context).translate('working_time'),
-          style: TextStyle(fontSize: 15),
-        ),
-        Text(
-          AppLocalizations.of(context).translate('working_time_description'),
-          style: TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        TimePickers(
-            workingTimes:
-                widget.link == null ? workingTime : widget.link.workingTime),
-        SizedBox(
-          height: 50,
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalizations.of(context).translate('working_day'),
+            style: TextStyle(fontSize: 15),
+          ),
+          Text(
+            AppLocalizations.of(context).translate('working_day_description'),
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          DayPickers(
+              workingDays:
+                  widget.link == null ? workingDay : widget.link.workingDay),
+          SizedBox(
+            height: 30,
+          ),
+          Text(
+            AppLocalizations.of(context).translate('working_time'),
+            style: TextStyle(fontSize: 15),
+          ),
+          Text(
+            AppLocalizations.of(context).translate('working_time_description'),
+            style: TextStyle(fontSize: 12, color: Colors.grey),
+          ),
+          TimePickers(
+              workingTimes: workingTime,
+              onChanges: (List time) {
+                workingTime = time;
+              }),
+          SizedBox(
+            height: 30,
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget branchWidget() {
+    /// usage example
+    return SmartSelect<int>.multiple(
+      title: AppLocalizations.of(context).translate('select_branch'),
+      value: selectedBranch,
+      choiceItems: S2Choice.listFrom<int, Branch>(
+        source: branch,
+        value: (index, item) => item.branchId,
+        title: (index, item) => item.name,
+      ),
+      onChange: (state) {
+        setState(() => selectedBranch = state.value);
+      },
+      modalTitle: AppLocalizations.of(context).translate('branch'),
+      modalType: S2ModalType.bottomSheet,
+      modalConfirm: true,
+      modalHeaderStyle: S2ModalHeaderStyle(centerTitle: true),
+      tileBuilder: (context, state) {
+        return S2Tile.fromState(
+          state,
+          title: RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                    text:
+                        AppLocalizations.of(context).translate('select_branch'),
+                    style: TextStyle(fontSize: 15, color: Colors.black)),
+                TextSpan(text: '\n'),
+                TextSpan(
+                  text: AppLocalizations.of(context)
+                      .translate('select_branch_description'),
+                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          isTwoLine: false,
+          value: state.valueDisplay,
+          onTap: state.showModal,
+          hideValue: true,
+          body: S2TileChips(
+            chipLength: state.valueObject.length,
+            chipLabelBuilder: (context, i) {
+              return Text(state.valueObject[i].title);
+            },
+            chipOnDelete: (i) {
+              print(state.valueObject[i]);
+              setState(() => selectedBranch.remove(state.valueObject[i].value));
+            },
+            chipColor: Colors.deepPurple,
+            chipBrightness: Brightness.dark,
+            chipBorderOpacity: .1,
+          ),
+        );
+      },
     );
   }
 
@@ -371,14 +494,14 @@ class _ListState extends State<LinkDetailPage> {
           ),
           actions: <Widget>[
             FlatButton(
-              child: Text('Cancel'),
+              child: Text(AppLocalizations.of(context).translate('cancel')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             FlatButton(
               child: Text(
-                'Confirm',
+                AppLocalizations.of(context).translate('confirm'),
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
@@ -386,10 +509,12 @@ class _ListState extends State<LinkDetailPage> {
                     {'delete': '1', 'link_id': link.linkId.toString()});
 
                 if (data['status'] == '1') {
-                  Navigator.of(context).pop();
-                  await Future.delayed(Duration(milliseconds: 300));
                   showSnackBar('delete_success', 'close');
-                  setState(() {});
+                  widget.refresh();
+
+                  await Future.delayed(Duration(milliseconds: 500));
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 } else
                   showSnackBar('something_went_wrong', 'close');
               },
@@ -419,6 +544,26 @@ class _ListState extends State<LinkDetailPage> {
     setState(() {});
   }
 
+  Future fetchBranch() async {
+    branch.clear();
+    if (allowBranch != 1) return;
+
+    Map data = await Domain.callApi(Domain.branch, {
+      'read': '1',
+      'merchant_id':
+          Merchant.fromJson(await SharePreferences().read("merchant"))
+              .merchantId
+              .toString()
+    });
+    if (data['status'] == '1') {
+      List responseJson = data['branch'];
+      branch.addAll(responseJson.map((e) => Branch.fromJson(e)));
+    } else {
+      showSnackBar('something_went_wrong', 'close');
+    }
+    setState(() {});
+  }
+
   checkingInput(String action) {
     if (labelController.text.isNotEmpty && url.text.isNotEmpty) {
       if (action == 'preview')
@@ -436,15 +581,16 @@ class _ListState extends State<LinkDetailPage> {
   Future createChannel() async {
     Map data = await Domain.callApi(Domain.link, {
       'create': '1',
-      'branch_id': '0',
-      'working_time': '[]',
+      'working_time': jsonEncode(workingTime),
       'working_day': workingDay.toString(),
+      'branch_id': selectedBranch.toString(),
       'url_id': widget.urlId,
       'label': labelController.text,
       'pre_message': preMessage.text,
       'url': url.text,
       'type': channelLabel
     });
+
     if (data['status'] == '1') {
       showSnackBar('create_success', 'close');
       widget.refresh();
@@ -459,9 +605,9 @@ class _ListState extends State<LinkDetailPage> {
     Map data = await Domain.callApi(Domain.link, {
       'update': '1',
       'link_id': widget.link.linkId.toString(),
-      'branch_id': '0',
-      'working_time': '[]',
+      'working_time': jsonEncode(workingTime),
       'working_day': workingDay.toString(),
+      'branch_id': selectedBranch.toString(),
       'label': labelController.text,
       'pre_message': preMessage.text,
       'url': url.text,
@@ -503,7 +649,10 @@ class _ListState extends State<LinkDetailPage> {
     this.allowBranch =
         Merchant.fromJson(await SharePreferences().read("merchant"))
             .allowBranch;
-    setState(() {});
+    print('Branch: $allowBranch');
+    setState(() {
+      fetchBranch();
+    });
   }
 
   showSnackBar(preMessage, button) {

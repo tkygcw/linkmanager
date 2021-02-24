@@ -26,7 +26,7 @@ class CustomSnackBar {
         //backgroundColor: Colors.redAccent,
         action: SnackBarAction(
           textColor: Color(0xFFFAF2FB),
-          label: '${AppLocalizations.of(context).translate('okay')}',
+          label: '${AppLocalizations.of(context).translate('close')}',
           onPressed: () {},
         ),
       ),

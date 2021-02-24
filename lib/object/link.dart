@@ -5,6 +5,7 @@ class Link {
   String label, type, url, preMessage, icon, createAt;
   List<String> workingTime;
   List<int> workingDay;
+  List<int> branch;
 
   Link(
       {this.linkId,
@@ -16,6 +17,7 @@ class Link {
       this.preMessage,
       this.workingTime,
       this.workingDay,
+      this.branch,
       this.createAt,
       this.linkClick});
 
@@ -30,7 +32,8 @@ class Link {
         type: json['type'],
         preMessage: json['pre_message'],
         workingTime: bindWorkingTime(json['working_time']),
-        workingDay: bindWorkingDay(json['working_day']));
+        workingDay: bindWorkingDay(json['working_day']),
+        branch: bindWorkingDay(json['branch_id']));
   }
 
   static List<String> bindWorkingTime(json) {
