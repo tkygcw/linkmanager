@@ -1,6 +1,6 @@
 import 'package:linkmanager/page/about/about.dart';
 import 'package:linkmanager/page/branch/branch.dart';
-import 'package:linkmanager/page/report.dart';
+import 'package:linkmanager/page/report/report.dart';
 import 'package:linkmanager/page/url/home.dart';
 
 class Routes {
