@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
+import 'package:linkmanager/page/report/report.dart';
 import 'package:linkmanager/page/url/url_dialog.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
@@ -170,6 +171,8 @@ class _ListState extends State<HomePage> {
             openUrlDialog(context, true, url);
           else if (action == 'delete')
             deleteURL(url);
+          else if (action == 'report')
+            openReportPage(url);
           else
             openLinkPage(url);
         },
@@ -252,6 +255,16 @@ class _ListState extends State<HomePage> {
       MaterialPageRoute(
           builder: (context) => LinkPage(
                 url: url,
+              )),
+    );
+  }
+
+  openReportPage(Url url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ReportPage(
+                urlID: url.id,
               )),
     );
   }

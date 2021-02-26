@@ -12,7 +12,6 @@ import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class LoadingPage extends StatefulWidget {
   @override
   _LoadingPageState createState() => _LoadingPageState();
@@ -86,6 +85,11 @@ class _LoadingPageState extends State<LoadingPage> {
         openUpdateDialog(data);
         return;
       }
+      /*
+      * save expired date
+      * */
+      await SharePreferences()
+          .save('expired_date', data['expired_date'][0]['end_date']);
       /*
       * status checking
       * */

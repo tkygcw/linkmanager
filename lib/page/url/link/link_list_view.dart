@@ -69,17 +69,18 @@ class LinkListView extends StatelessWidget {
                     Visibility(
                       visible: link.sequence == 1,
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.lightBlue,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 5,
-                              offset: Offset(1, 3), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        padding: EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.lightBlue,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.3),
+                                blurRadius: 5,
+                                offset:
+                                    Offset(1, 3), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          padding: EdgeInsets.all(2),
                           child: Text(
                             AppLocalizations.of(context).translate('default'),
                             style: TextStyle(color: Colors.white, fontSize: 10),

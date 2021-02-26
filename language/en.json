@@ -138,5 +138,8 @@
   "channels": "Channel Analysis",
   "channel": "Channel",
   "no_record_found": "No Record Found..",
-  "select_url": "Select URL Here"
+  "select_url": "Select URL Here",
+
+  "expired_date": "Expired Date",
+  "day_left": "Day Left"
 }

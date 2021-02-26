@@ -206,6 +206,22 @@ class HomeListView extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
+          value: 'report',
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.analytics,
+                color: Colors.grey,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(AppLocalizations.of(context)
+                  .translate('report')),
+            ],
+          ),
+        ),
+        PopupMenuItem(
           value: 'delete',
           child: Row(
             children: <Widget>[
@@ -231,6 +247,9 @@ class HomeListView extends StatelessWidget {
             break;
           case 'edit':
             this.onClick(url, 'edit');
+            break;
+          case 'report':
+            this.onClick(url, 'report');
             break;
           case 'copy':
             Clipboard.setData(new ClipboardData(text: getUrl(url.name)));

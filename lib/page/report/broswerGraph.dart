@@ -27,11 +27,11 @@ class _BrowserGraphState extends State<BrowserGraph> {
     // TODO: implement initState
     super.initState();
     controller = StreamController();
-    fetchReport();
   }
 
   @override
   Widget build(BuildContext context) {
+    fetchReport();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -97,6 +97,10 @@ class _BrowserGraphState extends State<BrowserGraph> {
   }
 
   Future fetchReport() async {
+    controller.add('');
+    await Future.delayed(Duration(milliseconds: 500));
+
+    browsers.clear();
     Map data = await Domain.callApi(
         Domain.report, {'browser_report': '1', 'url_id': widget.urlID});
 

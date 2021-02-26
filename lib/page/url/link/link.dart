@@ -275,7 +275,6 @@ class _ListState extends State<LinkPage> {
               )),
     );
   }
-
   /*
   * delete Link
   * */

@@ -11,6 +11,7 @@ import 'package:linkmanager/page/report/channelGraph.dart';
 import 'package:linkmanager/page/report/deviceGraph.dart';
 import 'package:linkmanager/page/report/locationGraph.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
+import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
@@ -19,6 +20,9 @@ import 'broswerGraph.dart';
 
 class ReportPage extends StatefulWidget {
   static const String routeName = '/report';
+  final urlID;
+
+  ReportPage({this.urlID});
 
   @override
   _ReportPageState createState() => _ReportPageState();
@@ -26,7 +30,7 @@ class ReportPage extends StatefulWidget {
 
 class _ReportPageState extends State<ReportPage> {
   final key = new GlobalKey<ScaffoldState>();
-  int urlID = 1;
+  int urlID;
   String domain;
   List<Url> urlList = [];
 
@@ -39,6 +43,8 @@ class _ReportPageState extends State<ReportPage> {
   @override
   void initState() {
     super.initState();
+    if (widget.urlID != null) this.urlID = widget.urlID;
+    //network detector
     connectivity = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
@@ -68,12 +74,13 @@ class _ReportPageState extends State<ReportPage> {
               )),
           actions: <Widget>[],
         ),
-        drawer: NavigationDrawer(),
+        drawer: widget.urlID == null ? NavigationDrawer() : null,
         body: mainContent());
   }
 
   Widget mainContent() {
-    return networkConnection
+    print('urlId $urlID');
+    return networkConnection && urlID != null
         ? SingleChildScrollView(
             child: Column(
               children: [
@@ -113,7 +120,10 @@ class _ReportPageState extends State<ReportPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(AppLocalizations.of(context).translate('select_url'), style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),),
+              Text(
+                AppLocalizations.of(context).translate('select_url'),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
               Container(
                 height: 50,
                 child: DropdownButton(
@@ -151,6 +161,7 @@ class _ReportPageState extends State<ReportPage> {
                     onChanged: (url) async {
                       setState(() {
                         urlID = url;
+                        print(urlID);
                       });
                     }),
               ),
@@ -160,10 +171,10 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Future fetchURL() async {
-    urlList.clear();
     this.domain =
         Merchant.fromJson(await SharePreferences().read("merchant")).domain;
 
+    urlList.clear();
     Map data = await Domain.callApi(Domain.url, {
       'read': '1',
       'merchant_id':
@@ -172,26 +183,35 @@ class _ReportPageState extends State<ReportPage> {
               .toString()
     });
     if (data['status'] == '1') {
-      print(data['url']);
       List responseJson = data['url'];
       urlList.addAll(responseJson.map((e) => Url.fromJson(e)));
     } else {
       showSnackBar('something_went_wrong', 'close');
     }
-    setState(() {});
+
+    setState(() {
+      //set default as first url
+      if (urlID == null && urlList.length > 0) {
+        urlID = urlList[0].id;
+      }
+    });
   }
 
   Widget notFound() {
-    return NotFound(
-        title: '${AppLocalizations.of(context).translate('no_network_found')}',
-        description:
-            '${AppLocalizations.of(context).translate('no_network_found_description')}',
-        showButton: true,
-        refresh: () {
-          setState(() {});
-        },
-        button: '${AppLocalizations.of(context).translate('retry')}',
-        drawable: 'drawable/no_signal.png');
+    if (!networkConnection)
+      return NotFound(
+          title:
+              '${AppLocalizations.of(context).translate('no_network_found')}',
+          description:
+              '${AppLocalizations.of(context).translate('no_network_found_description')}',
+          showButton: true,
+          refresh: () {
+            setState(() {});
+          },
+          button: '${AppLocalizations.of(context).translate('retry')}',
+          drawable: 'drawable/no_signal.png');
+    else
+      return CustomProgressBar();
   }
 
   showSnackBar(preMessage, button) {

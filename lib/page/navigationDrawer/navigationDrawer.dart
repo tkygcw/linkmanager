@@ -1,14 +1,36 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/page/navigationDrawer/routes.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
+import 'package:linkmanager/utils/sharePreference.dart';
+import 'package:package_info/package_info.dart';
+import 'package:url_launcher/url_launcher.dart';
 
-class NavigationDrawer extends StatelessWidget {
+class NavigationDrawer extends StatefulWidget {
+  @override
+  _NavigationDrawerState createState() => _NavigationDrawerState();
+}
+
+class _NavigationDrawerState extends State<NavigationDrawer> {
+  Merchant merchant;
+  String expiredDate;
+  String _platformVersion = 'Default';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getMerchantData();
+    getVersionNumber();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           createDrawerHeader(),
           createDrawerBodyItem(
@@ -37,32 +59,104 @@ class NavigationDrawer extends StatelessWidget {
               text: AppLocalizations.of(context).translate('setting'),
               onTap: () =>
                   Navigator.pushReplacementNamed(context, Routes.home)),
-          ListTile(
-            title: Text('App version 1.0.0'),
-            onTap: () {},
-          ),
+          waterMark()
         ],
       ),
     );
   }
 
+  Widget waterMark() {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Align(
+          alignment: Alignment.bottomLeft,
+          child: InkWell(
+            onTap: () => launch('https://www.channelsoft.com.my'),
+            child: RichText(
+              text: TextSpan(
+                style: TextStyle(color: Colors.grey, fontSize: 11),
+                children: <TextSpan>[
+                  TextSpan(text: 'Version $_platformVersion'),
+                  TextSpan(text: '\n'),
+                  TextSpan(
+                    text: 'Powered By CHANNEL SOFT PLT',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void getVersionNumber() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String version = packageInfo.version;
+    setState(() {
+      _platformVersion = version;
+    });
+  }
+
   Widget createDrawerHeader() {
-    return DrawerHeader(
-        margin: EdgeInsets.zero,
-        padding: EdgeInsets.zero,
-        decoration: BoxDecoration(image: DecorationImage(fit: BoxFit.fill,
-            image: NetworkImage('')
-            )),
-        child: Stack(children: <Widget>[
-          Positioned(
-              bottom: 12.0,
-              left: 16.0,
-              child: Text("Welcome to Flutter",
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.w500))),
-        ]));
+    return Container(
+        height: 220,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.bottomCenter,
+          end: Alignment.topLeft,
+          colors: <Color>[Colors.purple, Colors.deepPurpleAccent],
+        )),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              merchant != null ? merchant.name : '',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold),
+            ),
+            Text(
+              merchant != null ? merchant.email : '',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            RichText(
+              text: TextSpan(
+                style: TextStyle(color: Colors.white70),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: AppLocalizations.of(context)
+                          .translate('expired_date'),
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(text: ' ${setExpiredDate(expiredDate)}'),
+                ],
+              ),
+            ),
+          ],
+        ));
+  }
+
+  getMerchantData() async {
+    merchant = Merchant.fromJson(await SharePreferences().read("merchant"));
+    expiredDate = await SharePreferences().read('expired_date');
+    setState(() {});
+  }
+
+  String setExpiredDate(date) {
+    final dateFormat = DateFormat("dd/MM/yyyy");
+    try {
+      DateTime todayDate = DateTime.parse(date);
+      return dateFormat.format(todayDate);
+    } on Exception {
+      return '';
+    }
   }
 
   Widget createDrawerBodyItem(
@@ -70,7 +164,10 @@ class NavigationDrawer extends StatelessWidget {
     return ListTile(
       title: Row(
         children: <Widget>[
-          Icon(icon),
+          Icon(
+            icon,
+            color: Colors.black45,
+          ),
           Padding(
             padding: EdgeInsets.only(left: 8.0),
             child: Text(text),

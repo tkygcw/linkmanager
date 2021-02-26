@@ -27,11 +27,11 @@ class _ChannelGraphState extends State<ChannelGraph> {
     // TODO: implement initState
     super.initState();
     controller = StreamController();
-    fetchReport();
   }
 
   @override
   Widget build(BuildContext context) {
+    fetchReport();
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -97,6 +97,10 @@ class _ChannelGraphState extends State<ChannelGraph> {
   }
 
   Future fetchReport() async {
+    controller.add('');
+    await Future.delayed(Duration(milliseconds: 500));
+
+    channels.clear();
     Map data = await Domain.callApi(
         Domain.report, {'channel_report': '1', 'url_id': widget.urlID});
 
