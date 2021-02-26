@@ -101,7 +101,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
 
   Widget createDrawerHeader() {
     return Container(
-        height: 220,
+        height: 250,
         alignment: Alignment.center,
         decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -113,6 +113,15 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Container(
+              height: 60,
+              child: Image.asset(
+                'drawable/white-logo.png',
+              ),
+            ),
+            SizedBox(
+              height: 20,
+            ),
             Text(
               merchant != null ? merchant.name : '',
               style: TextStyle(
@@ -135,7 +144,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                       text: AppLocalizations.of(context)
                           .translate('expired_date'),
                       style: TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(text: ' ${setExpiredDate(expiredDate)}'),
+                  TextSpan(text: expiredDate != null ? ' ${setExpiredDate(expiredDate)}' : ''),
                 ],
               ),
             ),
