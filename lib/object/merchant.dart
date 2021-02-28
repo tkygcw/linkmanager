@@ -1,6 +1,6 @@
 class Merchant {
   int merchantId;
-  String name, email, domain, phonePrefix, phone;
+  String name, email, domain, phonePrefix, phone, title, description;
   int maxLink, maxUrl, manualGenerate, allowDateTime, allowBranch, status;
 
   Merchant(
@@ -10,6 +10,8 @@ class Merchant {
       this.domain,
       this.phonePrefix,
       this.phone,
+      this.title,
+      this.description,
       this.maxLink,
       this.maxUrl,
       this.manualGenerate,
@@ -24,6 +26,8 @@ class Merchant {
         email = json['email'],
         phonePrefix = json['phone_prefix'],
         phone = json['phone'],
+        title = json['title'],
+        description = json['description'],
         maxLink = json['max_link'] as int,
         maxUrl = json['max_url'] as int,
         allowDateTime = json['allow_date_time'] as int,

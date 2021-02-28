@@ -58,7 +58,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               icon: Icons.settings,
               text: AppLocalizations.of(context).translate('setting'),
               onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.home)),
+                  Navigator.pushReplacementNamed(context, Routes.setting)),
           waterMark()
         ],
       ),
@@ -144,7 +144,10 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                       text: AppLocalizations.of(context)
                           .translate('expired_date'),
                       style: TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(text: expiredDate != null ? ' ${setExpiredDate(expiredDate)}' : ''),
+                  TextSpan(
+                      text: expiredDate != null
+                          ? ' ${setExpiredDate(expiredDate)}'
+                          : ''),
                 ],
               ),
             ),

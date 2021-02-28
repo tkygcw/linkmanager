@@ -141,5 +141,20 @@
   "select_url": "Select URL Here",
 
   "expired_date": "Expired Date",
-  "day_left": "Day Left"
+  "day_left": "Day Left",
+
+  "username": "Username",
+  "phone_hint": "143157329",
+  "update_profile": "Update Profile",
+  "domain": "Domain",
+  "current_password": "Current Password",
+  "confirm_password": "Confirm Password",
+  "change_password": "Change Password",
+  "change_password_description": "Always remember, a stronger password make a stronger security for your data!",
+  "current_pass_not_match": "Current Password not match!",
+  "password_not_match": "Password Not Match",
+  "profile": "Profile Details",
+  "select_logo": "Select Logo",
+  "title": "Title",
+  "description": "Description",
 }

@@ -52,6 +52,8 @@ dependencies:
   smart_select: ^4.3.2
   #graph
   syncfusion_flutter_charts: ^18.4.44
+  #country picker
+  country_code_picker: ^1.7.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
