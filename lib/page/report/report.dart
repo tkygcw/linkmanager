@@ -10,6 +10,7 @@ import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
 import 'package:linkmanager/page/report/channelGraph.dart';
 import 'package:linkmanager/page/report/deviceGraph.dart';
 import 'package:linkmanager/page/report/locationGraph.dart';
+import 'package:linkmanager/page/report/monthlyReport.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
@@ -88,6 +89,10 @@ class _ReportPageState extends State<ReportPage> {
                 SizedBox(
                   height: 10,
                 ),
+                MonthlyGraph(urlID: urlID.toString()),
+                SizedBox(
+                  height: 10,
+                ),
                 ChannelGraph(urlID: urlID.toString()),
                 SizedBox(
                   height: 20,
@@ -99,12 +104,12 @@ class _ReportPageState extends State<ReportPage> {
                 DeviceGraph(
                   urlID: urlID.toString(),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                LocationGraph(
-                  urlID: urlID.toString(),
-                ),
+//                SizedBox(
+//                  height: 20,
+//                ),
+//                LocationGraph(
+//                  urlID: urlID.toString(),
+//                ),
               ],
             ),
           )

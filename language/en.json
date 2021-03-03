@@ -4,8 +4,8 @@
   "report": "Report",
   "about": "About",
   "setting": "Setting",
-  "link_lick": "Link Clicks",
-  "total_link": "Total Links",
+  "link_lick": "Total Clicks Today",
+  "total_link": "Total Channels",
   "status": "Status",
   "copy_link": "Copy Link",
   "share_link": "Share",
@@ -130,6 +130,7 @@
   "new_password": "New Password",
 
   "browsers": "Browser Analysis",
+  "months": "Monthly Analysis",
   "browser": "Browser",
   "devices": "Device Analysis",
   "device": "Device",
@@ -156,5 +157,5 @@
   "profile": "Profile Details",
   "select_logo": "Select Logo",
   "title": "Title",
-  "description": "Description",
+  "description": "Description"
 }
