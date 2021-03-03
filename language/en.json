@@ -157,5 +157,18 @@
   "profile": "Profile Details",
   "select_logo": "Select Logo",
   "title": "Title",
-  "description": "Description"
+  "description": "Description",
+  "branch_info": "Branch Info",
+  "account_setting": "Account Setting",
+  "other": "Others",
+  "log_out": "Log Out",
+
+  "sign_out_request": "Sign Out Request",
+  "sign_out_message": "Are you sure that you want to sign out?",
+
+  "branch_info_description": "These information will show only at manual select's URL.",
+
+  "take_photo_from_where": "From where do you want to take the photo?",
+  "gallery": "Gallery",
+  "camera": "Camera"
 }
