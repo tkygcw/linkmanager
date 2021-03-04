@@ -15,6 +15,7 @@ import 'package:linkmanager/page/loading.dart';
 import 'package:linkmanager/page/setting/profile.dart';
 import 'package:linkmanager/page/setting/change_password.dart';
 import 'package:linkmanager/page/setting/branch_setting.dart';
+import 'package:linkmanager/object/merchant.dart';
 
 class SettingPage extends StatefulWidget {
   static const String routeName = '/setting';
@@ -26,6 +27,7 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   final key = new GlobalKey<ScaffoldState>();
   String _platformVersion = 'Default';
+  int allowBranch = 0;
 
   /*
      * network checking purpose
@@ -46,6 +48,7 @@ class _SettingPageState extends State<SettingPage> {
       });
     });
     getVersionNumber();
+    getPreData();
   }
 
   @override
@@ -114,18 +117,21 @@ class _SettingPageState extends State<SettingPage> {
                 tileColor: Colors.white,
               ),
             ),
-            Card(
-              elevation: 2,
-              child: ListTile(
-                onTap: () => openPage('branch'),
-                title:
-                    Text(AppLocalizations.of(context).translate('branch_info')),
-                leading: Icon(
-                  Icons.info_outline,
-                  color: Colors.deepPurpleAccent,
+            Visibility(
+              visible: allowBranch == 1,
+              child: Card(
+                elevation: 2,
+                child: ListTile(
+                  onTap: () => openPage('branch'),
+                  title: Text(
+                      AppLocalizations.of(context).translate('branch_info')),
+                  leading: Icon(
+                    Icons.info_outline,
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  trailing: Icon(Icons.keyboard_arrow_right),
+                  tileColor: Colors.white,
                 ),
-                trailing: Icon(Icons.keyboard_arrow_right),
-                tileColor: Colors.white,
               ),
             ),
             SizedBox(
@@ -181,6 +187,14 @@ class _SettingPageState extends State<SettingPage> {
     setState(() {
       _platformVersion = version;
     });
+  }
+
+  getPreData() async {
+    this.allowBranch =
+        Merchant.fromJson(await SharePreferences().read("merchant"))
+            .allowBranch;
+
+    setState(() {});
   }
 
   Widget waterMark() {

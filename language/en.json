@@ -170,5 +170,11 @@
 
   "take_photo_from_where": "From where do you want to take the photo?",
   "gallery": "Gallery",
-  "camera": "Camera"
+  "camera": "Camera",
+
+  "max_url": "Number of URL",
+  "reach_maximum": "Your already reached the maximum.",
+  "all_day": "All Day",
+  "all_time": "All Time",
+  "no_branch": "No branch selected."
 }

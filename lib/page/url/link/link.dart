@@ -7,6 +7,7 @@ import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/link.dart';
 import 'package:linkmanager/object/url.dart';
+import 'package:linkmanager/object/branch.dart';
 import 'package:linkmanager/page/url/link/link_detail.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
@@ -16,6 +17,8 @@ import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:refreshable_reorderable_list/refreshable_reorderable_list.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:linkmanager/utils/sharePreference.dart';
+import 'package:linkmanager/object/merchant.dart';
 
 import 'link_list_view.dart';
 
@@ -31,6 +34,7 @@ class LinkPage extends StatefulWidget {
 class _ListState extends State<LinkPage> {
   String query = '';
   List<Link> links = [];
+  List<Branch> branches = [];
   bool itemLoad = false;
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
@@ -56,6 +60,7 @@ class _ListState extends State<LinkPage> {
             result == ConnectivityResult.wifi);
       });
     });
+    fetchBranch();
     fetchLink();
   }
 
@@ -148,6 +153,7 @@ class _ListState extends State<LinkPage> {
               index,
               LinkListView(
                 link: link,
+                branches: branches,
                 key: ValueKey(link.linkId),
                 onClick: (Link link, type) {
                   switch (type) {
@@ -209,11 +215,10 @@ class _ListState extends State<LinkPage> {
   }
 
   preview() {
-    if(links.length > 0){
+    if (links.length > 0) {
       String previewLink = '${Domain.domain}${widget.url.name}';
       launch(previewLink);
-    }
-    else {
+    } else {
       showSnackBar('no_channel_found', 'close');
     }
   }
@@ -259,6 +264,22 @@ class _ListState extends State<LinkPage> {
     });
   }
 
+  Future fetchBranch() async {
+    Map data = await Domain.callApi(Domain.branch, {
+      'read_branch_name': '1',
+      'merchant_id':
+          Merchant.fromJson(await SharePreferences().read("merchant"))
+              .merchantId
+              .toString(),
+    });
+    print(data);
+    if (data['status'] == '1') {
+      List responseJson = data['branch'];
+      branches.addAll(responseJson.map((e) => Branch.fromJson(e)));
+    }
+    setState(() {});
+  }
+
   /*
   * edit link detail dialog
   * */
@@ -275,6 +296,7 @@ class _ListState extends State<LinkPage> {
               )),
     );
   }
+
   /*
   * delete Link
   * */
@@ -349,8 +371,8 @@ class _ListState extends State<LinkPage> {
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
-                Map data = await Domain.callApi(Domain.link,
-                    {'clear': '1', 'url_id': url.id.toString()});
+                Map data = await Domain.callApi(
+                    Domain.link, {'clear': '1', 'url_id': url.id.toString()});
 
                 if (data['status'] == '1') {
                   Navigator.of(context).pop();

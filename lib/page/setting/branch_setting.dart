@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
@@ -30,11 +31,9 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
   StreamController controller = StreamController();
 
   File _image;
+  var imagePath;
   ImageProvider provider;
 
-  String imageCode = '-1';
-  String imageName;
-  String extension = '';
   final picker = ImagePicker();
   var compressedFileSource;
 
@@ -141,6 +140,9 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
                       AppLocalizations.of(context).translate('select_logo'),
                       style: TextStyle(color: Colors.blueGrey, fontSize: 14),
                     ),
+                    SizedBox(
+                      height: 10,
+                    ),
                     imageWidget(),
                     SizedBox(
                       height: 30,
@@ -175,16 +177,45 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
   }
 
   Widget imageWidget() {
-    return InkWell(
-        onTap: () => _showSelectionDialog(context),
-        child: Container(
+    return Stack(
+        fit: StackFit.passthrough,
+        overflow: Overflow.visible,
+        children: [
+          Container(
             alignment: Alignment.center,
-            child: compressedFileSource != null
-                ? Image.memory(
-                    compressedFileSource,
-                    height: 150,
-                  )
-                : Image.asset('drawable/nologo.png', height: 150,)));
+            child: InkWell(
+              onTap: () => _showSelectionDialog(context),
+              child: compressedFileSource != null
+                  ? Image.memory(
+                      compressedFileSource,
+                      height: 150,
+                    )
+                  : Image.asset(
+                      'drawable/nologo.png',
+                      height: 150,
+                    ),
+            ),
+          ),
+          Visibility(
+            visible: compressedFileSource != null,
+            child: Container(
+                padding: EdgeInsets.all(5),
+                height: 150,
+                alignment: Alignment.topRight,
+                child: IconButton(
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.red,
+                  ),
+                  onPressed: clearImage,
+                )),
+          ),
+        ]);
+  }
+
+  clearImage() {
+    compressedFileSource = null;
+    controller.add('display');
   }
 
   Future updateBranchDescription() async {
@@ -192,7 +223,9 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
       'update_branch': '1',
       'title': title.text,
       'description': description.text,
-      'logo': base64Encode(compressedFileSource).toString(),
+      'logo': compressedFileSource != null
+          ? base64Encode(compressedFileSource).toString()
+          : '',
       'merchant_id':
           Merchant.fromJson(await SharePreferences().read("merchant"))
               .merchantId
@@ -220,8 +253,8 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
       merchant = Merchant.fromJson(data['merchant'][0]);
       description.text = merchant.description;
       title.text = merchant.title;
-      if(merchant.logo.isNotEmpty)
-      compressedFileSource = base64Decode(base64Data(merchant.logo));
+      if (merchant.logo.isNotEmpty)
+        compressedFileSource = base64Decode(base64Data(merchant.logo));
     } else {
       showSnackBar('something_went_wrong', 'close');
     }
@@ -309,11 +342,46 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
   * compress purpose
   * */
   Future getImage(isCamera) async {
-    final pickedFile = await picker.getImage(
+    imagePath = await picker.getImage(
         source: isCamera ? ImageSource.camera : ImageSource.gallery);
-    _image = File(pickedFile.path);
+    // compressFileMethod();
+    _cropImage();
+  }
 
-    compressFileMethod();
+  Future<Null> _cropImage() async {
+    File croppedFile = await ImageCropper.cropImage(
+        sourcePath: imagePath.path,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        androidUiSettings: AndroidUiSettings(
+            toolbarTitle: 'Cropper',
+            toolbarColor: Colors.deepPurple,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.original,
+            lockAspectRatio: false),
+        iosUiSettings: IOSUiSettings(
+          title: 'Cropper',
+        ));
+    if (croppedFile != null) {
+      _image = croppedFile;
+      compressFileMethod();
+    }
   }
 
   void compressFileMethod() async {

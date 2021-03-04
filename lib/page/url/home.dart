@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
+import 'package:linkmanager/page/navigationDrawer/routes.dart';
 import 'package:linkmanager/page/report/report.dart';
 import 'package:linkmanager/page/url/url_dialog.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
@@ -14,6 +15,7 @@ import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import 'home_list_view_v2.dart';
@@ -31,6 +33,7 @@ class _ListState extends State<HomePage> {
   bool itemFinish = false;
   String domain = '';
   String query = '';
+  int maxUrl = 0;
 
   List<Url> urls = [];
   RefreshController _refreshController =
@@ -50,7 +53,7 @@ class _ListState extends State<HomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getDomain();
+    getPreData();
     connectivity = Connectivity()
         .onConnectivityChanged
         .listen((ConnectivityResult result) {
@@ -71,9 +74,8 @@ class _ListState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.white70
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle(statusBarColor: Colors.white70));
 
     return Scaffold(
         key: key,
@@ -91,10 +93,11 @@ class _ListState extends State<HomePage> {
           actions: <Widget>[
             IconButton(
               icon: Icon(
-                Icons.share,
+                Icons.analytics,
                 color: Colors.deepPurple,
               ),
               onPressed: () {
+                Navigator.pushReplacementNamed(context, Routes.report);
                 // do something
               },
             )
@@ -136,12 +139,12 @@ class _ListState extends State<HomePage> {
                 child: customListView(),
               )
             : loadingView(),
+        bottomNavigationBar: urlLimit(),
         floatingActionButton: FloatingActionButton(
           elevation: 5,
           backgroundColor: Colors.deepPurpleAccent,
           onPressed: () {
-            //create new url
-            openUrlDialog(context, false, null);
+            countUrl();
           },
           child: Icon(
             Icons.add,
@@ -185,10 +188,57 @@ class _ListState extends State<HomePage> {
     );
   }
 
-  getDomain() async {
+  Widget urlLimit() {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.all(8.0),
+      child: Container(
+        height: 60,
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.of(context).translate('max_url'),
+                  style: TextStyle(fontSize: 14),
+                ),
+                Text('${urls.length}/$maxUrl')
+              ],
+            ),
+            SizedBox(height: 5),
+            LinearPercentIndicator(
+              lineHeight: 14.0,
+              percent: calculateProgress(),
+              backgroundColor: Colors.grey,
+              progressColor: urls.length < maxUrl
+                  ? Colors.lightGreenAccent
+                  : Colors.redAccent,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  calculateProgress() {
+    if (urls.length > 0 && maxUrl > 0)
+      return urls.length / maxUrl;
+    else
+      return 0.0;
+  }
+
+  getPreData() async {
     this.domain =
         Merchant.fromJson(await SharePreferences().read("merchant")).domain +
             '/';
+
+    this.maxUrl =
+        Merchant.fromJson(await SharePreferences().read("merchant")).maxUrl;
+
+    setState(() {});
   }
 
   _onRefresh() async {
@@ -234,6 +284,25 @@ class _ListState extends State<HomePage> {
     setState(() {});
   }
 
+  Future countUrl() async {
+    Map data = await Domain.callApi(Domain.url, {
+      'count_url': '1',
+      'merchant_id':
+          Merchant.fromJson(await SharePreferences().read("merchant"))
+              .merchantId
+              .toString(),
+    });
+
+    if (data['status'] == '1') {
+      int currentUrlNo = data['num_link'];
+      if (currentUrlNo < maxUrl)
+        openUrlDialog(context, false, null);
+      else
+        showSnackBar('reach_maximum', 'close');
+    }
+    setState(() {});
+  }
+
   /*
   * edit address dialog
   * */
@@ -245,6 +314,7 @@ class _ListState extends State<HomePage> {
         return UrlDialog(
             url: url,
             onClick: (message) async {
+              _onRefresh();
               await Future.delayed(Duration(milliseconds: 300));
               showSnackBar(message, 'close');
               setState(() {});
