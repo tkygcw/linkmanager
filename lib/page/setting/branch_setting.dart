@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -9,6 +9,7 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linkmanager/object/merchant.dart';
+import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
@@ -24,6 +25,9 @@ class BranchSettingPage extends StatefulWidget {
 class _BranchSettingPageState extends State<BranchSettingPage> {
   Merchant merchant;
   final key = new GlobalKey<ScaffoldState>();
+
+  // ignore: close_sinks
+  StreamController controller = StreamController();
 
   File _image;
   ImageProvider provider;
@@ -61,26 +65,14 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
               )),
           actions: <Widget>[],
         ),
-        body: mainContent());
-  }
-
-  Future fetchMerchant() async {
-    Map data = await Domain.callApi(Domain.merchant, {
-      'profile': '1',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString()
-    });
-    if (data['status'] == '1') {
-      merchant = Merchant.fromJson(data['merchant'][0]);
-      description.text = merchant.description;
-      title.text = merchant.title;
-    } else {
-      showSnackBar('something_went_wrong', 'close');
-    }
-
-    setState(() {});
+        body: StreamBuilder(
+            stream: controller.stream,
+            builder: (context, object) {
+              if (object.data == 'display') {
+                return mainContent();
+              }
+              return CustomProgressBar();
+            }));
   }
 
   Widget mainContent() {
@@ -93,7 +85,7 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
             margin: EdgeInsets.all(15),
             elevation: 5,
             child: Container(
-                height: 500,
+                height: 530,
                 margin: EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +135,7 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
                               borderSide: new BorderSide(color: Colors.teal)),
                         )),
                     SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                     Text(
                       AppLocalizations.of(context).translate('select_logo'),
@@ -151,7 +143,7 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
                     ),
                     imageWidget(),
                     SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
                     SizedBox(
                       width: double.infinity,
@@ -186,12 +178,13 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
     return InkWell(
         onTap: () => _showSelectionDialog(context),
         child: Container(
-          alignment: Alignment.center,
-          child: Image.memory(
-            compressedFileSource != null ? compressedFileSource : null,
-            height: 150,
-          ),
-        ));
+            alignment: Alignment.center,
+            child: compressedFileSource != null
+                ? Image.memory(
+                    compressedFileSource,
+                    height: 150,
+                  )
+                : Image.asset('drawable/nologo.png', height: 150,)));
   }
 
   Future updateBranchDescription() async {
@@ -199,7 +192,7 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
       'update_branch': '1',
       'title': title.text,
       'description': description.text,
-      'logo': compressedFileSource.toString(),
+      'logo': base64Encode(compressedFileSource).toString(),
       'merchant_id':
           Merchant.fromJson(await SharePreferences().read("merchant"))
               .merchantId
@@ -213,6 +206,40 @@ class _BranchSettingPageState extends State<BranchSettingPage> {
     } else {
       showSnackBar('something_went_wrong', 'close');
     }
+  }
+
+  Future fetchMerchant() async {
+    Map data = await Domain.callApi(Domain.merchant, {
+      'profile': '1',
+      'merchant_id':
+          Merchant.fromJson(await SharePreferences().read("merchant"))
+              .merchantId
+              .toString()
+    });
+    if (data['status'] == '1') {
+      merchant = Merchant.fromJson(data['merchant'][0]);
+      description.text = merchant.description;
+      title.text = merchant.title;
+      if(merchant.logo.isNotEmpty)
+      compressedFileSource = base64Decode(base64Data(merchant.logo));
+    } else {
+      showSnackBar('something_went_wrong', 'close');
+    }
+    controller.add('display');
+  }
+
+  base64Data(String data) {
+    switch (data.length % 4) {
+      case 1:
+        break;
+      case 2:
+        data = data + "==";
+        break;
+      case 3:
+        data = data + "=";
+        break;
+    }
+    return data;
   }
 
   showSnackBar(preMessage, button) {
