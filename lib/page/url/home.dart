@@ -193,7 +193,7 @@ class _ListState extends State<HomePage> {
       elevation: 2,
       margin: const EdgeInsets.all(8.0),
       child: Container(
-        height: 60,
+        height: 55,
         padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +210,9 @@ class _ListState extends State<HomePage> {
             ),
             SizedBox(height: 5),
             LinearPercentIndicator(
-              lineHeight: 14.0,
+              lineHeight: 10.0,
+              animationDuration: 1000,
+              animation: true,
               percent: calculateProgress(),
               backgroundColor: Colors.grey,
               progressColor: urls.length < maxUrl
@@ -225,7 +227,7 @@ class _ListState extends State<HomePage> {
 
   calculateProgress() {
     if (urls.length > 0 && maxUrl > 0)
-      return urls.length / maxUrl;
+      return urls.length / maxUrl > 1 ? 1.0 : urls.length / maxUrl;
     else
       return 0.0;
   }

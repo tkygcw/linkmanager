@@ -13,6 +13,7 @@ import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:refreshable_reorderable_list/refreshable_reorderable_list.dart';
 import 'package:share/share.dart';
@@ -36,6 +37,8 @@ class _ListState extends State<LinkPage> {
   List<Link> links = [];
   List<Branch> branches = [];
   bool itemLoad = false;
+  int maxLink = 0;
+
   RefreshController _refreshController =
       RefreshController(initialRefresh: false);
 
@@ -60,6 +63,7 @@ class _ListState extends State<LinkPage> {
             result == ConnectivityResult.wifi);
       });
     });
+    getPreData();
     fetchBranch();
     fetchLink();
   }
@@ -74,63 +78,64 @@ class _ListState extends State<LinkPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        key: key,
-        appBar: AppBar(
-          centerTitle: false,
-          elevation: 2,
-          title: Text(widget.url.label,
-              textAlign: TextAlign.left,
-              style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 25),
-              )),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(
-                Icons.refresh,
-                color: Colors.deepPurple,
-              ),
-              onPressed: () {
-                _onRefresh();
-              },
+      key: key,
+      appBar: AppBar(
+        centerTitle: false,
+        elevation: 2,
+        title: Text(widget.url.label,
+            textAlign: TextAlign.left,
+            style: GoogleFonts.aBeeZee(
+              textStyle: TextStyle(
+                  color: Colors.deepPurple,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25),
+            )),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+              Icons.refresh,
+              color: Colors.deepPurple,
             ),
-            IconButton(
-              icon: Icon(
-                Icons.cleaning_services_outlined,
-                color: Colors.deepPurple,
-              ),
-              onPressed: () {
-                clearHistory(widget.url);
-              },
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.launch,
-                color: Colors.deepPurple,
-              ),
-              onPressed: () {
-                preview();
-              },
-            ),
-          ],
-        ),
-        body: links.length > 0 && networkConnection
-            ? customListView()
-            : loadingView(),
-        floatingActionButton: FloatingActionButton(
-          elevation: 5,
-          backgroundColor: Colors.deepPurpleAccent,
-          onPressed: () {
-            //create new Link
-            openLinkDetailPage(null);
-          },
-          child: Icon(
-            Icons.add,
-            color: Colors.white,
+            onPressed: () {
+              _onRefresh();
+            },
           ),
-        ));
+          IconButton(
+            icon: Icon(
+              Icons.delete_forever_rounded,
+              color: Colors.deepPurple,
+            ),
+            onPressed: () {
+              clearHistory(widget.url);
+            },
+          ),
+          IconButton(
+            icon: Icon(
+              Icons.launch,
+              color: Colors.deepPurple,
+            ),
+            onPressed: () {
+              preview();
+            },
+          ),
+        ],
+      ),
+      body: links.length > 0 && networkConnection
+          ? customListView()
+          : loadingView(),
+      floatingActionButton: FloatingActionButton(
+        elevation: 5,
+        backgroundColor: Colors.deepPurpleAccent,
+        onPressed: () {
+          countLink();
+        },
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
+      ),
+      bottomNavigationBar: linkLimit(),
+    );
   }
 
   Widget loadingView() {
@@ -179,6 +184,69 @@ class _ListState extends State<LinkPage> {
           .toList(),
       onReorder: _onReorder,
     );
+  }
+
+  Widget linkLimit() {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.all(8.0),
+      child: Container(
+        height: 55,
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.of(context).translate('max_url'),
+                  style: TextStyle(fontSize: 14),
+                ),
+                Text('${links.length}/$maxLink')
+              ],
+            ),
+            SizedBox(height: 5),
+            LinearPercentIndicator(
+              lineHeight: 10.0,
+              animationDuration: 1000,
+              animation: true,
+              percent: calculateProgress(),
+              backgroundColor: Colors.grey,
+              progressColor: links.length < maxLink
+                  ? Colors.lightGreenAccent
+                  : Colors.redAccent,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  calculateProgress() {
+    if (links.length > 0 && maxLink > 0)
+      return links.length / maxLink > 1 ? 1.0 : links.length / maxLink;
+    else
+      return 0.0;
+  }
+
+  Future countLink() async {
+    Map data = await Domain.callApi(Domain.link, {
+      'count_channel': '1',
+      'url_id': widget.url.id.toString(),
+    });
+
+    print(data);
+
+    if (data['status'] == '1') {
+      int currentUrlNo = data['link_num'];
+      if (currentUrlNo < maxLink)
+        //create new Link
+        openLinkDetailPage(null);
+      else
+        showSnackBar('reach_maximum', 'close');
+    }
+    setState(() {});
   }
 
   _onReorder(int oldIndex, int newIndex) async {
@@ -405,6 +473,13 @@ class _ListState extends State<LinkPage> {
         drawable: networkConnection
             ? 'drawable/no_link.png'
             : 'drawable/no_signal.png');
+  }
+
+  getPreData() async {
+    this.maxLink =
+        Merchant.fromJson(await SharePreferences().read("merchant")).maxUrl;
+
+    setState(() {});
   }
 
   showSnackBar(message, button) {
