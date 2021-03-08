@@ -48,6 +48,11 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               text: AppLocalizations.of(context).translate('report'),
               onTap: () =>
                   Navigator.pushReplacementNamed(context, Routes.report)),
+          createDrawerBodyItem(
+              icon: Icons.qr_code,
+              text: AppLocalizations.of(context).translate('qr_code'),
+              onTap: () =>
+                  Navigator.pushReplacementNamed(context, Routes.qRCode)),
           Divider(),
           createDrawerBodyItem(
               icon: Icons.info,

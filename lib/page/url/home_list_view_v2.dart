@@ -71,8 +71,8 @@ class HomeListView extends StatelessWidget {
                           children: [
                             Text(
                               '${AppLocalizations.of(context).translate('link_lick')}',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black87),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.black87),
                             ),
                             Text(
                               url.linkClickedNum.toString(),
@@ -94,8 +94,8 @@ class HomeListView extends StatelessWidget {
                           children: [
                             Text(
                               '${AppLocalizations.of(context).translate('total_link')}',
-                              style:
-                                  TextStyle(fontSize: 12, color: Colors.black87),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.black87),
                             ),
                             Text(
                               url.linkNum.toString(),
@@ -191,6 +191,21 @@ class HomeListView extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
+          value: 'qr_code',
+          child: Row(
+            children: <Widget>[
+              Icon(
+                Icons.qr_code,
+                color: Colors.grey,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Text(AppLocalizations.of(context).translate('qr_code')),
+            ],
+          ),
+        ),
+        PopupMenuItem(
           value: 'preview',
           child: Row(
             children: <Widget>[
@@ -216,8 +231,7 @@ class HomeListView extends StatelessWidget {
               SizedBox(
                 width: 10,
               ),
-              Text(AppLocalizations.of(context)
-                  .translate('report')),
+              Text(AppLocalizations.of(context).translate('report')),
             ],
           ),
         ),
@@ -250,6 +264,9 @@ class HomeListView extends StatelessWidget {
             break;
           case 'report':
             this.onClick(url, 'report');
+            break;
+          case 'qr_code':
+            this.onClick(url, 'qr_code');
             break;
           case 'copy':
             Clipboard.setData(new ClipboardData(text: getUrl(url.name)));

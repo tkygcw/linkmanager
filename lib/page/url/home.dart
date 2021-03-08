@@ -8,6 +8,7 @@ import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
 import 'package:linkmanager/page/navigationDrawer/routes.dart';
+import 'package:linkmanager/page/qrcode/qrcodePage.dart';
 import 'package:linkmanager/page/report/report.dart';
 import 'package:linkmanager/page/url/url_dialog.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
@@ -43,7 +44,7 @@ class _ListState extends State<HomePage> {
 
   final key = new GlobalKey<ScaffoldState>();
 
-  /*
+  /*flutter pub run flutter_launcher_icons:main
      * network checking purpose
      * */
   StreamSubscription<ConnectivityResult> connectivity;
@@ -180,6 +181,8 @@ class _ListState extends State<HomePage> {
             deleteURL(url);
           else if (action == 'report')
             openReportPage(url);
+          else if (action == 'qr_code')
+            openQrCodeDialog(context, url);
           else
             openLinkPage(url);
         },
@@ -322,6 +325,19 @@ class _ListState extends State<HomePage> {
               setState(() {});
             });
       },
+    );
+  }
+
+  /*
+  * qr code dialog
+  * */
+  openQrCodeDialog(mainContext, Url url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => QRCodePage(
+                url: url,
+              )),
     );
   }
 

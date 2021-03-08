@@ -1,5 +1,6 @@
 import 'package:linkmanager/page/about/about.dart';
 import 'package:linkmanager/page/branch/branch.dart';
+import 'package:linkmanager/page/qrcode/qrcodePage.dart';
 import 'package:linkmanager/page/report/report.dart';
 import 'package:linkmanager/page/setting/setting.dart';
 import 'package:linkmanager/page/url/home.dart';
@@ -10,4 +11,5 @@ class Routes {
   static const String report = ReportPage.routeName;
   static const String about = AboutPage.routeName;
   static const String setting = SettingPage.routeName;
+  static const String qRCode = QRCodePage.routeName;
 }

@@ -176,5 +176,11 @@
   "reach_maximum": "Your already reached the maximum.",
   "all_day": "All Day",
   "all_time": "All Time",
-  "no_branch": "No branch selected."
+  "no_branch": "No branch selected.",
+  "qr_code": "Generate QR Code",
+  "share_qr_code": "Share QR Code",
+  "qr_code_color": "QR Code Color",
+  "logo_size": "Logo Size",
+  "logo_size_description": "Large logo size may affect the efficiency of QR Scanner.",
+  "invalid_qr_code": "Invalid QR Code"
 }
