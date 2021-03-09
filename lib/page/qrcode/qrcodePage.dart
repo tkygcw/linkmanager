@@ -226,7 +226,7 @@ class _QRCodePageState extends State<QRCodePage> {
                               children: [
                                 Text(
                                   urlList[i].label,
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(fontSize: 14),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -236,7 +236,7 @@ class _QRCodePageState extends State<QRCodePage> {
                                     child: Text(
                                       '$domain/${urlList[i].name}',
                                       style: TextStyle(
-                                          fontSize: 15, color: Colors.blue),
+                                          fontSize: 14, color: Colors.blue),
                                     ))
                               ],
                             ),
@@ -294,8 +294,6 @@ class _QRCodePageState extends State<QRCodePage> {
       return null;
     }
   }
-
-  getLogo() async {}
 
   base64Data(String data) {
     switch (data.length % 4) {
@@ -382,7 +380,6 @@ class _QRCodePageState extends State<QRCodePage> {
       setState(() {
         networkConnection = (result == ConnectivityResult.mobile ||
             result == ConnectivityResult.wifi);
-        getLogo();
         fetchData();
       });
     });

@@ -145,7 +145,7 @@ class _ReportPageState extends State<ReportPage> {
                               children: [
                                 Text(
                                   urlList[i].label,
-                                  style: TextStyle(fontSize: 18),
+                                  style: TextStyle(fontSize: 14),
                                 ),
                                 SizedBox(
                                   width: 10,
@@ -155,7 +155,7 @@ class _ReportPageState extends State<ReportPage> {
                                     child: Text(
                                       '$domain ${urlList[i].name}',
                                       style: TextStyle(
-                                          fontSize: 15, color: Colors.blue),
+                                          fontSize: 14, color: Colors.blue),
                                     ))
                               ],
                             ),

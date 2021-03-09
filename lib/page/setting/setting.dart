@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
+import 'package:linkmanager/page/setting/language_setting.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
@@ -14,7 +15,6 @@ import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:linkmanager/page/loading.dart';
 import 'package:linkmanager/page/setting/profile.dart';
 import 'package:linkmanager/page/setting/change_password.dart';
-import 'package:linkmanager/page/setting/branch_setting.dart';
 import 'package:linkmanager/object/merchant.dart';
 
 class SettingPage extends StatefulWidget {
@@ -111,7 +111,7 @@ class _SettingPageState extends State<SettingPage> {
                     AppLocalizations.of(context).translate('change_password')),
                 leading: Icon(
                   Icons.lock_outline,
-                  color: Colors.purple,
+                  color: Colors.blue,
                 ),
                 trailing: Icon(Icons.keyboard_arrow_right),
                 tileColor: Colors.white,
@@ -122,12 +122,12 @@ class _SettingPageState extends State<SettingPage> {
               child: Card(
                 elevation: 2,
                 child: ListTile(
-                  onTap: () => openPage('branch'),
-                  title: Text(
-                      AppLocalizations.of(context).translate('branch_info')),
+                  onTap: () => openPage('language'),
+                  title:
+                      Text(AppLocalizations.of(context).translate('language')),
                   leading: Icon(
-                    Icons.info_outline,
-                    color: Colors.deepPurpleAccent,
+                    Icons.language,
+                    color: Colors.green,
                   ),
                   trailing: Icon(Icons.keyboard_arrow_right),
                   tileColor: Colors.white,
@@ -168,16 +168,27 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   openPage(page) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) {
-        if (page == 'profile')
-          return ProfilePage();
-        else if (page == 'password')
-          return ChangePasswordPage();
-        else
-          return BranchSettingPage();
-      }),
+    if (page != 'language')
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) {
+          if (page == 'profile')
+            return ProfilePage();
+          else
+            return ChangePasswordPage();
+        }),
+      );
+    else
+      showLanguageDialog();
+  }
+
+  Future<void> showLanguageDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return LanguageDialog();
+      },
     );
   }
 

@@ -1,9 +1,14 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/page/navigationDrawer/routes.dart';
+import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
+import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,6 +22,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   Merchant merchant;
   String expiredDate;
   String _platformVersion = 'Default';
+  StreamController controller = StreamController();
+  var logo;
 
   @override
   void initState() {
@@ -118,52 +125,99 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 60,
-              child: Image.asset(
-                'drawable/white-logo.png',
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              merchant != null ? merchant.name : '',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold),
-            ),
-            Text(
-              merchant != null ? merchant.email : '',
-              style: TextStyle(color: Colors.white, fontSize: 16),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            RichText(
-              text: TextSpan(
-                style: TextStyle(color: Colors.white70),
-                children: <TextSpan>[
-                  TextSpan(
-                      text: AppLocalizations.of(context)
-                          .translate('expired_date'),
-                      style: TextStyle(fontWeight: FontWeight.bold)),
-                  TextSpan(
-                      text: expiredDate != null
-                          ? ' ${setExpiredDate(expiredDate)}'
-                          : ''),
-                ],
-              ),
-            ),
+            StreamBuilder(
+                stream: controller.stream,
+                builder: (context, object) {
+                  if (object.data == 'display') {
+                    return Column(
+                      children: [
+                        Container(
+                            height: 70,
+                            decoration: new BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: new DecorationImage(
+                                    image: logo != null
+                                        ? MemoryImage(logo)
+                                        : AssetImage(
+                                            'drawable/white-logo.png')))),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Text(
+                          merchant != null ? merchant.name : '',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          merchant != null ? merchant.email : '',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(color: Colors.white70),
+                            children: <TextSpan>[
+                              TextSpan(
+                                  text: AppLocalizations.of(context)
+                                      .translate('expired_date'),
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(
+                                  text: expiredDate != null
+                                      ? ' ${setExpiredDate(expiredDate)}'
+                                      : ''),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }
+                  return CustomProgressBar(
+                    color: Colors.white70,
+                  );
+                }),
           ],
         ));
   }
 
   getMerchantData() async {
+    /*
+    * fetch logo
+    * */
+    Map logoData = await Domain.callApi(Domain.merchant, {
+      'logo': '1',
+      'merchant_id':
+          Merchant.fromJson(await SharePreferences().read("merchant"))
+              .merchantId
+              .toString(),
+    });
+
+    if (logoData['status'] == '1') {
+      if (logoData['logo'][0]['logo'] != '')
+        logo = base64Decode(base64Data(logoData['logo'][0]['logo']));
+    }
+
     merchant = Merchant.fromJson(await SharePreferences().read("merchant"));
     expiredDate = await SharePreferences().read('expired_date');
-    setState(() {});
+    controller.add('display');
+  }
+
+  base64Data(String data) {
+    switch (data.length % 4) {
+      case 1:
+        break;
+      case 2:
+        data = data + "==";
+        break;
+      case 3:
+        data = data + "=";
+        break;
+    }
+    return data;
   }
 
   String setExpiredDate(date) {

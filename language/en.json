@@ -182,5 +182,10 @@
   "qr_code_color": "QR Code Color",
   "logo_size": "Logo Size",
   "logo_size_description": "Large logo size may affect the efficiency of QR Scanner.",
-  "invalid_qr_code": "Invalid QR Code"
+  "invalid_qr_code": "Invalid QR Code",
+
+  "language": "Languages",
+  "confirm": "Confirm",
+  "background_color": "Main Color",
+  "branch_setting": "Branch Setting"
 }
