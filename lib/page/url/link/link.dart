@@ -88,7 +88,7 @@ class _ListState extends State<LinkPage> {
               textStyle: TextStyle(
                   color: Colors.deepPurple,
                   fontWeight: FontWeight.bold,
-                  fontSize: 25),
+                  fontSize: 20),
             )),
         actions: <Widget>[
           IconButton(
@@ -471,7 +471,7 @@ class _ListState extends State<LinkPage> {
         },
         button: '${AppLocalizations.of(context).translate('retry')}',
         drawable: networkConnection
-            ? 'drawable/no_link.png'
+            ? 'drawable/no_item.png'
             : 'drawable/no_signal.png');
   }
 

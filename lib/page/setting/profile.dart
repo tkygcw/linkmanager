@@ -17,6 +17,7 @@ import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -25,6 +26,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   Merchant merchant;
+  int allowBranch = 0;
+
   final key = new GlobalKey<ScaffoldState>();
   StreamController controller = StreamController();
 
@@ -50,6 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    getPreData();
     fetchMerchant();
   }
 
@@ -66,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                    fontSize: 20),
               )),
           actions: <Widget>[],
         ),
@@ -98,7 +102,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
       description.text = merchant.description;
       title.text = merchant.title;
-      pickerColor =  _colorFromHex(merchant.backgroundColor);
+      pickerColor = _colorFromHex(merchant.backgroundColor);
 
       if (merchant.logo.isNotEmpty)
         compressedFileSource = base64Decode(base64Data(merchant.logo));
@@ -210,13 +214,13 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                     ),
                     child: CountryCodePicker(
-                        onChanged: print,
+                        onChanged: (country) => prefix = country.dialCode,
                         // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
                         initialSelection: prefix,
                         favorite: ['+60'],
                         comparator: (a, b) => b.name.compareTo(a.name),
                         //Get the country information relevant to the initial selection
-                        onInit: (code) => prefix = code.code),
+                        onInit: (code) => prefix = code.dialCode),
                   ),
                 ),
                 SizedBox(
@@ -274,107 +278,133 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget branchSetting() {
-    return Card(
-        margin: EdgeInsets.all(15),
-        elevation: 5,
-        child: Container(
-            margin: EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  AppLocalizations.of(context).translate('branch_setting'),
-                  style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  AppLocalizations.of(context)
-                      .translate('branch_info_description'),
-                  style: TextStyle(color: Colors.blueGrey, fontSize: 12),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                TextField(
-                    controller: title,
-                    textAlign: TextAlign.start,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.title),
-                      labelText:
-                          '${AppLocalizations.of(context).translate('title')}',
-                      labelStyle:
-                          TextStyle(fontSize: 16, color: Colors.blueGrey),
-                      hintText:
-                          '${AppLocalizations.of(context).translate('title')}',
-                      border: new OutlineInputBorder(
-                          borderSide: new BorderSide(color: Colors.teal)),
-                    )),
-                SizedBox(
-                  height: 10,
-                ),
-                TextField(
-                    controller: description,
-                    textAlign: TextAlign.start,
-                    maxLines: 4,
-                    minLines: 2,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.description),
-                      labelText:
-                          '${AppLocalizations.of(context).translate('description')}',
-                      labelStyle:
-                          TextStyle(fontSize: 16, color: Colors.blueGrey),
-                      hintText:
-                          '${AppLocalizations.of(context).translate('description')}',
-                      border: new OutlineInputBorder(
-                          borderSide: new BorderSide(color: Colors.teal)),
-                    )),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  AppLocalizations.of(context)
-                      .translate('background_color'),
-                  style: TextStyle(color: Colors.blueGrey, fontSize: 12),
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                ColorPicker(
-                  pickerColor: pickerColor,
-                  onColorChanged: changeColor,
-                  showLabel: false,
-                  pickerAreaHeightPercent: 0.4,
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                SizedBox(
-                  width: double.infinity,
-                  height: 50.0,
-                  child: RaisedButton.icon(
-                    onPressed: () {
-                      if (title.text.isNotEmpty)
-                        updateBranchDescription();
-                      else
-                        showSnackBar('missing_input', 'close');
-                    },
-                    icon: Icon(
-                      Icons.description,
-                      color: Colors.white,
-                    ),
-                    color: Colors.deepPurpleAccent,
-                    label: Text(
-                      '${AppLocalizations.of(context).translate('update')}',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
+    return Visibility(
+      visible: allowBranch == 1,
+      child: Card(
+          margin: EdgeInsets.all(15),
+          elevation: 5,
+          child: Container(
+              margin: EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              AppLocalizations.of(context)
+                                  .translate('branch_setting'),
+                              style: TextStyle(
+                                  color: Colors.black54,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            Text(
+                              AppLocalizations.of(context)
+                                  .translate('branch_info_description'),
+                              style:
+                                  TextStyle(color: Colors.blueGrey, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: OutlineButton(
+                            onPressed: preview,
+                            child: Text(
+                              AppLocalizations.of(context).translate('preview'),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.deepPurpleAccent),
+                            )),
+                      )
+                    ],
                   ),
-                ),
-              ],
-            )));
+                  SizedBox(
+                    height: 15,
+                  ),
+                  TextField(
+                      controller: title,
+                      textAlign: TextAlign.start,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.title),
+                        labelText:
+                            '${AppLocalizations.of(context).translate('title')}',
+                        labelStyle:
+                            TextStyle(fontSize: 16, color: Colors.blueGrey),
+                        hintText:
+                            '${AppLocalizations.of(context).translate('title')}',
+                        border: new OutlineInputBorder(
+                            borderSide: new BorderSide(color: Colors.teal)),
+                      )),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextField(
+                      controller: description,
+                      textAlign: TextAlign.start,
+                      maxLines: 4,
+                      minLines: 2,
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.description),
+                        labelText:
+                            '${AppLocalizations.of(context).translate('description')}',
+                        labelStyle:
+                            TextStyle(fontSize: 16, color: Colors.blueGrey),
+                        hintText:
+                            '${AppLocalizations.of(context).translate('description')}',
+                        border: new OutlineInputBorder(
+                            borderSide: new BorderSide(color: Colors.teal)),
+                      )),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    AppLocalizations.of(context).translate('background_color'),
+                    style: TextStyle(color: Colors.blueGrey, fontSize: 12),
+                  ),
+                  SizedBox(
+                    height: 5,
+                  ),
+                  ColorPicker(
+                    pickerColor: pickerColor,
+                    onColorChanged: changeColor,
+                    showLabel: false,
+                    pickerAreaHeightPercent: 0.4,
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50.0,
+                    child: RaisedButton.icon(
+                      onPressed: () {
+                        if (title.text.isNotEmpty)
+                          updateBranchDescription();
+                        else
+                          showSnackBar('missing_input', 'close');
+                      },
+                      icon: Icon(
+                        Icons.description,
+                        color: Colors.white,
+                      ),
+                      color: Colors.deepPurpleAccent,
+                      label: Text(
+                        '${AppLocalizations.of(context).translate('update')}',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5)),
+                    ),
+                  ),
+                ],
+              ))),
+    );
   }
 
   Widget imageWidget() {
@@ -424,12 +454,21 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() => pickerColor = color);
   }
 
+  preview() async {
+    int merchantID =
+        Merchant.fromJson(await SharePreferences().read("merchant")).merchantId;
+    var url = '${Domain.domain}/branch.php?id=$merchantID&preview=true';
+
+    launch(url);
+  }
+
   Color _colorFromHex(String hexColor) {
     final hexCode = hexColor.replaceAll('#', '');
     return Color(int.parse('FF$hexCode', radix: 16));
   }
 
   Future updateProfile() async {
+    print(prefix);
     Map data = await Domain.callApi(Domain.merchant, {
       'update': '1',
       'name': name.text,
@@ -462,7 +501,6 @@ class _ProfilePageState extends State<ProfilePage> {
               .toString()
     });
 
-    print(data);
     if (data['status'] == '1') {
       showSnackBar('update_success', 'close');
     } else if (data['status'] == '3') {
@@ -620,6 +658,12 @@ class _ProfilePageState extends State<ProfilePage> {
       return 25;
     else
       return 20;
+  }
+
+  getPreData() async {
+    this.allowBranch =
+        Merchant.fromJson(await SharePreferences().read("merchant"))
+            .allowBranch;
   }
 
   showSnackBar(preMessage, button) {

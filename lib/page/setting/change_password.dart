@@ -37,7 +37,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                    fontSize: 20),
               )),
           actions: <Widget>[],
         ),

@@ -90,7 +90,7 @@
   "label_to_time": "End Time",
   "advance_setting": "Advanced Setting",
   "select_branch": "Select Branch",
-  "select_branch_description": "You may select specific branch for this channel.\n*Leave blank if all branch is valid for this channel",
+  "select_branch_description": "You may select specific branch for this channel.",
   "delete_branch_description": "Confirm to delete this branch?",
   "edit_branch": "Edit Branch",
   "create_branch": "Create Branch",
@@ -187,5 +187,8 @@
   "language": "Languages",
   "confirm": "Confirm",
   "background_color": "Main Color",
-  "branch_setting": "Branch Setting"
+  "branch_setting": "Branch Setting",
+  "no_qr_code_description": "Create an URL before using this!",
+  "no_report_found": "No Report Found",
+  "no_report_found_description": "There's no data or history found!"
 }

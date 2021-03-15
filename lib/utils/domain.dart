@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Domain {
-  static var domain = 'https://api.lkmng.com/';
+  static var domain = 'https://mylink.my/';
+//  static var domain = 'https://api.lkmng.com/';
 
   static var register = domain + 'registration/index.php';
   static var url = domain + 'url/index.php';

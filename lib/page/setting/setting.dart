@@ -15,7 +15,6 @@ import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:linkmanager/page/loading.dart';
 import 'package:linkmanager/page/setting/profile.dart';
 import 'package:linkmanager/page/setting/change_password.dart';
-import 'package:linkmanager/object/merchant.dart';
 
 class SettingPage extends StatefulWidget {
   static const String routeName = '/setting';
@@ -27,7 +26,6 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   final key = new GlobalKey<ScaffoldState>();
   String _platformVersion = 'Default';
-  int allowBranch = 0;
 
   /*
      * network checking purpose
@@ -48,7 +46,6 @@ class _SettingPageState extends State<SettingPage> {
       });
     });
     getVersionNumber();
-    getPreData();
   }
 
   @override
@@ -64,7 +61,7 @@ class _SettingPageState extends State<SettingPage> {
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                    fontSize: 20),
               )),
           actions: <Widget>[],
         ),
@@ -117,21 +114,18 @@ class _SettingPageState extends State<SettingPage> {
                 tileColor: Colors.white,
               ),
             ),
-            Visibility(
-              visible: allowBranch == 1,
-              child: Card(
-                elevation: 2,
-                child: ListTile(
-                  onTap: () => openPage('language'),
-                  title:
-                      Text(AppLocalizations.of(context).translate('language')),
-                  leading: Icon(
-                    Icons.language,
-                    color: Colors.green,
-                  ),
-                  trailing: Icon(Icons.keyboard_arrow_right),
-                  tileColor: Colors.white,
+            Card(
+              elevation: 2,
+              child: ListTile(
+                onTap: () => openPage('language'),
+                title:
+                    Text(AppLocalizations.of(context).translate('language')),
+                leading: Icon(
+                  Icons.language,
+                  color: Colors.green,
                 ),
+                trailing: Icon(Icons.keyboard_arrow_right),
+                tileColor: Colors.white,
               ),
             ),
             SizedBox(
@@ -198,14 +192,6 @@ class _SettingPageState extends State<SettingPage> {
     setState(() {
       _platformVersion = version;
     });
-  }
-
-  getPreData() async {
-    this.allowBranch =
-        Merchant.fromJson(await SharePreferences().read("merchant"))
-            .allowBranch;
-
-    setState(() {});
   }
 
   Widget waterMark() {

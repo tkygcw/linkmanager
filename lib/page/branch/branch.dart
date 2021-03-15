@@ -70,7 +70,7 @@ class _ListState extends State<BranchPage> {
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                    fontSize: 20),
               )),
           actions: <Widget>[
             IconButton(
@@ -368,18 +368,18 @@ class _ListState extends State<BranchPage> {
   Widget notFound() {
     return NotFound(
         title: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_link')}'
+            ? '${AppLocalizations.of(context).translate('no_record_found')}'
             : '${AppLocalizations.of(context).translate('no_network_found')}',
         description: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_branch_description')}'
+            ? '${AppLocalizations.of(context).translate('no_url_description')}'
             : '${AppLocalizations.of(context).translate('no_network_found_description')}',
         showButton: true,
         refresh: () {
-          setState(() {});
+          _onRefresh();
         },
         button: '${AppLocalizations.of(context).translate('retry')}',
         drawable: networkConnection
-            ? 'drawable/no_link.png'
+            ? 'drawable/no_branch.png'
             : 'drawable/no_signal.png');
   }
 

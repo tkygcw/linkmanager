@@ -71,7 +71,7 @@ class _QRCodePageState extends State<QRCodePage> {
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                    fontSize: 20),
               )),
           actions: <Widget>[],
         ),
@@ -79,8 +79,12 @@ class _QRCodePageState extends State<QRCodePage> {
         body: StreamBuilder(
             stream: refreshStream.stream,
             builder: (context, object) {
+              print(object.data);
               if (object.hasData && object.data.toString().length >= 1) {
-                return mainContent();
+                if (object.data == 'display')
+                  return mainContent();
+                else
+                  return notFound();
               }
               return Container(
                   height: 500, width: 1000, child: CustomProgressBar());
@@ -107,12 +111,12 @@ class _QRCodePageState extends State<QRCodePage> {
             Text(
               AppLocalizations.of(context).translate('logo_size'),
               style:
-              TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+                  TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
             ),
             Text(
               AppLocalizations.of(context).translate('logo_size_description'),
-              style:
-              TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 12),
+              style: TextStyle(
+                  color: Colors.red, fontWeight: FontWeight.bold, fontSize: 12),
             ),
             Slider(
                 value: valueHolder.toDouble(),
@@ -331,7 +335,7 @@ class _QRCodePageState extends State<QRCodePage> {
       if (logoData['logo'][0]['logo'] != '')
         logo = base64Decode(base64Data(logoData['logo'][0]['logo']));
     }
-    
+
     /*
     * fetch url
     * */
@@ -342,12 +346,15 @@ class _QRCodePageState extends State<QRCodePage> {
               .merchantId
               .toString()
     });
+    print(data);
     if (data['status'] == '1') {
       List responseJson = data['url'];
       urlList.addAll(responseJson.map((e) => Url.fromJson(e)));
-    } else {
+    } else if (data['status'] == '2') {
+      refreshStream.add('not_found');
+      return;
+    } else
       showSnackBar('something_went_wrong', 'close');
-    }
 
     //set default as first url
     if (urlName == null && urlList.length > 0) {
@@ -357,20 +364,22 @@ class _QRCodePageState extends State<QRCodePage> {
   }
 
   Widget notFound() {
-    if (!networkConnection)
-      return NotFound(
-          title:
-              '${AppLocalizations.of(context).translate('no_network_found')}',
-          description:
-              '${AppLocalizations.of(context).translate('no_network_found_description')}',
-          showButton: true,
-          refresh: () {
-            setState(() {});
-          },
-          button: '${AppLocalizations.of(context).translate('retry')}',
-          drawable: 'drawable/no_signal.png');
-    else
-      return CustomProgressBar();
+    return NotFound(
+        title: networkConnection
+            ? '${AppLocalizations.of(context).translate('no_url')}'
+            : '${AppLocalizations.of(context).translate('no_network_found')}',
+        description: networkConnection
+            ? '${AppLocalizations.of(context).translate('no_qr_code_description')}'
+            : '${AppLocalizations.of(context).translate('no_network_found_description')}',
+        showButton: true,
+        refresh: () async {
+          await fetchData();
+          setState(() {});
+        },
+        button: '${AppLocalizations.of(context).translate('retry')}',
+        drawable: networkConnection
+            ? 'drawable/no_qr_code.png'
+            : 'drawable/no_signal.png');
   }
 
   networkDetector() {

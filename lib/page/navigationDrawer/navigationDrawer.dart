@@ -82,7 +82,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Align(
-          alignment: Alignment.bottomLeft,
+          alignment: Alignment.bottomCenter,
           child: InkWell(
             onTap: () => launch('https://www.channelsoft.com.my'),
             child: RichText(
@@ -131,15 +131,17 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                   if (object.data == 'display') {
                     return Column(
                       children: [
-                        Container(
-                            height: 70,
-                            decoration: new BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: new DecorationImage(
-                                    image: logo != null
-                                        ? MemoryImage(logo)
-                                        : AssetImage(
-                                            'drawable/white-logo.png')))),
+                        logo != null
+                            ? Container(
+                                height: 70,
+                                decoration: new BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: new DecorationImage(
+                                        image: MemoryImage(logo))))
+                            : Container(
+                                height: 70,
+                                child: Image.asset('drawable/white-logo.png'),
+                              ),
                         SizedBox(
                           height: 20,
                         ),

@@ -39,7 +39,7 @@ class _AboutPageState extends State<AboutPage> {
               textStyle: TextStyle(
                   color: Colors.deepPurple,
                   fontWeight: FontWeight.bold,
-                  fontSize: 25),
+                  fontSize: 20),
             )),
       ),
       drawer: NavigationDrawer(),

@@ -18,7 +18,6 @@ import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:smart_select/smart_select.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -108,7 +107,7 @@ class _ListState extends State<LinkDetailPage> {
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                    fontSize: 20),
               )),
           actions: <Widget>[
             FlatButton.icon(
@@ -167,14 +166,14 @@ class _ListState extends State<LinkDetailPage> {
                   Row(
                     children: [
                       Expanded(
-                          flex: 1,
+                          flex: 2,
                           child: Text(
                             AppLocalizations.of(context)
                                 .translate('select_channel'),
                             style: TextStyle(fontSize: 15),
                           )),
                       Expanded(
-                        flex: 1,
+                        flex: 3,
                         child: DropdownButton(
                             value: channelLabel,
                             isExpanded: true,
@@ -538,7 +537,7 @@ class _ListState extends State<LinkDetailPage> {
     if (data['status'] == '1') {
       List responseJson = data['channel'];
       channel.addAll(responseJson.map((e) => Channel.fromJson(e)));
-    } else {
+    } else if (data['status'] == '4') {
       showSnackBar('something_went_wrong', 'close');
     }
     selectedChannel = await getSelectChannel();
@@ -559,7 +558,7 @@ class _ListState extends State<LinkDetailPage> {
     if (data['status'] == '1') {
       List responseJson = data['branch'];
       branch.addAll(responseJson.map((e) => Branch.fromJson(e)));
-    } else {
+    } else if (data['status'] == '4') {
       showSnackBar('something_went_wrong', 'close');
     }
     setState(() {});

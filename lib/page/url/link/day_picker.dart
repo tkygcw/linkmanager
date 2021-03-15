@@ -43,9 +43,11 @@ class _DayPickersState extends State<DayPickers> {
                     '${AppLocalizations.of(context).translate('day${i + 1}')}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                        fontSize: 14,
                         color:
                         widget.workingDays[i] == 0 ? Colors.white : Colors.black54),
                   ),
+
                 ),
               );
             }));

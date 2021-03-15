@@ -90,7 +90,7 @@
   "label_to_time": "结束时间",
   "advance_setting": "高级设置",
   "select_branch": "选择分行",
-  "select_branch_description": "您可以为此途径选择特定的分行.\n*保留空白如果所有分行都选用此途径",
+  "select_branch_description": "您可以为此途径选择特定的分行.",
   "delete_branch_description": "确认删除此分行?",
   "edit_branch": "编辑分行",
   "create_branch": "创建分行",

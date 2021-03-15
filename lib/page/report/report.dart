@@ -71,7 +71,7 @@ class _ReportPageState extends State<ReportPage> {
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                    fontSize: 20),
               )),
           actions: <Widget>[],
         ),
@@ -80,7 +80,6 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget mainContent() {
-    print('urlId $urlID');
     return networkConnection && urlID != null
         ? SingleChildScrollView(
             child: Column(
@@ -104,12 +103,6 @@ class _ReportPageState extends State<ReportPage> {
                 DeviceGraph(
                   urlID: urlID.toString(),
                 ),
-//                SizedBox(
-//                  height: 20,
-//                ),
-//                LocationGraph(
-//                  urlID: urlID.toString(),
-//                ),
               ],
             ),
           )
@@ -153,7 +146,7 @@ class _ReportPageState extends State<ReportPage> {
                                 Expanded(
                                     flex: 1,
                                     child: Text(
-                                      '$domain ${urlList[i].name}',
+                                      '$domain/${urlList[i].name}',
                                       style: TextStyle(
                                           fontSize: 14, color: Colors.blue),
                                     ))
@@ -187,10 +180,11 @@ class _ReportPageState extends State<ReportPage> {
               .merchantId
               .toString()
     });
+    print(data);
     if (data['status'] == '1') {
       List responseJson = data['url'];
       urlList.addAll(responseJson.map((e) => Url.fromJson(e)));
-    } else {
+    } else if (data['status'] == '4') {
       showSnackBar('something_went_wrong', 'close');
     }
 
@@ -203,20 +197,22 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget notFound() {
-    if (!networkConnection)
-      return NotFound(
-          title:
-              '${AppLocalizations.of(context).translate('no_network_found')}',
-          description:
-              '${AppLocalizations.of(context).translate('no_network_found_description')}',
-          showButton: true,
-          refresh: () {
-            setState(() {});
-          },
-          button: '${AppLocalizations.of(context).translate('retry')}',
-          drawable: 'drawable/no_signal.png');
-    else
-      return CustomProgressBar();
+    return NotFound(
+        title: networkConnection
+            ? '${AppLocalizations.of(context).translate('no_report_found')}'
+            : '${AppLocalizations.of(context).translate('no_network_found')}',
+        description: networkConnection
+            ? '${AppLocalizations.of(context).translate('no_report_found_description')}'
+            : '${AppLocalizations.of(context).translate('no_network_found_description')}',
+        showButton: true,
+        refresh: () async {
+          await fetchURL();
+          setState(() {});
+        },
+        button: '${AppLocalizations.of(context).translate('retry')}',
+        drawable: networkConnection
+            ? 'drawable/no_report.png'
+            : 'drawable/no_signal.png');
   }
 
   showSnackBar(preMessage, button) {

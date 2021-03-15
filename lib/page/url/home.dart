@@ -89,7 +89,7 @@ class _ListState extends State<HomePage> {
                 textStyle: TextStyle(
                     color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 25),
+                    fontSize: 20),
               )),
           actions: <Widget>[
             IconButton(
@@ -273,7 +273,10 @@ class _ListState extends State<HomePage> {
   Future fetchUrl() async {
     Map data = await Domain.callApi(Domain.url, {
       'read': '1',
-      'merchant_id': '1',
+      'merchant_id':
+          Merchant.fromJson(await SharePreferences().read("merchant"))
+              .merchantId
+              .toString(),
       'query': '$query',
       'page': '$currentPage',
       'itemPerPage': '$itemPerPage'
@@ -297,6 +300,8 @@ class _ListState extends State<HomePage> {
               .merchantId
               .toString(),
     });
+
+    print(data);
 
     if (data['status'] == '1') {
       int currentUrlNo = data['num_link'];
@@ -397,6 +402,7 @@ class _ListState extends State<HomePage> {
                   showSnackBar('delete_success', 'close');
                   setState(() {
                     urls.remove(url);
+                    if (urls.length <= 0) itemFinish = true;
                   });
                 } else
                   showSnackBar('something_went_wrong', 'close');
@@ -418,7 +424,7 @@ class _ListState extends State<HomePage> {
             : '${AppLocalizations.of(context).translate('no_network_found_description')}',
         showButton: true,
         refresh: () {
-          setState(() {});
+          _onRefresh();
         },
         button: '${AppLocalizations.of(context).translate('retry')}',
         drawable: networkConnection

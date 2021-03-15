@@ -273,7 +273,8 @@ class _UrlDialogState extends State<UrlDialog> {
   createURL() async {
     Map data = await Domain.callApi(Domain.url, {
       'create': '1',
-      'merchant_id': '1',
+      'merchant_id':
+          Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString(),
       'name': urlController.text,
       'label': labelController.text,
       'status': isActive ? '0' : '1',
