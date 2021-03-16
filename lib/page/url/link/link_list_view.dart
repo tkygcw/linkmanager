@@ -8,13 +8,14 @@ import 'package:linkmanager/utils/domain.dart';
 
 class LinkListView extends StatelessWidget {
   final Link link;
+  final int urlType;
   final List<Branch> branches;
   final Key key;
   final Function(String) showToast;
   final Function(Link, String) onClick;
 
   LinkListView(
-      {this.link, this.branches, this.key, this.showToast, this.onClick})
+      {this.link, this.urlType, this.branches, this.key, this.showToast, this.onClick})
       : super(key: key);
 
   @override
@@ -26,7 +27,7 @@ class LinkListView extends StatelessWidget {
         child: InkWell(
           onTap: () => onClick(link, 'edit'),
           child: Container(
-            height: branches.length > 0 ? 200 : 175,
+            height: urlType == 1 ? 200 : 175,
             padding: const EdgeInsets.fromLTRB(10, 20, 10, 20),
             child: Row(
               children: [
@@ -114,7 +115,7 @@ class LinkListView extends StatelessWidget {
                       height: 5,
                     ),
                     Visibility(
-                      visible: branches.length > 0,
+                      visible: urlType == 1,
                       child: Row(
                         children: [
                           Icon(

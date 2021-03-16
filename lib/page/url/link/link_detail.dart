@@ -10,6 +10,7 @@ import 'package:linkmanager/object/branch.dart';
 import 'package:linkmanager/object/channel.dart';
 import 'package:linkmanager/object/link.dart';
 import 'package:linkmanager/object/merchant.dart';
+import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/page/url/link/day_picker.dart';
 import 'package:linkmanager/page/url/link/time_picker.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
@@ -24,10 +25,10 @@ import 'package:url_launcher/url_launcher.dart';
 //testing
 class LinkDetailPage extends StatefulWidget {
   final Link link;
-  final urlId;
+  final Url url;
   final Function refresh;
 
-  LinkDetailPage({this.link, this.urlId, this.refresh});
+  LinkDetailPage({this.link, this.url, this.refresh});
 
   @override
   _ListState createState() => _ListState();
@@ -364,8 +365,8 @@ class _ListState extends State<LinkDetailPage> {
             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
           children: <Widget>[
-            if (branch.length > 0) branchWidget(),
-            if (branch.length > 0)
+            if (widget.url.type == 1) branchWidget(),
+            if (widget.url.type == 1)
               SizedBox(
                 height: 30,
               ),
@@ -584,7 +585,7 @@ class _ListState extends State<LinkDetailPage> {
       'working_time': jsonEncode(workingTime),
       'working_day': workingDay.toString(),
       'branch_id': selectedBranch.toString(),
-      'url_id': widget.urlId,
+      'url_id': widget.url.id.toString(),
       'label': labelController.text,
       'pre_message': preMessage.text,
       'url': url.text,

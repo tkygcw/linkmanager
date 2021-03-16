@@ -158,6 +158,7 @@ class _ListState extends State<LinkPage> {
               index,
               LinkListView(
                 link: link,
+                urlType: widget.url.type,
                 branches: branches,
                 key: ValueKey(link.linkId),
                 onClick: (Link link, type) {
@@ -357,7 +358,7 @@ class _ListState extends State<LinkPage> {
       MaterialPageRoute(
           builder: (context) => LinkDetailPage(
                 link: link,
-                urlId: widget.url.id.toString(),
+                url: widget.url,
                 refresh: () {
                   _onRefresh();
                 },
