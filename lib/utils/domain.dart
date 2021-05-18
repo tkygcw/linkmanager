@@ -16,6 +16,10 @@ class Domain {
 
   static callApi(url, Map<String, String> params) async {
     var response = await http.post(url, body: params);
-    return jsonDecode(response.body);
+    try{
+      return jsonDecode(response.body);
+    }catch($e){
+      print(response.body);
+    }
   }
 }

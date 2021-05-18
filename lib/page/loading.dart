@@ -90,18 +90,20 @@ class _LoadingPageState extends State<LoadingPage> {
       * */
       await SharePreferences()
           .save('expired_date', data['expired_date'][0]['end_date']);
+
       /*
       * status checking
       * */
-      status = data['merchant'][0]['status'].toString();
-      await SharePreferences()
-          .save('merchant', Merchant.fromJson(data['merchant'][0]));
-      checkMerchantStatus();
+      checkMerchantStatus(data);
     } else
       openDisableDialog();
   }
 
-  checkMerchantStatus() async {
+  checkMerchantStatus(data) async {
+    status = data['merchant'][0]['status'].toString();
+    await SharePreferences()
+        .save('merchant', Merchant.fromJson(data['merchant'][0]));
+
     String merchantStatus = status;
     if (merchantStatus == '0') {
       Merchant merchant =
@@ -164,7 +166,7 @@ class _LoadingPageState extends State<LoadingPage> {
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
-                launch(('https://www.emenu.com.my'));
+                launch(('https://www.lkmng.com'));
                 Navigator.of(context).pop();
               },
             ),
@@ -212,9 +214,12 @@ class _LoadingPageState extends State<LoadingPage> {
           actions: <Widget>[
             FlatButton(
               child: Text(AppLocalizations.of(context).translate('later')),
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
-                checkMerchantStatus();
+                /*
+                * status checking
+                * */
+                checkMerchantStatus(data);
               },
             ),
             FlatButton(
