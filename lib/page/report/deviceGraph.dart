@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:linkmanager/object/report.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
@@ -8,9 +7,9 @@ import 'package:linkmanager/utils/domain.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class DeviceGraph extends StatefulWidget {
-  final String urlID;
+  final String urlID, startDate, endDate;
 
-  DeviceGraph({this.urlID});
+  DeviceGraph({this.urlID, this.startDate, this.endDate});
 
   @override
   _DeviceGraphState createState() => _DeviceGraphState();
@@ -102,7 +101,7 @@ class _DeviceGraphState extends State<DeviceGraph> {
 
     devices.clear();
     Map data = await Domain.callApi(
-        Domain.report, {'device_report': '1', 'url_id': widget.urlID});
+        Domain.report, {'device_report': '1', 'url_id': widget.urlID, 'from_date': widget.startDate, 'to_date': widget.endDate});
 
     if (data['status'] == '1') {
       List responseJson = data['device_report'];

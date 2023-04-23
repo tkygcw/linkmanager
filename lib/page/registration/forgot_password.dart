@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:linkmanager/shareWidget/snack_bar.dart';
@@ -42,12 +41,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         padding: const EdgeInsets.fromLTRB(30, 80, 30, 30),
         height: double.infinity,
         width: double.infinity,
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: <Color>[Colors.purpleAccent, Colors.deepPurpleAccent],
-        )),
         child: SingleChildScrollView(
             child: StreamBuilder(
                 stream: pageStream.stream,
@@ -70,7 +63,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         IconButton(
           icon: Icon(
             Icons.backspace,
-            color: Colors.white,
+            color: Colors.lightBlue,
             size: 30,
           ),
           onPressed: () => Navigator.pushReplacementNamed(context, '/login'),
@@ -81,21 +74,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Center(
-                  child: Image.asset('drawable/forgot_password_icon.png',
-                      height: 200),
+                  child: Image.asset('drawable/forgot_password_icon.png', height: 200),
                 ),
                 Text(
                   '${AppLocalizations.of(context).translate('forgot_password')}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
                 SizedBox(
                   height: 15,
                 ),
                 Text(
                   '${AppLocalizations.of(context).translate('forgot_password_description')}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white70),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
@@ -109,15 +99,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     keyboardType: TextInputType.emailAddress,
                     controller: email,
                     textAlign: TextAlign.start,
-                    maxLengthEnforced: true,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.email),
-                      labelText:
-                          '${AppLocalizations.of(context).translate('email')}',
-                      labelStyle: TextStyle(fontSize: 16, color: Colors.white),
+                      labelText: '${AppLocalizations.of(context).translate('email')}',
+                      labelStyle: TextStyle(fontSize: 16, color: Colors.blueAccent),
                       hintText: '',
                     ),
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black87),
                   ),
                 ),
                 SizedBox(
@@ -126,16 +114,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 SizedBox(
                   width: double.infinity,
                   height: 50.0,
-                  child: OutlineButton(
-                    borderSide: BorderSide(width: 1, color: Colors.white),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                        side: BorderSide(width: 1, color: Colors.blueAccent),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                        backgroundColor: Colors.orange),
                     onPressed: () => sendPac(context),
                     child: Text(
                       '${AppLocalizations.of(context).translate('send_pac')}',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.blueAccent),
                     ),
-                    color: Colors.orange,
                   ),
                 ),
               ],
@@ -151,7 +139,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         IconButton(
           icon: Icon(
             Icons.backspace,
-            color: Colors.white,
+            color: Colors.lightBlue,
             size: 30,
           ),
           onPressed: () => pageStream.add('email'),
@@ -166,16 +154,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
                 Text(
                   '${AppLocalizations.of(context).translate('email_verification')}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
                 SizedBox(
                   height: 15,
                 ),
                 Text(
                   '${AppLocalizations.of(context).translate('email_verification_description')}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white70),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
@@ -192,15 +178,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ],
                     controller: pac,
                     textAlign: TextAlign.start,
-                    maxLengthEnforced: true,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.verified_user),
-                      labelText:
-                          '${AppLocalizations.of(context).translate('pac_no')}',
-                      labelStyle: TextStyle(fontSize: 16, color: Colors.white),
+                      labelText: '${AppLocalizations.of(context).translate('pac_no')}',
+                      labelStyle: TextStyle(fontSize: 16, color: Colors.blueAccent),
                       hintText: '',
                     ),
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black87),
                   ),
                 ),
                 SizedBox(
@@ -208,8 +193,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
                 Text(
                   "${AppLocalizations.of(context).translate('click_to_resend')}",
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white70),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
                   textAlign: TextAlign.start,
                 ),
                 SizedBox(
@@ -218,16 +202,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 SizedBox(
                   width: double.infinity,
                   height: 50.0,
-                  child: OutlineButton(
-                    borderSide: BorderSide(width: 1, color: Colors.white),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                        side: BorderSide(width: 1, color: Colors.blueAccent),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                        backgroundColor: Colors.orange),
                     onPressed: () => checkPac(context),
                     child: Text(
                       '${AppLocalizations.of(context).translate('verify_email')}',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.blueAccent),
                     ),
-                    color: Colors.orange,
                   ),
                 ),
               ],
@@ -243,7 +227,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         IconButton(
           icon: Icon(
             Icons.backspace,
-            color: Colors.white,
+            color: Colors.lightBlue,
             size: 30,
           ),
           onPressed: () => pageStream.add('pac'),
@@ -254,21 +238,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Center(
-                  child: Image.asset('drawable/change_password_icon.png',
-                      height: 200),
+                  child: Image.asset('drawable/change_password_icon.png', height: 200),
                 ),
                 Text(
                   '${AppLocalizations.of(context).translate('reset_password')}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
                 SizedBox(
                   height: 15,
                 ),
                 Text(
                   '${AppLocalizations.of(context).translate('reset_password_description')}',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, color: Colors.white70),
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(
@@ -276,20 +257,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
                 Theme(
                   data: new ThemeData(
-                    primaryColor: Colors.white,
+                    primaryColor: Colors.blueAccent,
                   ),
                   child: TextField(
                     keyboardType: TextInputType.text,
                     controller: newPassword,
                     obscureText: hideNewPassword,
                     textAlign: TextAlign.start,
-                    maxLengthEnforced: true,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.lock),
-                      labelText:
-                          '${AppLocalizations.of(context).translate('new_password')}',
-                      labelStyle: TextStyle(fontSize: 16, color: Colors.white),
-                      hintText: '',
+                      labelText: '${AppLocalizations.of(context).translate('new_password')}',
+                      labelStyle: TextStyle(fontSize: 16, color: Colors.blueAccent),
                       suffixIcon: IconButton(
                           icon: Icon(Icons.remove_red_eye),
                           onPressed: () {
@@ -298,7 +277,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             });
                           }),
                     ),
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.black87),
                   ),
                 ),
                 SizedBox(
@@ -306,19 +285,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 ),
                 Theme(
                   data: new ThemeData(
-                    primaryColor: Colors.white,
+                    primaryColor: Colors.blueAccent,
                   ),
                   child: TextField(
                     keyboardType: TextInputType.text,
                     obscureText: hideConfirmPassword,
                     controller: confirmPassword,
                     textAlign: TextAlign.start,
-                    maxLengthEnforced: true,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.verified_user),
-                      labelText:
-                          '${AppLocalizations.of(context).translate('confirmation_password')}',
-                      labelStyle: TextStyle(fontSize: 16, color: Colors.white),
+                      labelText: '${AppLocalizations.of(context).translate('confirmation_password')}',
+                      labelStyle: TextStyle(fontSize: 16, color: Colors.blueAccent),
                       hintText: '',
                       suffixIcon: IconButton(
                           icon: Icon(Icons.remove_red_eye),
@@ -328,7 +306,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             });
                           }),
                     ),
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: Colors.blueAccent),
                   ),
                 ),
                 SizedBox(
@@ -337,16 +315,19 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 SizedBox(
                   width: double.infinity,
                   height: 50.0,
-                  child: OutlineButton(
-                    borderSide: BorderSide(width: 1, color: Colors.white),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5)),
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.blueAccent,
+                      side: BorderSide(width: 1, color: Colors.blueAccent),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                    ),
                     onPressed: () => updatePassword(context),
                     child: Text(
                       '${AppLocalizations.of(context).translate('update_password')}',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.blueAccent),
                     ),
-                    color: Colors.white,
                   ),
                 ),
               ],
@@ -359,56 +340,42 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   * send pac via email
   * */
   sendPac(context) async {
-    CustomSnackBar.show(
-        context, '${AppLocalizations.of(context).translate('verify')}');
+    CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('verify')}');
 
     pacNumber = (new Random().nextInt(900000) + 100000).toString();
 
-    Map data = await Domain.callApi(Domain.register,
-        {'forgot_password': '1', 'email': email.text, 'pac': pacNumber});
+    Map data = await Domain.callApi(Domain.register, {'forgot_password': '1', 'email': email.text, 'pac': pacNumber});
 
     if (data['status'] == '1') {
-      CustomSnackBar.show(
-          context, '${AppLocalizations.of(context).translate('pac_sent')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('pac_sent')}');
       pageStream.add('pac');
     } else
-      CustomSnackBar.show(context,
-          '${AppLocalizations.of(context).translate('invalid_email')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('invalid_email')}');
   }
 
   checkPac(context) {
     if (pac.text == pacNumber) {
-      CustomSnackBar.show(context,
-          '${AppLocalizations.of(context).translate('verify_success')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('verify_success')}');
       pageStream.add('reset');
     } else
-      CustomSnackBar.show(context,
-          '${AppLocalizations.of(context).translate('invalid_pac_number')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('invalid_pac_number')}');
   }
 
   updatePassword(context) async {
     if (newPassword.text.length > 0) {
       if (newPassword.text == confirmPassword.text) {
-        Map data = await Domain.callApi(Domain.register, {
-          'forgot_password': '1',
-          'new_password': newPassword.text,
-          'email': email.text
-        });
+        Map data = await Domain.callApi(Domain.register, {'forgot_password': '1', 'new_password': newPassword.text, 'email': email.text});
 
         if (data['status'] == '1') {
           CustomToast(
             '${AppLocalizations.of(context).translate('password_update_success')}',
-            context,
           ).show();
           Navigator.pushReplacementNamed(context, '/login');
         } else
-          CustomSnackBar.show(context,
-              '${AppLocalizations.of(context).translate('something_went_wrong')}');
+          CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('something_went_wrong')}');
       } else
-        CustomSnackBar.show(context,
-            '${AppLocalizations.of(context).translate('password_not_match')}');
+        CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('password_not_match')}');
     } else
-      CustomSnackBar.show(context,
-          '${AppLocalizations.of(context).translate('all_field_required')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('all_field_required')}');
   }
 }

@@ -60,13 +60,12 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             primaryColor: Colors.white,
-            accentColor: Colors.deepPurple,
             textTheme: GoogleFonts.notoSansTextTheme(
               Theme.of(context).textTheme,
             ),
             appBarTheme: Theme.of(context)
                 .appBarTheme
-                .copyWith(brightness: Brightness.light),
+                .copyWith(systemOverlayStyle: SystemUiOverlayStyle.dark), colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.deepPurple),
           ),
           routes: {
             '/': (context) => LoadingPage(),

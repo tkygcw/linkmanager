@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
@@ -40,32 +39,28 @@ class _TimePickersState extends State<TimePickers> {
                   child: Row(
                     children: [
                       Text(AppLocalizations.of(context).translate('from_time')),
-                      FlatButton(
+                      TextButton(
                         onPressed: () {
                           showDatePicker(null, i, true);
                         },
                         child: Text(
                           getTime(workingTime[i], true) == ''
-                              ? AppLocalizations.of(context)
-                                  .translate('label_from_time')
+                              ? AppLocalizations.of(context).translate('label_from_time')
                               : getTime(workingTime[i], true),
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.blueGrey),
+                          style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                         ),
                       ),
                       SizedBox(width: 10),
                       Text(AppLocalizations.of(context).translate('to_time')),
-                      FlatButton(
+                      TextButton(
                         onPressed: () {
                           showDatePicker(null, i, false);
                         },
                         child: Text(
                           getTime(workingTime[i], true) == ''
-                              ? AppLocalizations.of(context)
-                                  .translate('label_to_time')
+                              ? AppLocalizations.of(context).translate('label_to_time')
                               : getTime(workingTime[i], false),
-                          style:
-                              TextStyle(fontSize: 16, color: Colors.blueGrey),
+                          style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                         ),
                       ),
                       Spacer(),
@@ -87,7 +82,11 @@ class _TimePickersState extends State<TimePickers> {
         SizedBox(
           width: double.infinity,
           height: 50.0,
-          child: OutlineButton.icon(
+          child: OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(width: 1, color: Colors.deepPurpleAccent),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            ),
             onPressed: () {
               workingTime.add("00:00 - 23:59");
               widget.onChanges(workingTime);
@@ -101,9 +100,6 @@ class _TimePickersState extends State<TimePickers> {
               '${AppLocalizations.of(context).translate('add_time')}',
               style: TextStyle(color: Colors.deepPurpleAccent),
             ),
-            borderSide: BorderSide(width: 1, color: Colors.deepPurpleAccent),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
           ),
         ),
       ],
@@ -126,10 +122,7 @@ class _TimePickersState extends State<TimePickers> {
     print(getTime(workingTime[position], startDate));
     DateTime currentTime = new DateFormat("HH:mm").parse(getTime(workingTime[position], startDate));
 
-    DatePicker.showTimePicker(context,
-        showTitleActions: true,
-        currentTime: currentTime,
-        onChanged: (date) {}, onConfirm: (date) async {
+    DatePicker.showTimePicker(context, showTitleActions: true, currentTime: currentTime, onChanged: (date) {}, onConfirm: (date) async {
       setNewRange(DateFormat("HH:mm").format(date), position, startDate);
       widget.onChanges(workingTime);
       setState(() {});

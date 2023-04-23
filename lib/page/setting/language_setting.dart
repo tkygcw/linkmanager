@@ -1,4 +1,4 @@
-import 'package:flutter/rendering.dart';
+
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:grouped_buttons/grouped_buttons.dart';
@@ -68,13 +68,13 @@ class _LanguageDialogState extends State<LanguageDialog> {
         ),
       ),
       actions: <Widget>[
-        FlatButton(
+        TextButton(
           child: Text('${AppLocalizations.of(context).translate('cancel')}'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
-        FlatButton(
+        TextButton(
           child: Text(
             '${AppLocalizations.of(context).translate('update')}',
             style: TextStyle(color: Colors.red),

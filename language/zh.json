@@ -187,5 +187,9 @@
   "language": "语言",
   "confirm": "确定",
   "background_color": "主要颜色",
-  "branch_setting": "分行设置"
+  "branch_setting": "分行设置",
+
+  "filter": "筛选",
+  "from_date": "从日期",
+  "to_date": "至日期"
 }

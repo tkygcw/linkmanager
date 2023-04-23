@@ -1,18 +1,17 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
 import 'package:linkmanager/page/report/channelGraph.dart';
 import 'package:linkmanager/page/report/deviceGraph.dart';
-import 'package:linkmanager/page/report/locationGraph.dart';
 import 'package:linkmanager/page/report/monthlyReport.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
-import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
@@ -35,10 +34,13 @@ class _ReportPageState extends State<ReportPage> {
   String domain;
   List<Url> urlList = [];
 
+  var fromDate, toDate;
+  final selectedDateFormat = DateFormat("yyy-MM-dd");
+
   /*
      * network checking purpose
      * */
-  StreamSubscription<ConnectivityResult> connectivity;
+  var connectivity;
   bool networkConnection = true;
 
   @override
@@ -46,12 +48,9 @@ class _ReportPageState extends State<ReportPage> {
     super.initState();
     if (widget.urlID != null) this.urlID = widget.urlID;
     //network detector
-    connectivity = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+    connectivity = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile ||
-            result == ConnectivityResult.wifi);
+        networkConnection = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
         fetchURL();
       });
     });
@@ -68,14 +67,11 @@ class _ReportPageState extends State<ReportPage> {
           title: Text(AppLocalizations.of(context).translate('report'),
               textAlign: TextAlign.left,
               style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
               )),
           actions: <Widget>[],
         ),
-        drawer: widget.urlID == null ? NavigationDrawer() : null,
+        drawer: widget.urlID == null ? CustomNavigationDrawer() : null,
         body: mainContent());
   }
 
@@ -92,16 +88,26 @@ class _ReportPageState extends State<ReportPage> {
                 SizedBox(
                   height: 10,
                 ),
-                ChannelGraph(urlID: urlID.toString()),
+                ChannelGraph(
+                  urlID: urlID.toString(),
+                  startDate: fromDate != null ? selectedDateFormat.format(fromDate).toString() : '',
+                  endDate: toDate != null ? selectedDateFormat.format(toDate).toString() : '',
+                ),
                 SizedBox(
                   height: 20,
                 ),
-                BrowserGraph(urlID: urlID.toString()),
+                BrowserGraph(
+                  urlID: urlID.toString(),
+                  startDate: fromDate != null ? selectedDateFormat.format(fromDate).toString() : '',
+                  endDate: toDate != null ? selectedDateFormat.format(toDate).toString() : '',
+                ),
                 SizedBox(
                   height: 20,
                 ),
                 DeviceGraph(
                   urlID: urlID.toString(),
+                  startDate: fromDate != null ? selectedDateFormat.format(fromDate).toString() : '',
+                  endDate: toDate != null ? selectedDateFormat.format(toDate).toString() : '',
                 ),
               ],
             ),
@@ -147,8 +153,7 @@ class _ReportPageState extends State<ReportPage> {
                                     flex: 1,
                                     child: Text(
                                       '$domain/${urlList[i].name}',
-                                      style: TextStyle(
-                                          fontSize: 14, color: Colors.blue),
+                                      style: TextStyle(fontSize: 14, color: Colors.blue),
                                     ))
                               ],
                             ),
@@ -163,23 +168,57 @@ class _ReportPageState extends State<ReportPage> {
                       });
                     }),
               ),
+              sortingLayout()
             ],
           ),
         ));
   }
 
+  Widget sortingLayout() {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: TextButton.icon(
+              label: Text(
+                fromDate != null ? selectedDateFormat.format(fromDate).toString() : '${AppLocalizations.of(context).translate('from_date')}',
+                style: TextStyle(color: Colors.blueGrey, fontSize: 13),
+              ),
+              icon: Icon(Icons.date_range),
+              onPressed: () {
+                DatePicker.showDatePicker(context, showTitleActions: true, onChanged: (date) {}, onConfirm: (date) {
+                  setState(() {
+                    fromDate = date;
+                  });
+                }, currentTime: fromDate != null ? fromDate : DateTime.now(), locale: LocaleType.zh);
+              }),
+        ),
+        Expanded(
+          flex: 2,
+          child: TextButton.icon(
+              label: Text(
+                toDate != null ? selectedDateFormat.format(toDate).toString() : '${AppLocalizations.of(context).translate('to_date')}',
+                style: TextStyle(color: Colors.blueGrey, fontSize: 13),
+              ),
+              icon: Icon(Icons.date_range),
+              onPressed: () {
+                DatePicker.showDatePicker(context, showTitleActions: true, onChanged: (date) {}, onConfirm: (date) {
+                  setState(() {
+                    toDate = date;
+                  });
+                }, currentTime: toDate != null ? toDate : DateTime.now(), locale: LocaleType.zh);
+              }),
+        ),
+      ],
+    );
+  }
+
   Future fetchURL() async {
-    this.domain =
-        Merchant.fromJson(await SharePreferences().read("merchant")).domain;
+    this.domain = Merchant.fromJson(await SharePreferences().read("merchant")).domain;
 
     urlList.clear();
-    Map data = await Domain.callApi(Domain.url, {
-      'read': '1',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString()
-    });
+    Map data = await Domain.callApi(
+        Domain.url, {'read': '1', 'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString()});
     print(data);
     if (data['status'] == '1') {
       List responseJson = data['url'];
@@ -210,13 +249,11 @@ class _ReportPageState extends State<ReportPage> {
           setState(() {});
         },
         button: '${AppLocalizations.of(context).translate('retry')}',
-        drawable: networkConnection
-            ? 'drawable/no_report.png'
-            : 'drawable/no_signal.png');
+        drawable: networkConnection ? 'drawable/no_report.png' : 'drawable/no_signal.png');
   }
 
   showSnackBar(preMessage, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(preMessage)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

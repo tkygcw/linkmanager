@@ -187,5 +187,9 @@
   "language": "Bahasa",
   "confirm": "Confirm",
   "background_color": "Warna Utama",
-  "branch_setting": "Cawangan Setting"
+  "branch_setting": "Cawangan Setting",
+
+  "filter": "Tapis",
+  "from_date": "Dari tarikh",
+  "to_date": "Sampai tarikh"
 }

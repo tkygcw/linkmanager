@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:linkmanager/object/merchant.dart';
@@ -13,12 +12,12 @@ import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:package_info/package_info.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class NavigationDrawer extends StatefulWidget {
+class CustomNavigationDrawer extends StatefulWidget {
   @override
-  _NavigationDrawerState createState() => _NavigationDrawerState();
+  _CustomNavigationDrawerState createState() => _CustomNavigationDrawerState();
 }
 
-class _NavigationDrawerState extends State<NavigationDrawer> {
+class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
   Merchant merchant;
   String expiredDate;
   String _platformVersion = 'Default';
@@ -43,34 +42,28 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
           createDrawerBodyItem(
               icon: Icons.home,
               text: AppLocalizations.of(context).translate('home'),
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.home)),
+              onTap: () => Navigator.pushReplacementNamed(context, Routes.home)),
           createDrawerBodyItem(
               icon: Icons.location_city,
               text: AppLocalizations.of(context).translate('branch'),
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.branch)),
+              onTap: () => Navigator.pushReplacementNamed(context, Routes.branch)),
           createDrawerBodyItem(
               icon: Icons.analytics,
               text: AppLocalizations.of(context).translate('report'),
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.report)),
+              onTap: () => Navigator.pushReplacementNamed(context, Routes.report)),
           createDrawerBodyItem(
               icon: Icons.qr_code,
               text: AppLocalizations.of(context).translate('qr_code'),
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.qRCode)),
+              onTap: () => Navigator.pushReplacementNamed(context, Routes.qRCode)),
           Divider(),
           createDrawerBodyItem(
               icon: Icons.info,
               text: AppLocalizations.of(context).translate('about'),
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.about)),
+              onTap: () => Navigator.pushReplacementNamed(context, Routes.about)),
           createDrawerBodyItem(
               icon: Icons.settings,
               text: AppLocalizations.of(context).translate('setting'),
-              onTap: () =>
-                  Navigator.pushReplacementNamed(context, Routes.setting)),
+              onTap: () => Navigator.pushReplacementNamed(context, Routes.setting)),
           waterMark()
         ],
       ),
@@ -84,7 +77,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: InkWell(
-            onTap: () => launch('https://www.channelsoft.com.my'),
+            onTap: () => launchUrl(Uri.parse('https://www.channelsoft.com.my')),
             child: RichText(
               text: TextSpan(
                 style: TextStyle(color: Colors.grey, fontSize: 11),
@@ -134,10 +127,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                         logo != null
                             ? Container(
                                 height: 70,
-                                decoration: new BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    image: new DecorationImage(
-                                        image: MemoryImage(logo))))
+                                decoration: new BoxDecoration(shape: BoxShape.circle, image: new DecorationImage(image: MemoryImage(logo))))
                             : Container(
                                 height: 70,
                                 child: Image.asset('drawable/white-logo.png'),
@@ -147,10 +137,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                         ),
                         Text(
                           merchant != null ? merchant.name : '',
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           merchant != null ? merchant.email : '',
@@ -163,15 +150,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
                           text: TextSpan(
                             style: TextStyle(color: Colors.white70),
                             children: <TextSpan>[
-                              TextSpan(
-                                  text: AppLocalizations.of(context)
-                                      .translate('expired_date'),
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                              TextSpan(
-                                  text: expiredDate != null
-                                      ? ' ${setExpiredDate(expiredDate)}'
-                                      : ''),
+                              TextSpan(text: AppLocalizations.of(context).translate('expired_date'), style: TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(text: expiredDate != null ? ' ${setExpiredDate(expiredDate)}' : ''),
                             ],
                           ),
                         ),
@@ -192,15 +172,11 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     * */
     Map logoData = await Domain.callApi(Domain.merchant, {
       'logo': '1',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString(),
+      'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString(),
     });
 
     if (logoData['status'] == '1') {
-      if (logoData['logo'][0]['logo'] != '')
-        logo = base64Decode(base64Data(logoData['logo'][0]['logo']));
+      if (logoData['logo'][0]['logo'] != '') logo = base64Decode(base64Data(logoData['logo'][0]['logo']));
     }
 
     merchant = Merchant.fromJson(await SharePreferences().read("merchant"));
@@ -232,8 +208,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
     }
   }
 
-  Widget createDrawerBodyItem(
-      {IconData icon, String text, GestureTapCallback onTap}) {
+  Widget createDrawerBodyItem({IconData icon, String text, GestureTapCallback onTap}) {
     return ListTile(
       title: Row(
         children: <Widget>[

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:linkmanager/object/report.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
@@ -8,9 +7,9 @@ import 'package:linkmanager/utils/domain.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class ChannelGraph extends StatefulWidget {
-  final String urlID;
+  final String urlID, startDate, endDate;
 
-  ChannelGraph({this.urlID});
+  ChannelGraph({this.urlID, this.startDate, this.endDate});
 
   @override
   _ChannelGraphState createState() => _ChannelGraphState();
@@ -68,16 +67,14 @@ class _ChannelGraphState extends State<ChannelGraph> {
                     child: SfCartesianChart(
                         primaryXAxis: CategoryAxis(),
                         primaryYAxis: NumericAxis(),
-                        legend: Legend(
-                            isVisible: true, position: LegendPosition.bottom),
+                        legend: Legend(isVisible: true, position: LegendPosition.bottom),
                         series: <ChartSeries>[
                       ColumnSeries<Report, String>(
                           name: getText('channel'),
                           dataSource: channels,
                           xValueMapper: (Report sales, _) => sales.label,
                           yValueMapper: (Report sales, _) => sales.data,
-                          pointColorMapper: (Report sales, _) =>
-                              Colors.deepPurple,
+                          pointColorMapper: (Report sales, _) => Colors.deepPurple,
                           // Enable data label
                           dataLabelSettings: DataLabelSettings(isVisible: true))
                     ])),
@@ -88,22 +85,22 @@ class _ChannelGraphState extends State<ChannelGraph> {
                 getText('no_record_found'),
                 style: TextStyle(color: Colors.grey),
               ));
-            return Container(
-                height: 100,
-                alignment: Alignment.center,
-                child: CircularProgressIndicator());
+            return Container(height: 100, alignment: Alignment.center, child: CircularProgressIndicator());
           }),
     );
   }
 
   Future fetchReport() async {
+    print(widget.startDate);
+    print(widget.endDate);
     controller.add('');
     await Future.delayed(Duration(milliseconds: 500));
 
     channels.clear();
     Map data = await Domain.callApi(
-        Domain.report, {'channel_report': '1', 'url_id': widget.urlID});
+        Domain.report, {'channel_report': '1', 'url_id': widget.urlID, 'from_date': widget.startDate, 'to_date': widget.endDate});
 
+    print(data);
     if (data['status'] == '1') {
       List responseJson = data['channel_report'];
       channels.addAll(responseJson.map((e) => Report.fromJson(e)));

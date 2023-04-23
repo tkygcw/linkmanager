@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:linkmanager/object/merchant.dart';
@@ -38,17 +37,16 @@ class _LoadingPageState extends State<LoadingPage> {
 
   netWorkChecking() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile ||
-        connectivityResult == ConnectivityResult.wifi) {
+    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
       launchChecking();
     } else {
-      key.currentState.showSnackBar(new SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
           duration: Duration(days: 1),
           content: new Text("No Internet Connection!"),
           action: SnackBarAction(
             label: 'Retry',
             onPressed: () {
-              key.currentState.hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
               setState(() {});
               // Some code to undo the change.
             },
@@ -70,10 +68,8 @@ class _LoadingPageState extends State<LoadingPage> {
   }
 
   void launchChecking() async {
-    var merchantId =
-        Merchant.fromJson(await SharePreferences().read("merchant")).merchantId;
-    Map data = await Domain.callApi(
-        Domain.merchant, {'read': '1', 'merchant_id': merchantId.toString()});
+    var merchantId = Merchant.fromJson(await SharePreferences().read("merchant")).merchantId;
+    Map data = await Domain.callApi(Domain.merchant, {'read': '1', 'merchant_id': merchantId.toString()});
     print(data);
     if (data['status'] == '1') {
       /*
@@ -88,8 +84,7 @@ class _LoadingPageState extends State<LoadingPage> {
       /*
       * save expired date
       * */
-      await SharePreferences()
-          .save('expired_date', data['expired_date'][0]['end_date']);
+      await SharePreferences().save('expired_date', data['expired_date'][0]['end_date']);
 
       /*
       * status checking
@@ -101,16 +96,12 @@ class _LoadingPageState extends State<LoadingPage> {
 
   checkMerchantStatus(data) async {
     status = data['merchant'][0]['status'].toString();
-    await SharePreferences()
-        .save('merchant', Merchant.fromJson(data['merchant'][0]));
+    await SharePreferences().save('merchant', Merchant.fromJson(data['merchant'][0]));
 
     String merchantStatus = status;
     if (merchantStatus == '0') {
-      Merchant merchant =
-          Merchant.fromJson(await SharePreferences().read('merchant'));
-      merchant.merchantId != null
-          ? Navigator.pushReplacementNamed(context, '/home')
-          : Navigator.pushReplacementNamed(context, '/login');
+      Merchant merchant = Merchant.fromJson(await SharePreferences().read('merchant'));
+      merchant.merchantId != null ? Navigator.pushReplacementNamed(context, '/home') : Navigator.pushReplacementNamed(context, '/login');
     } else
       openDisableDialog();
   }
@@ -153,20 +144,20 @@ class _LoadingPageState extends State<LoadingPage> {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Close'),
               onPressed: () {
                 Navigator.of(context).pop();
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 'Contact',
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
-                launch(('https://www.lkmng.com'));
+                launchUrl(Uri.parse('https://www.lkmng.com'));
                 Navigator.of(context).pop();
               },
             ),
@@ -193,9 +184,7 @@ class _LoadingPageState extends State<LoadingPage> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: Container(
-            height:
-                (20 * countLineBreak(data['version'][0]['detail'].toString()))
-                    .toDouble(),
+            height: (20 * countLineBreak(data['version'][0]['detail'].toString())).toDouble(),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.0),
             ),
@@ -212,7 +201,7 @@ class _LoadingPageState extends State<LoadingPage> {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(AppLocalizations.of(context).translate('later')),
               onPressed: () async {
                 Navigator.of(context).pop();
@@ -222,15 +211,13 @@ class _LoadingPageState extends State<LoadingPage> {
                 checkMerchantStatus(data);
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 AppLocalizations.of(context).translate('update_now'),
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
-                launch((Platform.isIOS
-                    ? data['version'][0]['appstore_url'].toString()
-                    : data['version'][0]['playstore_url'].toString()));
+                launchUrl(Uri.parse(Platform.isIOS ? data['version'][0]['appstore_url'].toString() : data['version'][0]['playstore_url'].toString()));
                 Navigator.of(context).pop();
               },
             ),

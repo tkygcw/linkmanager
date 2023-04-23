@@ -1,5 +1,3 @@
-import 'package:country_code_picker/country_code_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/merchant.dart';
@@ -34,10 +32,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           title: Text(AppLocalizations.of(context).translate('change_password'),
               textAlign: TextAlign.left,
               style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
               )),
           actions: <Widget>[],
         ),
@@ -60,17 +55,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 children: [
                   Text(
                     AppLocalizations.of(context).translate('change_password'),
-                    style: TextStyle(
-                        color: Colors.blueGrey,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(color: Colors.blueGrey, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 2,
                   ),
                   Text(
-                    AppLocalizations.of(context)
-                        .translate('change_password_description'),
+                    AppLocalizations.of(context).translate('change_password_description'),
                     style: TextStyle(color: Colors.black26, fontSize: 14),
                   ),
                   SizedBox(
@@ -83,16 +74,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_open),
-                        labelText:
-                            '${AppLocalizations.of(context).translate('current_password')}',
-                        labelStyle:
-                            TextStyle(fontSize: 14, color: Colors.blueGrey),
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(color: Colors.teal)),
+                        labelText: '${AppLocalizations.of(context).translate('current_password')}',
+                        labelStyle: TextStyle(fontSize: 14, color: Colors.blueGrey),
+                        border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                         suffixIcon: IconButton(
-                          icon: Icon(hideCurrentPassword
-                              ? Icons.remove_red_eye
-                              : Icons.close),
+                          icon: Icon(hideCurrentPassword ? Icons.remove_red_eye : Icons.close),
                           onPressed: () {
                             setState(() {
                               hideCurrentPassword = !hideCurrentPassword;
@@ -110,16 +96,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_open),
-                        labelText:
-                            '${AppLocalizations.of(context).translate('new_password')}',
-                        labelStyle:
-                            TextStyle(fontSize: 14, color: Colors.blueGrey),
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(color: Colors.teal)),
+                        labelText: '${AppLocalizations.of(context).translate('new_password')}',
+                        labelStyle: TextStyle(fontSize: 14, color: Colors.blueGrey),
+                        border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                         suffixIcon: IconButton(
-                          icon: Icon(hideNewPassword
-                              ? Icons.remove_red_eye
-                              : Icons.close),
+                          icon: Icon(hideNewPassword ? Icons.remove_red_eye : Icons.close),
                           onPressed: () {
                             setState(() {
                               hideNewPassword = !hideNewPassword;
@@ -137,16 +118,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_open),
-                        labelText:
-                            '${AppLocalizations.of(context).translate('confirm_password')}',
-                        labelStyle:
-                            TextStyle(fontSize: 14, color: Colors.blueGrey),
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(color: Colors.teal)),
+                        labelText: '${AppLocalizations.of(context).translate('confirm_password')}',
+                        labelStyle: TextStyle(fontSize: 14, color: Colors.blueGrey),
+                        border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                         suffixIcon: IconButton(
-                          icon: Icon(hideConfirmPassword
-                              ? Icons.remove_red_eye
-                              : Icons.close),
+                          icon: Icon(hideConfirmPassword ? Icons.remove_red_eye : Icons.close),
                           onPressed: () {
                             setState(() {
                               hideConfirmPassword = !hideConfirmPassword;
@@ -160,7 +136,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   SizedBox(
                     width: double.infinity,
                     height: 50.0,
-                    child: RaisedButton.icon(
+                    child: ElevatedButton.icon(
                       onPressed: () {
                         if (newPassword.text == confirmPassword.text)
                           updatePassword();
@@ -171,13 +147,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         Icons.security,
                         color: Colors.white,
                       ),
-                      color: Colors.deepPurpleAccent,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurpleAccent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                      ),
                       label: Text(
                         '${AppLocalizations.of(context).translate('update_password')}',
                         style: TextStyle(color: Colors.white),
                       ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
                     ),
                   ),
                 ],
@@ -190,10 +167,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       'update': '1',
       'current_password': currentPassword.text,
       'new_password': newPassword.text,
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString()
+      'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString()
     });
     if (data['status'] == '1') {
       showSnackBar('update_success', 'close');
@@ -209,7 +183,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   showSnackBar(preMessage, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(preMessage)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

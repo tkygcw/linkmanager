@@ -13,7 +13,7 @@ class CustomSnackBar {
       BuildContext context,
       String message,
       ) {
-    Scaffold.of(context).showSnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         elevation: 0.0,
         //behavior: SnackBarBehavior.floating,

@@ -5,13 +5,7 @@ class NotFound extends StatelessWidget {
   final bool showButton;
   final Function refresh;
 
-  NotFound(
-      {this.title,
-      this.description,
-      this.drawable,
-      this.button,
-      this.refresh,
-      this.showButton});
+  NotFound({this.title, this.description, this.drawable, this.button, this.refresh, this.showButton});
 
   @override
   Widget build(BuildContext context) {
@@ -52,14 +46,15 @@ class NotFound extends StatelessWidget {
               child: SizedBox(
                 width: double.infinity,
                 height: 50.0,
-                child: OutlineButton(
-                  borderSide: BorderSide(
-                    color: Colors.deepPurple, //Color of the border
-                    style: BorderStyle.solid, //Style of the border
-                    width: 0.8, //width of the border
-                  ),
-                  color: Colors.deepPurple,
-                  onPressed:() => refresh(),
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                      side: BorderSide(
+                        color: Colors.deepPurple, //Color of the border
+                        style: BorderStyle.solid, //Style of the border
+                        width: 0.8, //width of the border
+                      ),
+                      backgroundColor: Colors.deepPurple),
+                  onPressed: () => refresh(),
                   child: Text(
                     button,
                     style: TextStyle(color: Colors.deepPurple),

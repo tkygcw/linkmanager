@@ -5,16 +5,7 @@ class Channel {
   String channel, url, icon, label, hint, labelMessage, messageHint;
   TextInputType inputType;
 
-  Channel(
-      {this.channel,
-      this.channelId,
-      this.url,
-      this.icon,
-      this.label,
-      this.hint,
-      this.labelMessage,
-      this.messageHint,
-      this.inputType});
+  Channel({this.channel, this.channelId, this.url, this.icon, this.label, this.hint, this.labelMessage, this.messageHint, this.inputType});
 
   factory Channel.fromJson(Map<String, dynamic> json) {
     return Channel(
@@ -46,5 +37,6 @@ class Channel {
       case 8:
         return TextInputType.name;
     }
+    return TextInputType.text;
   }
 }

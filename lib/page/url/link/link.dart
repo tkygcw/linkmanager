@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/link.dart';
 import 'package:linkmanager/object/url.dart';
@@ -280,13 +279,13 @@ class _ListState extends State<LinkPage> {
   previewChannel(Link link) {
     String previewLink =
         '${Domain.link}?preview=1&channel=${link.type}&url=${link.url}&pre_message=${link.preMessage}';
-    launch(previewLink);
+    launchUrl(Uri.parse(previewLink));
   }
 
   preview() {
     if (links.length > 0) {
       String previewLink = '${Domain.domain}${widget.url.name}';
-      launch(previewLink);
+      launchUrl(Uri.parse(previewLink));
     } else {
       showSnackBar('no_channel_found', 'close');
     }
@@ -381,13 +380,13 @@ class _ListState extends State<LinkPage> {
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 'Confirm',
                 style: TextStyle(color: Colors.red),
@@ -428,13 +427,13 @@ class _ListState extends State<LinkPage> {
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 'Confirm',
                 style: TextStyle(color: Colors.red),
@@ -484,7 +483,7 @@ class _ListState extends State<LinkPage> {
   }
 
   showSnackBar(message, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(message)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

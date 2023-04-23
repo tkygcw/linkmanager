@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
@@ -30,19 +29,16 @@ class _SettingPageState extends State<SettingPage> {
   /*
      * network checking purpose
      * */
-  StreamSubscription<ConnectivityResult> connectivity;
+  var connectivity;
   bool networkConnection = true;
 
   @override
   void initState() {
     super.initState();
     //network detector
-    connectivity = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+    connectivity = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile ||
-            result == ConnectivityResult.wifi);
+        networkConnection = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
       });
     });
     getVersionNumber();
@@ -58,14 +54,11 @@ class _SettingPageState extends State<SettingPage> {
           title: Text(AppLocalizations.of(context).translate('setting'),
               textAlign: TextAlign.left,
               style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
               )),
           actions: <Widget>[],
         ),
-        drawer: NavigationDrawer(),
+        drawer: CustomNavigationDrawer(),
         body: mainContent());
   }
 
@@ -81,8 +74,7 @@ class _SettingPageState extends State<SettingPage> {
           children: [
             Text(
               AppLocalizations.of(context).translate('account_setting'),
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.blueGrey),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
             ),
             SizedBox(
               height: 10,
@@ -104,8 +96,7 @@ class _SettingPageState extends State<SettingPage> {
               elevation: 2,
               child: ListTile(
                 onTap: () => openPage('password'),
-                title: Text(
-                    AppLocalizations.of(context).translate('change_password')),
+                title: Text(AppLocalizations.of(context).translate('change_password')),
                 leading: Icon(
                   Icons.lock_outline,
                   color: Colors.blue,
@@ -118,8 +109,7 @@ class _SettingPageState extends State<SettingPage> {
               elevation: 2,
               child: ListTile(
                 onTap: () => openPage('language'),
-                title:
-                    Text(AppLocalizations.of(context).translate('language')),
+                title: Text(AppLocalizations.of(context).translate('language')),
                 leading: Icon(
                   Icons.language,
                   color: Colors.green,
@@ -133,8 +123,7 @@ class _SettingPageState extends State<SettingPage> {
             ),
             Text(
               AppLocalizations.of(context).translate('other'),
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.blueGrey),
+              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
             ),
             SizedBox(
               height: 10,
@@ -143,14 +132,12 @@ class _SettingPageState extends State<SettingPage> {
               elevation: 2,
               child: ListTile(
                 onTap: showLogOutDialog,
-                title: Text(AppLocalizations.of(context).translate('log_out'),
-                    style: TextStyle(color: Colors.red)),
+                title: Text(AppLocalizations.of(context).translate('log_out'), style: TextStyle(color: Colors.red)),
                 leading: Icon(
                   Icons.login_outlined,
                   color: Colors.redAccent,
                 ),
-                trailing:
-                    Icon(Icons.keyboard_arrow_right, color: Colors.redAccent),
+                trailing: Icon(Icons.keyboard_arrow_right, color: Colors.redAccent),
                 tileColor: Colors.white,
               ),
             ),
@@ -201,7 +188,7 @@ class _SettingPageState extends State<SettingPage> {
         child: Align(
           alignment: Alignment.bottomCenter,
           child: InkWell(
-            onTap: () => launch('https://www.channelsoft.com.my'),
+            onTap: () => launchUrl(Uri.parse('https://www.channelsoft.com.my')),
             child: RichText(
               text: TextSpan(
                 style: TextStyle(color: Colors.grey, fontSize: 11),
@@ -226,25 +213,22 @@ class _SettingPageState extends State<SettingPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
-              '${AppLocalizations.of(context).translate('sign_out_request')}'),
+          title: Text('${AppLocalizations.of(context).translate('sign_out_request')}'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text(
-                    '${AppLocalizations.of(context).translate('sign_out_message')}'),
+                Text('${AppLocalizations.of(context).translate('sign_out_message')}'),
               ],
             ),
           ),
           actions: <Widget>[
-            FlatButton(
-              child:
-                  Text('${AppLocalizations.of(context).translate('cancel')}'),
+            TextButton(
+              child: Text('${AppLocalizations.of(context).translate('cancel')}'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 '${AppLocalizations.of(context).translate('confirm')}',
                 style: TextStyle(color: Colors.red),
@@ -261,19 +245,14 @@ class _SettingPageState extends State<SettingPage> {
 
   logOut() async {
     SharePreferences().clear();
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) => LoadingPage()),
-        ModalRoute.withName('/'));
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => LoadingPage()), ModalRoute.withName('/'));
   }
 
   Widget notFound() {
     if (!networkConnection)
       return NotFound(
-          title:
-              '${AppLocalizations.of(context).translate('no_network_found')}',
-          description:
-              '${AppLocalizations.of(context).translate('no_network_found_description')}',
+          title: '${AppLocalizations.of(context).translate('no_network_found')}',
+          description: '${AppLocalizations.of(context).translate('no_network_found_description')}',
           showButton: true,
           refresh: () {
             setState(() {});
@@ -285,7 +264,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   showSnackBar(preMessage, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(preMessage)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

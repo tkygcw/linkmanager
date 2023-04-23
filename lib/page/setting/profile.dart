@@ -4,7 +4,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:country_code_picker/country_code_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -67,10 +66,7 @@ class _ProfilePageState extends State<ProfilePage> {
           title: Text(AppLocalizations.of(context).translate('profile'),
               textAlign: TextAlign.left,
               style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
               )),
           actions: <Widget>[],
         ),
@@ -85,13 +81,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future fetchMerchant() async {
-    Map data = await Domain.callApi(Domain.merchant, {
-      'profile': '1',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString()
-    });
+    Map data = await Domain.callApi(
+        Domain.merchant, {'profile': '1', 'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString()});
     if (data['status'] == '1') {
       merchant = Merchant.fromJson(data['merchant'][0]);
       name.text = merchant.name;
@@ -104,8 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
       title.text = merchant.title;
       pickerColor = _colorFromHex(merchant.backgroundColor);
 
-      if (merchant.logo.isNotEmpty)
-        compressedFileSource = base64Decode(base64Data(merchant.logo));
+      if (merchant.logo.isNotEmpty) compressedFileSource = base64Decode(base64Data(merchant.logo));
     } else {
       showSnackBar('something_went_wrong', 'close');
     }
@@ -136,10 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             Text(
               AppLocalizations.of(context).translate('profile'),
-              style: TextStyle(
-                  color: Colors.black54,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+              style: TextStyle(color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(
               height: 20,
@@ -154,13 +141,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 textAlign: TextAlign.start,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText:
-                      '${AppLocalizations.of(context).translate('username')}',
+                  labelText: '${AppLocalizations.of(context).translate('username')}',
                   labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  hintText:
-                      '${AppLocalizations.of(context).translate('username')}',
-                  border: new OutlineInputBorder(
-                      borderSide: new BorderSide(color: Colors.teal)),
+                  hintText: '${AppLocalizations.of(context).translate('username')}',
+                  border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                 )),
             SizedBox(
               height: 10,
@@ -172,13 +156,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(color: Colors.black54),
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email),
-                  labelText:
-                      '${AppLocalizations.of(context).translate('email')}',
+                  labelText: '${AppLocalizations.of(context).translate('email')}',
                   labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  hintText:
-                      '${AppLocalizations.of(context).translate('email')}',
-                  border: new OutlineInputBorder(
-                      borderSide: new BorderSide(color: Colors.teal)),
+                  hintText: '${AppLocalizations.of(context).translate('email')}',
+                  border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                 )),
             SizedBox(
               height: 10,
@@ -190,13 +171,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(color: Colors.black54),
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.link),
-                  labelText:
-                      '${AppLocalizations.of(context).translate('domain')}',
+                  labelText: '${AppLocalizations.of(context).translate('domain')}',
                   labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  hintText:
-                      '${AppLocalizations.of(context).translate('domain')}',
-                  border: new OutlineInputBorder(
-                      borderSide: new BorderSide(color: Colors.teal)),
+                  hintText: '${AppLocalizations.of(context).translate('domain')}',
+                  border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                 )),
             SizedBox(
               height: 10,
@@ -209,8 +187,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.all(Radius.circular(
-                              5.0) //                 <--- border radius here
+                      borderRadius: BorderRadius.all(Radius.circular(5.0) //                 <--- border radius here
                           ),
                     ),
                     child: CountryCodePicker(
@@ -233,14 +210,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       keyboardType: TextInputType.phone,
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
-                        labelText:
-                            '${AppLocalizations.of(context).translate('phone')}',
-                        labelStyle:
-                            TextStyle(fontSize: 16, color: Colors.blueGrey),
-                        hintText:
-                            '${AppLocalizations.of(context).translate('phone_hint')}',
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(color: Colors.teal)),
+                        labelText: '${AppLocalizations.of(context).translate('phone')}',
+                        labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                        hintText: '${AppLocalizations.of(context).translate('phone_hint')}',
+                        border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                       )),
                 ),
               ],
@@ -251,7 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(
               width: double.infinity,
               height: 50.0,
-              child: RaisedButton.icon(
+              child: ElevatedButton.icon(
                 onPressed: () {
                   if (name.text.isNotEmpty && phone.text.isNotEmpty)
                     updateProfile();
@@ -262,13 +235,14 @@ class _ProfilePageState extends State<ProfilePage> {
                   Icons.edit,
                   color: Colors.white,
                 ),
-                color: Colors.deepPurpleAccent,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurpleAccent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                ),
                 label: Text(
                   '${AppLocalizations.of(context).translate('update_profile')}',
                   style: TextStyle(color: Colors.white),
                 ),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5)),
               ),
             ),
           ],
@@ -296,30 +270,23 @@ class _ProfilePageState extends State<ProfilePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              AppLocalizations.of(context)
-                                  .translate('branch_setting'),
-                              style: TextStyle(
-                                  color: Colors.black54,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold),
+                              AppLocalizations.of(context).translate('branch_setting'),
+                              style: TextStyle(color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              AppLocalizations.of(context)
-                                  .translate('branch_info_description'),
-                              style:
-                                  TextStyle(color: Colors.blueGrey, fontSize: 12),
+                              AppLocalizations.of(context).translate('branch_info_description'),
+                              style: TextStyle(color: Colors.blueGrey, fontSize: 12),
                             ),
                           ],
                         ),
                       ),
                       Expanded(
                         flex: 1,
-                        child: OutlineButton(
+                        child: OutlinedButton(
                             onPressed: preview,
                             child: Text(
                               AppLocalizations.of(context).translate('preview'),
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.deepPurpleAccent),
+                              style: TextStyle(fontSize: 12, color: Colors.deepPurpleAccent),
                             )),
                       )
                     ],
@@ -332,14 +299,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.title),
-                        labelText:
-                            '${AppLocalizations.of(context).translate('title')}',
-                        labelStyle:
-                            TextStyle(fontSize: 16, color: Colors.blueGrey),
-                        hintText:
-                            '${AppLocalizations.of(context).translate('title')}',
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(color: Colors.teal)),
+                        labelText: '${AppLocalizations.of(context).translate('title')}',
+                        labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                        hintText: '${AppLocalizations.of(context).translate('title')}',
+                        border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                       )),
                   SizedBox(
                     height: 10,
@@ -351,14 +314,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       minLines: 2,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.description),
-                        labelText:
-                            '${AppLocalizations.of(context).translate('description')}',
-                        labelStyle:
-                            TextStyle(fontSize: 16, color: Colors.blueGrey),
-                        hintText:
-                            '${AppLocalizations.of(context).translate('description')}',
-                        border: new OutlineInputBorder(
-                            borderSide: new BorderSide(color: Colors.teal)),
+                        labelText: '${AppLocalizations.of(context).translate('description')}',
+                        labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
+                        hintText: '${AppLocalizations.of(context).translate('description')}',
+                        border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                       )),
                   SizedBox(
                     height: 10,
@@ -373,7 +332,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ColorPicker(
                     pickerColor: pickerColor,
                     onColorChanged: changeColor,
-                    showLabel: false,
+                    labelTypes: [null],
                     pickerAreaHeightPercent: 0.4,
                   ),
                   SizedBox(
@@ -382,7 +341,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(
                     width: double.infinity,
                     height: 50.0,
-                    child: RaisedButton.icon(
+                    child: ElevatedButton.icon(
                       onPressed: () {
                         if (title.text.isNotEmpty)
                           updateBranchDescription();
@@ -393,13 +352,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         Icons.description,
                         color: Colors.white,
                       ),
-                      color: Colors.deepPurpleAccent,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurpleAccent,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                      ),
                       label: Text(
                         '${AppLocalizations.of(context).translate('update')}',
                         style: TextStyle(color: Colors.white),
                       ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
                     ),
                   ),
                 ],
@@ -408,40 +368,37 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget imageWidget() {
-    return Stack(
-        fit: StackFit.passthrough,
-        overflow: Overflow.visible,
-        children: [
-          Container(
-            alignment: Alignment.center,
-            child: InkWell(
-              onTap: () => _showSelectionDialog(context),
-              child: compressedFileSource != null
-                  ? Image.memory(
-                      compressedFileSource,
-                      height: 150,
-                    )
-                  : Image.asset(
-                      'drawable/nologo.png',
-                      height: 150,
-                    ),
-            ),
-          ),
-          Visibility(
-            visible: compressedFileSource != null,
-            child: Container(
-                padding: EdgeInsets.all(5),
-                height: 150,
-                alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                  ),
-                  onPressed: clearImage,
-                )),
-          ),
-        ]);
+    return Stack(clipBehavior: Clip.none, fit: StackFit.passthrough, children: [
+      Container(
+        alignment: Alignment.center,
+        child: InkWell(
+          onTap: () => _showSelectionDialog(context),
+          child: compressedFileSource != null
+              ? Image.memory(
+                  compressedFileSource,
+                  height: 150,
+                )
+              : Image.asset(
+                  'drawable/nologo.png',
+                  height: 150,
+                ),
+        ),
+      ),
+      Visibility(
+        visible: compressedFileSource != null,
+        child: Container(
+            padding: EdgeInsets.all(5),
+            height: 150,
+            alignment: Alignment.topRight,
+            child: IconButton(
+              icon: Icon(
+                Icons.delete,
+                color: Colors.red,
+              ),
+              onPressed: clearImage,
+            )),
+      ),
+    ]);
   }
 
   clearImage() {
@@ -455,11 +412,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   preview() async {
-    int merchantID =
-        Merchant.fromJson(await SharePreferences().read("merchant")).merchantId;
+    int merchantID = Merchant.fromJson(await SharePreferences().read("merchant")).merchantId;
     var url = '${Domain.domain}/branch.php?id=$merchantID&preview=true';
 
-    launch(url);
+    launchUrl(Uri.parse(url));
   }
 
   Color _colorFromHex(String hexColor) {
@@ -474,13 +430,8 @@ class _ProfilePageState extends State<ProfilePage> {
       'name': name.text,
       'phone_prefix': prefix,
       'phone': phone.text,
-      'logo': compressedFileSource != null
-          ? base64Encode(compressedFileSource).toString()
-          : '',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString()
+      'logo': compressedFileSource != null ? base64Encode(compressedFileSource).toString() : '',
+      'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString()
     });
     if (data['status'] == '1') {
       showSnackBar('update_success', 'close');
@@ -495,10 +446,7 @@ class _ProfilePageState extends State<ProfilePage> {
       'title': title.text,
       'description': description.text,
       'background_color': '#${pickerColor.value.toRadixString(16)}',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString()
+      'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString()
     });
 
     if (data['status'] == '1') {
@@ -516,18 +464,15 @@ class _ProfilePageState extends State<ProfilePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              title: Text(
-                  "${AppLocalizations.of(context).translate('take_photo_from_where')}"),
+              title: Text("${AppLocalizations.of(context).translate('take_photo_from_where')}"),
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
                     height: 40,
-                    child: RaisedButton.icon(
-                      label: Text(
-                          '${AppLocalizations.of(context).translate('gallery')}',
-                          style: TextStyle(color: Colors.white)),
-                      color: Colors.orangeAccent,
+                    child: ElevatedButton.icon(
+                      label: Text('${AppLocalizations.of(context).translate('gallery')}', style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent),
                       icon: Icon(
                         Icons.perm_media,
                         color: Colors.white,
@@ -540,12 +485,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   SizedBox(
                     height: 40,
-                    child: RaisedButton.icon(
+                    child: ElevatedButton.icon(
                       label: Text(
                         '${AppLocalizations.of(context).translate('camera')}',
                         style: TextStyle(color: Colors.white),
                       ),
-                      color: Colors.blueAccent,
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
                       icon: Icon(
                         Icons.camera_alt,
                         color: Colors.white,
@@ -579,8 +524,7 @@ class _ProfilePageState extends State<ProfilePage> {
   * compress purpose
   * */
   Future getImage(isCamera) async {
-    imagePath = await picker.getImage(
-        source: isCamera ? ImageSource.camera : ImageSource.gallery);
+    imagePath = await picker.getImage(source: isCamera ? ImageSource.camera : ImageSource.gallery);
     // compressFileMethod();
     _cropImage();
   }
@@ -661,13 +605,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   getPreData() async {
-    this.allowBranch =
-        Merchant.fromJson(await SharePreferences().read("merchant"))
-            .allowBranch;
+    this.allowBranch = Merchant.fromJson(await SharePreferences().read("merchant")).allowBranch;
   }
 
   showSnackBar(preMessage, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(preMessage)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

@@ -25,9 +25,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-        statusBarColor: Colors.purple
-    ));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.white));
     return Scaffold(
       key: key,
       body: mainContent(),
@@ -68,18 +66,12 @@ class _LoginPageState extends State<LoginPage> {
       padding: const EdgeInsets.fromLTRB(30, 80, 30, 30),
       height: double.infinity,
       width: double.infinity,
-      decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: <Color>[Colors.purpleAccent, Colors.deepPurpleAccent],
-          )),
       child: Column(
         children: [
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: Image.asset('drawable/white-logo.png' ),
+              child: Image.asset('drawable/logo.png'),
             ),
             flex: 2,
           ),
@@ -101,26 +93,23 @@ class _LoginPageState extends State<LoginPage> {
       children: [
         TextFormField(
           focusNode: emailFocusNode,
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black87),
           controller: email,
           maxLines: 1,
           textAlign: TextAlign.start,
-          maxLengthEnforced: true,
+          maxLengthEnforcement: MaxLengthEnforcement.enforced,
           keyboardType: TextInputType.emailAddress,
           onTap: () => _requestFocus(emailFocusNode),
           decoration: InputDecoration(
             labelText: AppLocalizations.of(context).translate('email'),
-            labelStyle: TextStyle(
-              color: emailFocusNode.hasFocus ? Colors.white : Colors.white60,
-            ),
             prefixIcon: Icon(
               Icons.email,
-              color: emailFocusNode.hasFocus ? Colors.white : Colors.white70,
+              color: emailFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
             ),
             suffixIcon: IconButton(
               icon: Icon(
                 Icons.clear,
-                color: emailFocusNode.hasFocus ? Colors.white : Colors.white60,
+                color: emailFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
               ),
               onPressed: () {
                 setState(() {
@@ -129,10 +118,10 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white60),
+              borderSide: BorderSide(color: Colors.blueAccent),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white, width: 2),
+              borderSide: BorderSide(color: Colors.blueAccent),
             ),
           ),
         ),
@@ -140,12 +129,12 @@ class _LoginPageState extends State<LoginPage> {
           height: 30,
         ),
         TextFormField(
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black87),
           controller: password,
           maxLines: 1,
           textAlign: TextAlign.start,
           obscureText: hidePassword,
-          maxLengthEnforced: true,
+          maxLengthEnforcement: MaxLengthEnforcement.enforced,
           focusNode: passwordFocusNode,
           onTap: () => _requestFocus(passwordFocusNode),
           keyboardType: TextInputType.visiblePassword,
@@ -153,23 +142,18 @@ class _LoginPageState extends State<LoginPage> {
             labelText: AppLocalizations.of(context).translate('password'),
             prefixIcon: Icon(
               Icons.lock_open,
-              color: passwordFocusNode.hasFocus ? Colors.white : Colors.white70,
+              color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
             ),
             labelStyle: TextStyle(
-              color: passwordFocusNode.hasFocus ? Colors.white : Colors.white60,
+              color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
             ),
             suffixIcon: IconButton(
               icon: hidePassword
-                  ? Icon(Icons.remove_red_eye,
-                  color: passwordFocusNode.hasFocus
-                      ? Colors.white
-                      : Colors.white60)
+                  ? Icon(Icons.remove_red_eye, color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey)
                   : Icon(
-                Icons.close,
-                color: passwordFocusNode.hasFocus
-                    ? Colors.white
-                    : Colors.white60,
-              ),
+                      Icons.close,
+                      color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
+                    ),
               onPressed: () {
                 setState(() {
                   hidePassword = !hidePassword;
@@ -177,10 +161,10 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white60),
+              borderSide: BorderSide(color: Colors.blueAccent),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white, width: 2),
+              borderSide: BorderSide(color: Colors.blueAccent, width: 2),
             ),
           ),
         ),
@@ -192,7 +176,7 @@ class _LoginPageState extends State<LoginPage> {
               },
               child: Text(
                 AppLocalizations.of(context).translate('forgot_password'),
-                style: TextStyle(color: Colors.white70),
+                style: TextStyle(color: Colors.blueAccent),
                 textAlign: TextAlign.start,
               )),
         ),
@@ -202,13 +186,14 @@ class _LoginPageState extends State<LoginPage> {
         Container(
           width: double.infinity,
           height: 50,
-          child: OutlineButton(
-            borderSide: BorderSide(width: 1, color: Colors.white),
-            shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(width: 1, color: Colors.blueAccent),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+            ),
             child: Text(
               AppLocalizations.of(context).translate('login'),
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.blue),
             ),
             onPressed: () async {
               inputChecking();
@@ -228,12 +213,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future login() async {
-    Map data = await Domain.callApi(Domain.register,
-        {'login': '1', 'email': email.text, 'password': password.text});
+    Map data = await Domain.callApi(Domain.register, {'login': '1', 'email': email.text, 'password': password.text});
 
     if (data['status'] == '1') {
-      await SharePreferences()
-          .save('merchant', Merchant(merchantId: data['merchant_id']));
+      await SharePreferences().save('merchant', Merchant(merchantId: data['merchant_id']));
 
       Navigator.pushReplacementNamed(context, '/');
     } else if (data['status'] == '2') {
@@ -261,13 +244,12 @@ class _LoginPageState extends State<LoginPage> {
           Text(
             'All Right Reserved By CHANNEL SOFT PLT',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white54, fontSize: 10),
+            style: TextStyle(color: Colors.grey, fontSize: 10),
           ),
           Text(
-            '${AppLocalizations.of(context).translate(
-                'version')} $_platformVersion',
+            '${AppLocalizations.of(context).translate('version')} $_platformVersion',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white54, fontSize: 10),
+            style: TextStyle(color: Colors.grey, fontSize: 10),
           ),
         ],
       ),
@@ -275,7 +257,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   showSnackBar(message, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(message)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

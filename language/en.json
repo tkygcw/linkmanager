@@ -190,5 +190,9 @@
   "branch_setting": "Branch Setting",
   "no_qr_code_description": "Create an URL before using this!",
   "no_report_found": "No Report Found",
-  "no_report_found_description": "There's no data or history found!"
+  "no_report_found_description": "There's no data or history found!",
+
+  "filter": "Filter",
+  "from_date": "From Date",
+  "to_date": "To Date"
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
@@ -104,7 +103,7 @@ class _ListState extends State<HomePage> {
             )
           ],
         ),
-        drawer: NavigationDrawer(),
+        drawer: CustomNavigationDrawer(),
         body: urls.length > 0 && networkConnection
             ? SmartRefresher(
                 enablePullDown: true,
@@ -381,13 +380,13 @@ class _ListState extends State<HomePage> {
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 'Confirm',
                 style: TextStyle(color: Colors.red),
@@ -433,7 +432,7 @@ class _ListState extends State<HomePage> {
   }
 
   showSnackBar(message, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(message)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

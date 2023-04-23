@@ -1,10 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/branch.dart';
 import 'package:linkmanager/object/channel.dart';
@@ -62,12 +61,9 @@ class _ListState extends State<LinkDetailPage> {
   void initState() {
     super.initState();
     getPreData();
-    connectivity = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+    connectivity = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile ||
-            result == ConnectivityResult.wifi);
+        networkConnection = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
 
         fetchChannel();
         fetchBranch();
@@ -100,18 +96,13 @@ class _ListState extends State<LinkDetailPage> {
         appBar: AppBar(
           centerTitle: true,
           elevation: 2,
-          title: Text(
-              AppLocalizations.of(context).translate(
-                  widget.link == null ? 'new_channel' : 'edit_channel'),
+          title: Text(AppLocalizations.of(context).translate(widget.link == null ? 'new_channel' : 'edit_channel'),
               textAlign: TextAlign.center,
               style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
               )),
           actions: <Widget>[
-            FlatButton.icon(
+            TextButton.icon(
               icon: Icon(
                 Icons.launch,
                 color: Colors.blueGrey,
@@ -146,19 +137,14 @@ class _ListState extends State<LinkDetailPage> {
                     controller: labelController,
                     maxLines: 1,
                     textAlign: TextAlign.start,
-                    maxLengthEnforced: true,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
-                      labelText:
-                          AppLocalizations.of(context).translate('label'),
+                      labelText: AppLocalizations.of(context).translate('label'),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
-                      labelStyle:
-                          TextStyle(fontSize: 20, color: Colors.blueGrey),
-                      hintText:
-                          AppLocalizations.of(context).translate('label_hint'),
+                      labelStyle: TextStyle(fontSize: 20, color: Colors.blueGrey),
+                      hintText: AppLocalizations.of(context).translate('label_hint'),
                       hintStyle: TextStyle(color: Colors.black26, fontSize: 15),
-                      border: new OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(5.0),
-                          borderSide: new BorderSide(color: Colors.teal)),
+                      border: new OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: new BorderSide(color: Colors.teal)),
                     ),
                   ),
                   SizedBox(
@@ -169,8 +155,7 @@ class _ListState extends State<LinkDetailPage> {
                       Expanded(
                           flex: 2,
                           child: Text(
-                            AppLocalizations.of(context)
-                                .translate('select_channel'),
+                            AppLocalizations.of(context).translate('select_channel'),
                             style: TextStyle(fontSize: 15),
                           )),
                       Expanded(
@@ -178,14 +163,12 @@ class _ListState extends State<LinkDetailPage> {
                         child: DropdownButton(
                             value: channelLabel,
                             isExpanded: true,
-                            style:
-                                TextStyle(fontSize: 15, color: Colors.black87),
+                            style: TextStyle(fontSize: 15, color: Colors.black87),
                             items: [
                               for (int i = 0; i < channel.length; i++)
                                 DropdownMenuItem(
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Expanded(
                                         flex: 1,
@@ -226,8 +209,7 @@ class _ListState extends State<LinkDetailPage> {
                   Container(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      AppLocalizations.of(context)
-                          .translate('channel_description'),
+                      AppLocalizations.of(context).translate('channel_description'),
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ),
@@ -240,16 +222,18 @@ class _ListState extends State<LinkDetailPage> {
                   SizedBox(
                     height: 30,
                   ),
-                  Visibility(
-                      visible: allowDayTime == 1, child: expansionView()),
+                  Visibility(visible: allowDayTime == 1, child: expansionView()),
                   SizedBox(
                     height: allowDayTime == 1 ? 30 : 0,
                   ),
                   SizedBox(
                     width: double.infinity,
                     height: 50.0,
-                    child: RaisedButton(
-                      elevation: 5,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurpleAccent,
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
                       onPressed: () {
                         checkingInput(null);
                       },
@@ -257,9 +241,6 @@ class _ListState extends State<LinkDetailPage> {
                         '${AppLocalizations.of(context).translate(widget.link == null ? 'create_channel' : 'update_channel')}',
                         style: TextStyle(color: Colors.white),
                       ),
-                      color: Colors.deepPurpleAccent,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(5)),
                     ),
                   ),
                   SizedBox(
@@ -270,7 +251,7 @@ class _ListState extends State<LinkDetailPage> {
                     child: SizedBox(
                       width: double.infinity,
                       height: 50.0,
-                      child: OutlineButton(
+                      child: OutlinedButton(
                         onPressed: () {
                           deleteLink(widget.link);
                         },
@@ -278,9 +259,10 @@ class _ListState extends State<LinkDetailPage> {
                           '${AppLocalizations.of(context).translate('delete_channel')}',
                           style: TextStyle(color: Colors.red),
                         ),
-                        borderSide: BorderSide(width: 1, color: Colors.red),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5)),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(width: 1, color: Colors.red),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                        ),
                       ),
                     ),
                   ),
@@ -308,16 +290,14 @@ class _ListState extends State<LinkDetailPage> {
           keyboardType: selectedChannel.inputType,
           maxLines: 1,
           textAlign: TextAlign.start,
-          maxLengthEnforced: true,
+          maxLengthEnforcement: MaxLengthEnforcement.enforced,
           decoration: InputDecoration(
             labelText: selectedChannel.label,
             floatingLabelBehavior: FloatingLabelBehavior.always,
             labelStyle: TextStyle(fontSize: 20, color: Colors.blueGrey),
             hintText: selectedChannel.hint,
             hintStyle: TextStyle(color: Colors.black26, fontSize: 15),
-            border: new OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5.0),
-                borderSide: new BorderSide(color: Colors.teal)),
+            border: new OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: new BorderSide(color: Colors.teal)),
           ),
         ),
         Visibility(
@@ -334,16 +314,14 @@ class _ListState extends State<LinkDetailPage> {
             maxLines: 3,
             maxLength: 100,
             textAlign: TextAlign.start,
-            maxLengthEnforced: true,
+            maxLengthEnforcement: MaxLengthEnforcement.enforced,
             decoration: InputDecoration(
               labelText: selectedChannel.labelMessage,
               floatingLabelBehavior: FloatingLabelBehavior.always,
               labelStyle: TextStyle(fontSize: 20, color: Colors.blueGrey),
               hintText: selectedChannel.messageHint,
               hintStyle: TextStyle(color: Colors.black26, fontSize: 15),
-              border: new OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: new BorderSide(color: Colors.teal)),
+              border: new OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: new BorderSide(color: Colors.teal)),
             ),
           ),
         ),
@@ -355,9 +333,8 @@ class _ListState extends State<LinkDetailPage> {
     return Card(
       elevation: 1,
       child: Theme(
-        data: ThemeData.light().copyWith(
-            accentColor: Colors.blueAccent,
-            unselectedWidgetColor: Colors.black26),
+        data: ThemeData.light()
+            .copyWith(unselectedWidgetColor: Colors.black26, colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.blueAccent)),
         child: ExpansionTile(
           leading: Icon(Icons.settings),
           title: Text(
@@ -394,9 +371,7 @@ class _ListState extends State<LinkDetailPage> {
           SizedBox(
             height: 10,
           ),
-          DayPickers(
-              workingDays:
-                  widget.link == null ? workingDay : widget.link.workingDay),
+          DayPickers(workingDays: widget.link == null ? workingDay : widget.link.workingDay),
           SizedBox(
             height: 30,
           ),
@@ -444,14 +419,10 @@ class _ListState extends State<LinkDetailPage> {
           title: RichText(
             text: TextSpan(
               children: <TextSpan>[
-                TextSpan(
-                    text:
-                        AppLocalizations.of(context).translate('select_branch'),
-                    style: TextStyle(fontSize: 15, color: Colors.black)),
+                TextSpan(text: AppLocalizations.of(context).translate('select_branch'), style: TextStyle(fontSize: 15, color: Colors.black)),
                 TextSpan(text: '\n'),
                 TextSpan(
-                  text: AppLocalizations.of(context)
-                      .translate('select_branch_description'),
+                  text: AppLocalizations.of(context).translate('select_branch_description'),
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
@@ -494,20 +465,19 @@ class _ListState extends State<LinkDetailPage> {
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text(AppLocalizations.of(context).translate('cancel')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 AppLocalizations.of(context).translate('confirm'),
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
-                Map data = await Domain.callApi(Domain.link,
-                    {'delete': '1', 'link_id': link.linkId.toString()});
+                Map data = await Domain.callApi(Domain.link, {'delete': '1', 'link_id': link.linkId.toString()});
 
                 if (data['status'] == '1') {
                   showSnackBar('delete_success', 'close');
@@ -527,9 +497,8 @@ class _ListState extends State<LinkDetailPage> {
   }
 
   preview() {
-    String previewLink =
-        '${Domain.link}?preview=1&channel=$channelLabel&url=${url.text}&pre_message=${preMessage.text}';
-    launch(previewLink);
+    String previewLink = '${Domain.link}?preview=1&channel=$channelLabel&url=${url.text}&pre_message=${preMessage.text}';
+    launchUrl(Uri.parse(previewLink));
   }
 
   Future fetchChannel() async {
@@ -549,13 +518,8 @@ class _ListState extends State<LinkDetailPage> {
     branch.clear();
     if (allowBranch != 1) return;
 
-    Map data = await Domain.callApi(Domain.branch, {
-      'read': '1',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString()
-    });
+    Map data = await Domain.callApi(
+        Domain.branch, {'read': '1', 'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString()});
     if (data['status'] == '1') {
       List responseJson = data['branch'];
       branch.addAll(responseJson.map((e) => Branch.fromJson(e)));
@@ -637,19 +601,13 @@ class _ListState extends State<LinkDetailPage> {
           setState(() {});
         },
         button: '${AppLocalizations.of(context).translate('retry')}',
-        drawable: networkConnection
-            ? 'drawable/no_link.png'
-            : 'drawable/no_signal.png');
+        drawable: networkConnection ? 'drawable/no_link.png' : 'drawable/no_signal.png');
   }
 
   getPreData() async {
-    this.allowDayTime =
-        Merchant.fromJson(await SharePreferences().read("merchant"))
-            .allowDateTime;
+    this.allowDayTime = Merchant.fromJson(await SharePreferences().read("merchant")).allowDateTime;
 
-    this.allowBranch =
-        Merchant.fromJson(await SharePreferences().read("merchant"))
-            .allowBranch;
+    this.allowBranch = Merchant.fromJson(await SharePreferences().read("merchant")).allowBranch;
     print('Branch: $allowBranch');
     setState(() {
       fetchBranch();
@@ -657,7 +615,7 @@ class _ListState extends State<LinkDetailPage> {
   }
 
   showSnackBar(preMessage, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(preMessage)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

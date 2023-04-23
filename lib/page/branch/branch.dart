@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/branch.dart';
 import 'package:linkmanager/object/merchant.dart';
@@ -84,7 +84,7 @@ class _ListState extends State<BranchPage> {
             )
           ],
         ),
-        drawer: NavigationDrawer(),
+        drawer: CustomNavigationDrawer(),
         body: branches.length > 0 && networkConnection
             ? mainContent()
             : loadingView(),
@@ -233,13 +233,13 @@ class _ListState extends State<BranchPage> {
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 'Confirm',
                 style: TextStyle(color: Colors.red),
@@ -290,7 +290,7 @@ class _ListState extends State<BranchPage> {
               controller: branchName,
               maxLines: 1,
               textAlign: TextAlign.start,
-              maxLengthEnforced: true,
+              maxLengthEnforcement: MaxLengthEnforcement.enforced,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context).translate('label'),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -304,13 +304,13 @@ class _ListState extends State<BranchPage> {
             ),
           ),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 'Confirm',
                 style: TextStyle(color: Colors.red),
@@ -384,7 +384,7 @@ class _ListState extends State<BranchPage> {
   }
 
   showSnackBar(message, button) {
-    key.currentState.showSnackBar(new SnackBar(
+    ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
         content: new Text(AppLocalizations.of(context).translate(message)),
         action: SnackBarAction(
           label: AppLocalizations.of(context).translate(button),

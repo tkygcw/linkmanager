@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';

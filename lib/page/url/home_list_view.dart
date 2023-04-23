@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
@@ -142,7 +140,7 @@ class HomeListView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    FlatButton.icon(
+                    TextButton.icon(
                         onPressed: () {
                           Clipboard.setData(
                               new ClipboardData(text: getUrl(url.name)));
@@ -156,7 +154,7 @@ class HomeListView extends StatelessWidget {
                           AppLocalizations.of(context).translate('copy_link'),
                           style: TextStyle(color: Colors.blue),
                         )),
-                    FlatButton.icon(
+                    TextButton.icon(
                         onPressed: () =>
                             Share.share(getUrl(url.name), subject: url.label),
                         icon: Icon(
@@ -167,7 +165,7 @@ class HomeListView extends StatelessWidget {
                           AppLocalizations.of(context).translate('share_link'),
                           style: TextStyle(color: Colors.green),
                         )),
-                    FlatButton.icon(
+                    TextButton.icon(
                         onPressed: () =>
                             Share.share(getUrl(url.name), subject: url.label),
                         icon: Icon(

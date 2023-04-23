@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_version/get_version.dart';
@@ -19,7 +18,6 @@ class _AboutPageState extends State<AboutPage> {
   String _projectVersion = '';
   String _projectCode = '';
 
-
   @override
   void initState() {
     // TODO: implement initState
@@ -36,13 +34,10 @@ class _AboutPageState extends State<AboutPage> {
         title: Text(AppLocalizations.of(context).translate('about'),
             textAlign: TextAlign.center,
             style: GoogleFonts.aBeeZee(
-              textStyle: TextStyle(
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20),
+              textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
             )),
       ),
-      drawer: NavigationDrawer(),
+      drawer: CustomNavigationDrawer(),
       body: new SingleChildScrollView(
         child: new ListBody(
           children: <Widget>[
@@ -82,7 +77,7 @@ class _AboutPageState extends State<AboutPage> {
               height: 20.0,
             ),
             new ListTile(
-              onTap: () => launch('https://api.whatsapp.com/send?phone=60143157329&text=PmLinkManager'),
+              onTap: () => launchUrl(Uri.parse('https://api.whatsapp.com/send?phone=60143157329&text=PmLinkManager')),
               leading: new Icon(Icons.info),
               title: Text(AppLocalizations.of(context).translate('contact_info')),
               subtitle: new Text('www.channelsoft.com.my\nchannelsoftmy@gmail.com\n+6014-315 7329'),

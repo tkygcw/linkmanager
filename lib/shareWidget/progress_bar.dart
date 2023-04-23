@@ -14,11 +14,5 @@ class CustomProgressBar extends StatelessWidget {
         size: 40.0,
       ),
     );
-    return Center(
-      child: CircularProgressIndicator(
-        backgroundColor: Colors.grey[100],
-        valueColor: new AlwaysStoppedAnimation<Color>(Colors.red),
-      ),
-    );
   }
 }

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:linkmanager/object/report.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
@@ -8,9 +7,9 @@ import 'package:linkmanager/utils/domain.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class BrowserGraph extends StatefulWidget {
-  final String urlID;
+  final String urlID, startDate, endDate;
 
-  BrowserGraph({this.urlID});
+  BrowserGraph({this.urlID, this.startDate, this.endDate});
 
   @override
   _BrowserGraphState createState() => _BrowserGraphState();
@@ -68,16 +67,14 @@ class _BrowserGraphState extends State<BrowserGraph> {
                     child: SfCartesianChart(
                         primaryXAxis: CategoryAxis(),
                         primaryYAxis: NumericAxis(),
-                        legend: Legend(
-                            isVisible: true, position: LegendPosition.bottom),
+                        legend: Legend(isVisible: true, position: LegendPosition.bottom),
                         series: <ChartSeries>[
                       ColumnSeries<Report, String>(
                           name: getText('browser'),
                           dataSource: browsers,
                           xValueMapper: (Report sales, _) => sales.label,
                           yValueMapper: (Report sales, _) => sales.data,
-                          pointColorMapper: (Report sales, _) =>
-                              Colors.deepPurple,
+                          pointColorMapper: (Report sales, _) => Colors.deepPurple,
                           // Enable data label
                           dataLabelSettings: DataLabelSettings(isVisible: true))
                     ])),
@@ -88,10 +85,7 @@ class _BrowserGraphState extends State<BrowserGraph> {
                 getText('no_record_found'),
                 style: TextStyle(color: Colors.grey),
               ));
-            return Container(
-                height: 100,
-                alignment: Alignment.center,
-                child: CircularProgressIndicator());
+            return Container(height: 100, alignment: Alignment.center, child: CircularProgressIndicator());
           }),
     );
   }
@@ -102,7 +96,7 @@ class _BrowserGraphState extends State<BrowserGraph> {
 
     browsers.clear();
     Map data = await Domain.callApi(
-        Domain.report, {'browser_report': '1', 'url_id': widget.urlID});
+        Domain.report, {'browser_report': '1', 'url_id': widget.urlID, 'from_date': widget.startDate, 'to_date': widget.endDate});
 
     if (data['status'] == '1') {
       List responseJson = data['browser_report'];

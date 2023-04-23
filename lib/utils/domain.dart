@@ -15,7 +15,7 @@ class Domain {
   static var report = domain + 'report/index.php';
 
   static callApi(url, Map<String, String> params) async {
-    var response = await http.post(url, body: params);
+    var response = await http.post(Uri.parse(url), body: params);
     try{
       return jsonDecode(response.body);
     }catch($e){

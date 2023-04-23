@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
@@ -67,17 +67,15 @@ class _UrlDialogState extends State<UrlDialog> {
         primaryColor: Colors.deepPurple,
       ),
       child: AlertDialog(
-          title: new Text(
-              '${AppLocalizations.of(context).translate(isUpdate ? 'update_url' : 'create_url')}'),
+          title: new Text('${AppLocalizations.of(context).translate(isUpdate ? 'update_url' : 'create_url')}'),
           actions: <Widget>[
-            FlatButton(
-              child:
-                  Text('${AppLocalizations.of(context).translate('cancel')}'),
+            TextButton(
+              child: Text('${AppLocalizations.of(context).translate('cancel')}'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text(
                 '${AppLocalizations.of(context).translate(isUpdate ? 'update' : 'create')}',
                 style: TextStyle(color: Colors.red),
@@ -93,10 +91,7 @@ class _UrlDialogState extends State<UrlDialog> {
                 if (object.hasData && object.data.toString().length >= 1) {
                   return mainContent();
                 }
-                return Container(
-                    height: allowBranch == 1 ? 320 : 250,
-                    width: 1000,
-                    child: CustomProgressBar());
+                return Container(height: allowBranch == 1 ? 320 : 250, width: 1000, child: CustomProgressBar());
               })),
     );
   }
@@ -112,16 +107,14 @@ class _UrlDialogState extends State<UrlDialog> {
             controller: labelController,
             maxLines: 1,
             textAlign: TextAlign.start,
-            maxLengthEnforced: true,
+            maxLengthEnforcement: MaxLengthEnforcement.enforced,
             decoration: InputDecoration(
               labelText: AppLocalizations.of(context).translate('label'),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
               hintText: AppLocalizations.of(context).translate('label_hint'),
               hintStyle: TextStyle(color: Colors.black26),
-              border: new OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  borderSide: new BorderSide(color: Colors.red)),
+              border: new OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: new BorderSide(color: Colors.red)),
             ),
           ),
           SizedBox(
@@ -130,8 +123,7 @@ class _UrlDialogState extends State<UrlDialog> {
           Container(
               padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
               child: Text(AppLocalizations.of(context).translate('your_url'),
-                  textAlign: TextAlign.start,
-                  style: TextStyle(color: Colors.black54, fontSize: 12))),
+                  textAlign: TextAlign.start, style: TextStyle(color: Colors.black54, fontSize: 12))),
           Container(
             padding: EdgeInsets.all(5),
             decoration: BoxDecoration(
@@ -193,17 +185,14 @@ class _UrlDialogState extends State<UrlDialog> {
                           child: DropdownButton(
                               value: urlType,
                               isExpanded: true,
-                              style: TextStyle(
-                                  fontSize: 15, color: Colors.black87),
+                              style: TextStyle(fontSize: 15, color: Colors.black87),
                               items: [
                                 DropdownMenuItem(
-                                  child: Text(AppLocalizations.of(context)
-                                      .translate('time_based')),
+                                  child: Text(AppLocalizations.of(context).translate('time_based')),
                                   value: 0,
                                 ),
                                 DropdownMenuItem(
-                                  child: Text(AppLocalizations.of(context)
-                                      .translate('location_based')),
+                                  child: Text(AppLocalizations.of(context).translate('location_based')),
                                   value: 1,
                                 )
                               ],
@@ -215,8 +204,7 @@ class _UrlDialogState extends State<UrlDialog> {
                       ],
                     ),
                     Text(
-                      AppLocalizations.of(context)
-                          .translate('url_type_description'),
+                      AppLocalizations.of(context).translate('url_type_description'),
                       style: TextStyle(color: Colors.black54, fontSize: 12),
                     ),
                     SizedBox(
@@ -273,8 +261,7 @@ class _UrlDialogState extends State<UrlDialog> {
   createURL() async {
     Map data = await Domain.callApi(Domain.url, {
       'create': '1',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString(),
+      'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString(),
       'name': urlController.text,
       'label': labelController.text,
       'status': isActive ? '0' : '1',
@@ -312,17 +299,11 @@ class _UrlDialogState extends State<UrlDialog> {
   }
 
   getDomain() async {
-    this.domain =
-        Merchant.fromJson(await SharePreferences().read("merchant")).domain +
-            '/';
+    this.domain = Merchant.fromJson(await SharePreferences().read("merchant")).domain + '/';
 
-    this.manualUrl =
-        Merchant.fromJson(await SharePreferences().read("merchant"))
-            .manualGenerate;
+    this.manualUrl = Merchant.fromJson(await SharePreferences().read("merchant")).manualGenerate;
 
-    this.allowBranch =
-        Merchant.fromJson(await SharePreferences().read("merchant"))
-            .allowBranch;
+    this.allowBranch = Merchant.fromJson(await SharePreferences().read("merchant")).allowBranch;
     print('allow branch: $allowBranch');
 
     setState(() {});
@@ -331,7 +312,6 @@ class _UrlDialogState extends State<UrlDialog> {
   showToast(message) {
     CustomToast(
       '${AppLocalizations.of(context).translate(message)}',
-      context,
     ).show();
   }
 }
