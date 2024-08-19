@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:linkmanager/object/merchant.dart';
@@ -75,11 +76,13 @@ class _LoadingPageState extends State<LoadingPage> {
       /*
       * version checking
       * */
-      String latestVersion = data['version'][0]['version'].toString();
-      String currentVersion = await getVersionNumber();
-      if (latestVersion != currentVersion) {
-        openUpdateDialog(data);
-        return;
+      if (!kIsWeb) {
+        String latestVersion = data['version'][0]['version'].toString();
+        String currentVersion = await getVersionNumber();
+        if (latestVersion != currentVersion) {
+          openUpdateDialog(data);
+          return;
+        }
       }
       /*
       * save expired date
@@ -183,21 +186,23 @@ class _LoadingPageState extends State<LoadingPage> {
             "${AppLocalizations.of(context).translate('new_update')}",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          content: Container(
-            height: (20 * countLineBreak(data['version'][0]['detail'].toString())).toDouble(),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  data['version'][0]['detail'].toString(),
-                  style: TextStyle(fontSize: 15),
-                  textAlign: TextAlign.left,
-                )
-              ],
+          content: SingleChildScrollView(
+            child: Container(
+              height: (20 * countLineBreak(data['version'][0]['detail'].toString())).toDouble(),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    data['version'][0]['detail'].toString(),
+                    style: TextStyle(fontSize: 15),
+                    textAlign: TextAlign.left,
+                  )
+                ],
+              ),
             ),
           ),
           actions: <Widget>[

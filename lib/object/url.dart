@@ -24,4 +24,9 @@ class Url {
         linkClickedNum: json['link_click_num'] as int,
         linkNum: json['link_num'] as int);
   }
+
+  @override
+  String toString() {
+    return '${this.label}';
+  }
 }

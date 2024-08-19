@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity/connectivity.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,6 +34,9 @@ class _ReportPageState extends State<ReportPage> {
   int urlID;
   String domain;
   List<Url> urlList = [];
+
+  List<String> sortingTypes = ['Today', 'Yesterday', 'Last 7 Days', 'One Month'];
+  String selectedType = 'Today';
 
   var fromDate, toDate;
   final selectedDateFormat = DateFormat("yyy-MM-dd");
@@ -76,15 +80,11 @@ class _ReportPageState extends State<ReportPage> {
   }
 
   Widget mainContent() {
-    return networkConnection && urlID != null
+    return networkConnection != null
         ? SingleChildScrollView(
             child: Column(
               children: [
                 urlSelection(),
-                SizedBox(
-                  height: 10,
-                ),
-                MonthlyGraph(urlID: urlID.toString()),
                 SizedBox(
                   height: 10,
                 ),
@@ -109,10 +109,65 @@ class _ReportPageState extends State<ReportPage> {
                   startDate: fromDate != null ? selectedDateFormat.format(fromDate).toString() : '',
                   endDate: toDate != null ? selectedDateFormat.format(toDate).toString() : '',
                 ),
+                SizedBox(
+                  height: 10,
+                ),
+                MonthlyGraph(urlID: urlID.toString()),
               ],
             ),
           )
         : notFound();
+  }
+
+  Widget buttonBar() {
+    return Container(
+      height: 50,
+      child: GridView(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: kIsWeb ? 4 : 4,
+            childAspectRatio: kIsWeb ? 7 : 2.5,
+          ),
+          children: List.generate(sortingTypes.length, (index) {
+            return InkWell(
+              onTap: () {
+                setState(() {
+                  selectedType = sortingTypes[index];
+                  setupDate();
+                });
+              },
+              child: Container(
+                  color: selectedType == sortingTypes[index] ? Colors.deepPurple : Colors.white,
+                  alignment: Alignment.center,
+                  child: Text(
+                    sortingTypes[index],
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: selectedType == sortingTypes[index] ? Colors.white : Colors.black54,
+                        fontSize: kIsWeb ? 16 : 12),
+                  )),
+            );
+          })),
+    );
+  }
+
+  setupDate() {
+    if (selectedType == 'Today') {
+      toDate = fromDate = DateTime.now();
+    } else if (selectedType == 'Yesterday') {
+      var today = DateTime.now();
+      toDate = fromDate = DateTime(today.year, today.month, today.day - 1);
+    } else if (selectedType == 'Last 7 Days') {
+      var today = DateTime.now();
+      fromDate = DateTime(today.year, today.month, today.day - 7);
+      toDate = DateTime(today.year, today.month, today.day);
+    } else {
+      var today = DateTime.now();
+      fromDate = DateTime(today.year, today.month, 1);
+      toDate = DateTime(today.year, today.month, today.day);
+    }
   }
 
   Widget urlSelection() {
@@ -140,17 +195,18 @@ class _ReportPageState extends State<ReportPage> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              //crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Text(
-                                  urlList[i].label,
-                                  style: TextStyle(fontSize: 14),
-                                ),
-                                SizedBox(
-                                  width: 10,
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    urlList[i].label,
+                                    style: TextStyle(fontSize: 14),
+                                  ),
                                 ),
                                 Expanded(
-                                    flex: 1,
+                                    flex: 2,
                                     child: Text(
                                       '$domain/${urlList[i].name}',
                                       style: TextStyle(fontSize: 14, color: Colors.blue),
@@ -167,6 +223,13 @@ class _ReportPageState extends State<ReportPage> {
                         print(urlID);
                       });
                     }),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              buttonBar(),
+              SizedBox(
+                width: 10,
               ),
               sortingLayout()
             ],

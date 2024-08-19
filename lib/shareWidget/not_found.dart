@@ -57,7 +57,7 @@ class NotFound extends StatelessWidget {
                   onPressed: () => refresh(),
                   child: Text(
                     button,
-                    style: TextStyle(color: Colors.deepPurple),
+                    style: TextStyle(color: Colors.white),
                   ),
                 ),
               ),

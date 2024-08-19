@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:easy_search_bar/easy_search_bar.dart';
 import 'package:flutter/services.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:linkmanager/page/url/url_dialog.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
+import 'package:linkmanager/utils/debouncer.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -29,15 +31,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _ListState extends State<HomePage> {
-  int itemPerPage = 8, currentPage = 1;
+  int itemPerPage = 10, currentPage = 1;
   bool itemFinish = false;
   String domain = '';
   String query = '';
   int maxUrl = 0;
 
   List<Url> urls = [];
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  RefreshController _refreshController = RefreshController(initialRefresh: false);
 
   final ScrollController listScrollController = ScrollController();
 
@@ -49,17 +50,16 @@ class _ListState extends State<HomePage> {
   StreamSubscription<ConnectivityResult> connectivity;
   bool networkConnection = true;
 
+  final delayTimer = DelayTimer(milliseconds: 500);
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getPreData();
-    connectivity = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+    connectivity = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile ||
-            result == ConnectivityResult.wifi);
+        networkConnection = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
       });
     });
     fetchUrl();
@@ -74,21 +74,30 @@ class _ListState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: Colors.white70));
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.white70));
 
     return Scaffold(
         key: key,
-        appBar: AppBar(
-          centerTitle: true,
+        appBar: EasySearchBar(
+          searchHintText: 'Type url or campaign name...',
+          searchCursorColor: Colors.black12,
+          searchBackIconTheme: IconThemeData(color: Colors.deepPurple),
+          searchHintStyle: TextStyle(color: Colors.blueGrey),
+          onSearch: (value) async {
+            delayTimer.run(() {
+              setState(() {
+                query = value;
+                urls.clear();
+                itemFinish = false;
+              });
+              fetchUrl();
+            });
+          },
           elevation: 2,
           title: Text(AppLocalizations.of(context).translate('home'),
               textAlign: TextAlign.center,
               style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(
-                    color: Colors.deepPurple,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20),
+                textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
               )),
           actions: <Widget>[
             IconButton(
@@ -108,24 +117,21 @@ class _ListState extends State<HomePage> {
             ? SmartRefresher(
                 enablePullDown: true,
                 enablePullUp: true,
+                physics: AlwaysScrollableScrollPhysics(),
                 header: WaterDropHeader(),
                 footer: CustomFooter(
                   builder: (BuildContext context, LoadStatus mode) {
                     Widget body;
                     if (mode == LoadStatus.idle) {
-                      body = Text(
-                          '${AppLocalizations.of(context).translate('pull_up_load')}');
+                      body = Text('${AppLocalizations.of(context).translate('pull_up_load')}');
                     } else if (mode == LoadStatus.loading) {
                       body = CustomProgressBar();
                     } else if (mode == LoadStatus.failed) {
-                      body = Text(
-                          '${AppLocalizations.of(context).translate('load_failed')}');
+                      body = Text('${AppLocalizations.of(context).translate('load_failed')}');
                     } else if (mode == LoadStatus.canLoading) {
-                      body = Text(
-                          '${AppLocalizations.of(context).translate('release_to_load_more')}');
+                      body = Text('${AppLocalizations.of(context).translate('release_to_load_more')}');
                     } else {
-                      body = Text(
-                          '${AppLocalizations.of(context).translate('no_more_data')}');
+                      body = Text('${AppLocalizations.of(context).translate('no_more_data')}');
                     }
                     return Container(
                       height: 55.0,
@@ -217,9 +223,7 @@ class _ListState extends State<HomePage> {
               animation: true,
               percent: calculateProgress(),
               backgroundColor: Colors.grey,
-              progressColor: urls.length < maxUrl
-                  ? Colors.lightGreenAccent
-                  : Colors.redAccent,
+              progressColor: urls.length < maxUrl ? Colors.lightGreenAccent : Colors.redAccent,
             ),
           ],
         ),
@@ -235,12 +239,9 @@ class _ListState extends State<HomePage> {
   }
 
   getPreData() async {
-    this.domain =
-        Merchant.fromJson(await SharePreferences().read("merchant")).domain +
-            '/';
+    this.domain = Merchant.fromJson(await SharePreferences().read("merchant")).domain + '/';
 
-    this.maxUrl =
-        Merchant.fromJson(await SharePreferences().read("merchant")).maxUrl;
+    this.maxUrl = Merchant.fromJson(await SharePreferences().read("merchant")).maxUrl;
 
     setState(() {});
   }
@@ -272,32 +273,27 @@ class _ListState extends State<HomePage> {
   Future fetchUrl() async {
     Map data = await Domain.callApi(Domain.url, {
       'read': '1',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString(),
+      'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString(),
       'query': '$query',
       'page': '$currentPage',
       'itemPerPage': '$itemPerPage'
     });
 
-    if (data['status'] == '1') {
-      List responseJson = data['url'];
-      urls.addAll(responseJson.map((e) => Url.fromJson(e)));
-    } else {
-      _refreshController.loadNoData();
-      itemFinish = true;
-    }
-    setState(() {});
+    setState(() {
+      if (data['status'] == '1') {
+        List responseJson = data['url'];
+        urls.addAll(responseJson.map((e) => Url.fromJson(e)));
+      } else {
+        _refreshController.loadNoData();
+        itemFinish = true;
+      }
+    });
   }
 
   Future countUrl() async {
     Map data = await Domain.callApi(Domain.url, {
       'count_url': '1',
-      'merchant_id':
-          Merchant.fromJson(await SharePreferences().read("merchant"))
-              .merchantId
-              .toString(),
+      'merchant_id': Merchant.fromJson(await SharePreferences().read("merchant")).merchantId.toString(),
     });
 
     print(data);
@@ -392,8 +388,7 @@ class _ListState extends State<HomePage> {
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
-                Map data = await Domain.callApi(
-                    Domain.url, {'delete': '1', 'url_id': url.id.toString()});
+                Map data = await Domain.callApi(Domain.url, {'delete': '1', 'url_id': url.id.toString()});
 
                 if (data['status'] == '1') {
                   Navigator.of(context).pop();
@@ -426,9 +421,7 @@ class _ListState extends State<HomePage> {
           _onRefresh();
         },
         button: '${AppLocalizations.of(context).translate('retry')}',
-        drawable: networkConnection
-            ? 'drawable/no_item.png'
-            : 'drawable/no_signal.png');
+        drawable: networkConnection ? 'drawable/no_item.png' : 'drawable/no_signal.png');
   }
 
   showSnackBar(message, button) {

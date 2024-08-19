@@ -89,118 +89,120 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget body() {
-    return Column(
-      children: [
-        TextFormField(
-          focusNode: emailFocusNode,
-          style: TextStyle(color: Colors.black87),
-          controller: email,
-          maxLines: 1,
-          textAlign: TextAlign.start,
-          maxLengthEnforcement: MaxLengthEnforcement.enforced,
-          keyboardType: TextInputType.emailAddress,
-          onTap: () => _requestFocus(emailFocusNode),
-          decoration: InputDecoration(
-            labelText: AppLocalizations.of(context).translate('email'),
-            prefixIcon: Icon(
-              Icons.email,
-              color: emailFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                Icons.clear,
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          TextFormField(
+            focusNode: emailFocusNode,
+            style: TextStyle(color: Colors.black87),
+            controller: email,
+            maxLines: 1,
+            textAlign: TextAlign.start,
+            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+            keyboardType: TextInputType.emailAddress,
+            onTap: () => _requestFocus(emailFocusNode),
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).translate('email'),
+              prefixIcon: Icon(
+                Icons.email,
                 color: emailFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
               ),
-              onPressed: () {
-                setState(() {
-                  email.clear();
-                });
-              },
-            ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueAccent),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueAccent),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 30,
-        ),
-        TextFormField(
-          style: TextStyle(color: Colors.black87),
-          controller: password,
-          maxLines: 1,
-          textAlign: TextAlign.start,
-          obscureText: hidePassword,
-          maxLengthEnforcement: MaxLengthEnforcement.enforced,
-          focusNode: passwordFocusNode,
-          onTap: () => _requestFocus(passwordFocusNode),
-          keyboardType: TextInputType.visiblePassword,
-          decoration: InputDecoration(
-            labelText: AppLocalizations.of(context).translate('password'),
-            prefixIcon: Icon(
-              Icons.lock_open,
-              color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
-            ),
-            labelStyle: TextStyle(
-              color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
-            ),
-            suffixIcon: IconButton(
-              icon: hidePassword
-                  ? Icon(Icons.remove_red_eye, color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey)
-                  : Icon(
-                      Icons.close,
-                      color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
-                    ),
-              onPressed: () {
-                setState(() {
-                  hidePassword = !hidePassword;
-                });
-              },
-            ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueAccent),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  Icons.clear,
+                  color: emailFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    email.clear();
+                  });
+                },
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blueAccent),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blueAccent),
+              ),
             ),
           ),
-        ),
-        Container(
-          alignment: Alignment.topLeft,
-          child: TextButton(
-              onPressed: () {
-                openForgotPassword();
-              },
+          SizedBox(
+            height: 30,
+          ),
+          TextFormField(
+            style: TextStyle(color: Colors.black87),
+            controller: password,
+            maxLines: 1,
+            textAlign: TextAlign.start,
+            obscureText: hidePassword,
+            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+            focusNode: passwordFocusNode,
+            onTap: () => _requestFocus(passwordFocusNode),
+            keyboardType: TextInputType.visiblePassword,
+            decoration: InputDecoration(
+              labelText: AppLocalizations.of(context).translate('password'),
+              prefixIcon: Icon(
+                Icons.lock_open,
+                color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
+              ),
+              labelStyle: TextStyle(
+                color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
+              ),
+              suffixIcon: IconButton(
+                icon: hidePassword
+                    ? Icon(Icons.remove_red_eye, color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey)
+                    : Icon(
+                        Icons.close,
+                        color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
+                      ),
+                onPressed: () {
+                  setState(() {
+                    hidePassword = !hidePassword;
+                  });
+                },
+              ),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blueAccent),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.blueAccent, width: 2),
+              ),
+            ),
+          ),
+          Container(
+            alignment: Alignment.topLeft,
+            child: TextButton(
+                onPressed: () {
+                  openForgotPassword();
+                },
+                child: Text(
+                  AppLocalizations.of(context).translate('forgot_password'),
+                  style: TextStyle(color: Colors.blueAccent),
+                  textAlign: TextAlign.start,
+                )),
+          ),
+          SizedBox(
+            height: 30,
+          ),
+          Container(
+            width: double.infinity,
+            height: 50,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(width: 1, color: Colors.blueAccent),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+              ),
               child: Text(
-                AppLocalizations.of(context).translate('forgot_password'),
-                style: TextStyle(color: Colors.blueAccent),
-                textAlign: TextAlign.start,
-              )),
-        ),
-        SizedBox(
-          height: 30,
-        ),
-        Container(
-          width: double.infinity,
-          height: 50,
-          child: OutlinedButton(
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(width: 1, color: Colors.blueAccent),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+                AppLocalizations.of(context).translate('login'),
+                style: TextStyle(color: Colors.blue),
+              ),
+              onPressed: () async {
+                inputChecking();
+              },
             ),
-            child: Text(
-              AppLocalizations.of(context).translate('login'),
-              style: TextStyle(color: Colors.blue),
-            ),
-            onPressed: () async {
-              inputChecking();
-            },
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -244,12 +246,13 @@ class _LoginPageState extends State<LoginPage> {
           Text(
             'All Right Reserved By CHANNEL SOFT PLT',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey, fontSize: 10),
+            maxLines: 1,
+            style: TextStyle(color: Colors.grey, fontSize: 8),
           ),
           Text(
             '${AppLocalizations.of(context).translate('version')} $_platformVersion',
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.grey, fontSize: 10),
+            style: TextStyle(color: Colors.grey, fontSize: 8),
           ),
         ],
       ),

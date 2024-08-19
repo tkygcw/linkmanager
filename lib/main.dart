@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,11 +27,11 @@ void main() async {
   ));
 }
 
-statusBarColor(){
+statusBarColor() {
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     statusBarColor: Colors.white, // status bar color
-    statusBarBrightness: Brightness.dark,//status bar brigtness
-    statusBarIconBrightness:Brightness.dark ,
+    statusBarBrightness: Brightness.dark, //status bar brigtness
+    statusBarIconBrightness: Brightness.dark,
   ));
 }
 
@@ -63,9 +65,14 @@ class MyApp extends StatelessWidget {
             textTheme: GoogleFonts.notoSansTextTheme(
               Theme.of(context).textTheme,
             ),
-            appBarTheme: Theme.of(context)
-                .appBarTheme
-                .copyWith(systemOverlayStyle: SystemUiOverlayStyle.dark), colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.deepPurple),
+            appBarTheme: AppBarTheme(
+              backgroundColor: Colors.white,
+              titleTextStyle: TextStyle(color: Colors.deepPurple),
+              iconTheme: IconThemeData(color: Colors.deepPurple), //
+            ),
+          ),
+          scrollBehavior: MaterialScrollBehavior().copyWith(
+            dragDevices: {PointerDeviceKind.mouse, PointerDeviceKind.touch},
           ),
           routes: {
             '/': (context) => LoadingPage(),
