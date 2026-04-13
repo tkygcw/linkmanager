@@ -20,7 +20,7 @@ import 'broswerGraph.dart';
 
 class ReportPage extends StatefulWidget {
   static const String routeName = '/report';
-  final urlID;
+  int? urlID;
 
   ReportPage({this.urlID});
 
@@ -30,7 +30,7 @@ class ReportPage extends StatefulWidget {
 
 class _ReportPageState extends State<ReportPage> {
   final key = new GlobalKey<ScaffoldState>();
-  late int urlID;
+  int urlID = 0;
   late String domain;
   List<Url> urlList = [];
 
@@ -49,7 +49,7 @@ class _ReportPageState extends State<ReportPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.urlID != null) this.urlID = widget.urlID;
+    if (widget.urlID != null) this.urlID = widget.urlID!;
     //network detector
     connectivity = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
       setState(() {
@@ -182,44 +182,44 @@ class _ReportPageState extends State<ReportPage> {
               ),
               Container(
                 height: 50,
-                child: DropdownButton(
-                    value: urlID,
-                    isExpanded: true,
-                    style: TextStyle(fontSize: 15, color: Colors.black87),
-                    items: [
-                      for (int i = 0; i < urlList.length; i++)
-                        DropdownMenuItem(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              //crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    urlList[i].label,
-                                    style: TextStyle(fontSize: 14),
-                                  ),
+                child: DropdownButton<int>(
+                  value: urlList.any((e) => e.id == urlID) ? urlID : null,
+                  isExpanded: true,
+                  style: TextStyle(fontSize: 15, color: Colors.black87),
+                  items: [
+                    for (int i = 0; i < urlList.length; i++)
+                      DropdownMenuItem<int>(
+                        value: urlList[i].id,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 1,
+                                child: Text(
+                                  urlList[i].label,
+                                  style: TextStyle(fontSize: 14),
                                 ),
-                                Expanded(
-                                    flex: 2,
-                                    child: Text(
-                                      '$domain/${urlList[i].name}',
-                                      style: TextStyle(fontSize: 14, color: Colors.blue),
-                                    ))
-                              ],
-                            ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  '$domain/${urlList[i].name}',
+                                  style: TextStyle(fontSize: 14, color: Colors.blue),
+                                ),
+                              ),
+                            ],
                           ),
-                          value: urlList[i].id,
-                        )
-                    ],
-                    onChanged: (url) async {
-                      setState(() {
-                        urlID = '' as int;
-                        print(urlID);
-                      });
-                    }),
+                        ),
+                      )
+                  ],
+                  onChanged: (int? value) {
+                    setState(() {
+                      urlID = value!;
+                      print(urlID);
+                    });
+                  },
+                )
               ),
               SizedBox(
                 width: 10,

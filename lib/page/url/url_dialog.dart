@@ -209,7 +209,7 @@ class _UrlDialogState extends State<UrlDialog> {
                       style: TextStyle(color: Colors.black54, fontSize: 12),
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 12,
                     ),
                   ],
                 )),
