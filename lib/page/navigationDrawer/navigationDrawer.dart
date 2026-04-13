@@ -9,7 +9,8 @@ import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
-import 'package:package_info/package_info.dart';
+// import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CustomNavigationDrawer extends StatefulWidget {
@@ -18,8 +19,8 @@ class CustomNavigationDrawer extends StatefulWidget {
 }
 
 class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
-  Merchant merchant;
-  String expiredDate;
+  late Merchant merchant;
+  late String expiredDate;
   String _platformVersion = 'Default';
   StreamController controller = StreamController();
   var logo;
@@ -41,28 +42,28 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
           createDrawerHeader(),
           createDrawerBodyItem(
               icon: Icons.home,
-              text: AppLocalizations.of(context).translate('home'),
+              text: AppLocalizations.of(context)!.translate('home'),
               onTap: () => Navigator.pushReplacementNamed(context, Routes.home)),
           createDrawerBodyItem(
               icon: Icons.location_city,
-              text: AppLocalizations.of(context).translate('branch'),
+              text: AppLocalizations.of(context)!.translate('branch'),
               onTap: () => Navigator.pushReplacementNamed(context, Routes.branch)),
           createDrawerBodyItem(
               icon: Icons.analytics,
-              text: AppLocalizations.of(context).translate('report'),
+              text: AppLocalizations.of(context)!.translate('report'),
               onTap: () => Navigator.pushReplacementNamed(context, Routes.report)),
           createDrawerBodyItem(
               icon: Icons.qr_code,
-              text: AppLocalizations.of(context).translate('qr_code'),
+              text: AppLocalizations.of(context)!.translate('qr_code'),
               onTap: () => Navigator.pushReplacementNamed(context, Routes.qRCode)),
           Divider(),
           createDrawerBodyItem(
               icon: Icons.info,
-              text: AppLocalizations.of(context).translate('about'),
+              text: AppLocalizations.of(context)!.translate('about'),
               onTap: () => Navigator.pushReplacementNamed(context, Routes.about)),
           createDrawerBodyItem(
               icon: Icons.settings,
-              text: AppLocalizations.of(context).translate('setting'),
+              text: AppLocalizations.of(context)!.translate('setting'),
               onTap: () => Navigator.pushReplacementNamed(context, Routes.setting)),
           waterMark()
         ],
@@ -136,11 +137,11 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
                           height: 20,
                         ),
                         Text(
-                          merchant != null ? merchant.name : '',
+                          merchant.name,
                           style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          merchant != null ? merchant.email : '',
+                          merchant.email,
                           style: TextStyle(color: Colors.white, fontSize: 16),
                         ),
                         SizedBox(
@@ -150,8 +151,8 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
                           text: TextSpan(
                             style: TextStyle(color: Colors.white70),
                             children: <TextSpan>[
-                              TextSpan(text: AppLocalizations.of(context).translate('expired_date'), style: TextStyle(fontWeight: FontWeight.bold)),
-                              TextSpan(text: expiredDate != null ? ' ${setExpiredDate(expiredDate)}' : ''),
+                              TextSpan(text: AppLocalizations.of(context)!.translate('expired_date'), style: TextStyle(fontWeight: FontWeight.bold)),
+                              TextSpan(text: ' ${setExpiredDate(expiredDate)}'),
                             ],
                           ),
                         ),
@@ -208,7 +209,7 @@ class _CustomNavigationDrawerState extends State<CustomNavigationDrawer> {
     }
   }
 
-  Widget createDrawerBodyItem({IconData icon, String text, GestureTapCallback onTap}) {
+  Widget createDrawerBodyItem({required IconData icon, required String text, required GestureTapCallback onTap}) {
     return ListTile(
       title: Row(
         children: <Widget>[

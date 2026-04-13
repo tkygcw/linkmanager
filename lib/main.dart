@@ -8,7 +8,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/page/about/about.dart';
 import 'package:linkmanager/page/branch/branch.dart';
 import 'package:linkmanager/page/loading.dart';
-import 'package:linkmanager/page/qrcode/qrcodePage.dart';
 import 'package:linkmanager/page/registration/login.dart';
 import 'package:linkmanager/page/report/report.dart';
 import 'package:linkmanager/page/setting/setting.dart';
@@ -38,7 +37,7 @@ statusBarColor() {
 class MyApp extends StatelessWidget {
   final AppLanguage appLanguage;
 
-  MyApp({this.appLanguage});
+  MyApp({required this.appLanguage});
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +81,7 @@ class MyApp extends StatelessWidget {
             '/login': (context) => LoginPage(),
             '/report': (context) => ReportPage(),
             '/setting': (context) => SettingPage(),
-            '/qrcode': (context) => QRCodePage()
+            // '/qrcode': (context) => QRCodePage(url: null,)
           },
         );
       }),

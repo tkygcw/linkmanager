@@ -9,7 +9,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class LocationGraph extends StatefulWidget {
   final String urlID;
 
-  LocationGraph({this.urlID});
+  LocationGraph({required this.urlID});
 
   @override
   _LocationGraphState createState() => _LocationGraphState();
@@ -19,7 +19,7 @@ class _LocationGraphState extends State<LocationGraph> {
   List<Report> locations = [];
 
   // ignore: close_sinks
-  StreamController controller;
+  late StreamController controller;
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _LocationGraphState extends State<LocationGraph> {
                         primaryYAxis: NumericAxis(),
                         legend: Legend(
                             isVisible: true, position: LegendPosition.bottom),
-                        series: <ChartSeries>[
+                        series: <CartesianSeries>[
                       ColumnSeries<Report, String>(
                           name: getText('device'),
                           dataSource: locations,
@@ -112,6 +112,6 @@ class _LocationGraphState extends State<LocationGraph> {
   }
 
   getText(text) {
-    return AppLocalizations.of(context).translate(text);
+    return AppLocalizations.of(context)!.translate(text);
   }
 }

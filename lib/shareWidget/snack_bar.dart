@@ -6,7 +6,7 @@ class CustomSnackBar {
   final String message;
 
   const CustomSnackBar({
-    @required this.message,
+    required this.message,
   });
 
   static show(
@@ -26,7 +26,7 @@ class CustomSnackBar {
         //backgroundColor: Colors.redAccent,
         action: SnackBarAction(
           textColor: Color(0xFFFAF2FB),
-          label: '${AppLocalizations.of(context).translate('close')}',
+          label: '${AppLocalizations.of(context)!.translate('close')}',
           onPressed: () {},
         ),
       ),

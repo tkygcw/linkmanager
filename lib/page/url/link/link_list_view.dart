@@ -14,7 +14,7 @@ class LinkListView extends StatelessWidget {
   final Function(Link, String) onClick;
 
   LinkListView(
-      {this.link, this.urlType, this.branches, this.key, this.showToast, this.onClick})
+      {required this.link, required this.urlType, required this.branches, required this.key, required this.showToast, required this.onClick})
       : super(key: key);
 
   @override
@@ -154,7 +154,7 @@ class LinkListView extends StatelessWidget {
                           ),
                           padding: EdgeInsets.all(2),
                           child: Text(
-                            AppLocalizations.of(context).translate('default'),
+                            AppLocalizations.of(context)!.translate('default'),
                             style: TextStyle(color: Colors.white, fontSize: 10),
                           )),
                     ),
@@ -196,7 +196,7 @@ class LinkListView extends StatelessWidget {
                               SizedBox(
                                 width: 10,
                               ),
-                              Text(AppLocalizations.of(context)
+                              Text(AppLocalizations.of(context)!
                                   .translate('edit')),
                             ],
                           ),
@@ -212,7 +212,7 @@ class LinkListView extends StatelessWidget {
                               SizedBox(
                                 width: 10,
                               ),
-                              Text(AppLocalizations.of(context)
+                              Text(AppLocalizations.of(context)!
                                   .translate('duplicate')),
                             ],
                           ),
@@ -228,7 +228,7 @@ class LinkListView extends StatelessWidget {
                               SizedBox(
                                 width: 10,
                               ),
-                              Text(AppLocalizations.of(context)
+                              Text(AppLocalizations.of(context)!
                                   .translate('preview')),
                             ],
                           ),
@@ -244,7 +244,7 @@ class LinkListView extends StatelessWidget {
                               SizedBox(
                                 width: 10,
                               ),
-                              Text(AppLocalizations.of(context)
+                              Text(AppLocalizations.of(context)!
                                   .translate('share_link')),
                             ],
                           ),
@@ -261,7 +261,7 @@ class LinkListView extends StatelessWidget {
                                 width: 10,
                               ),
                               Text(
-                                AppLocalizations.of(context)
+                                AppLocalizations.of(context)!
                                     .translate('delete_link'),
                                 style: TextStyle(color: Colors.red),
                               ),
@@ -269,7 +269,7 @@ class LinkListView extends StatelessWidget {
                           ),
                         ),
                       ],
-                      onSelected: (value) {
+                      onSelected: (String value) {
                         this.onClick(this.link, value);
                       },
                     ),

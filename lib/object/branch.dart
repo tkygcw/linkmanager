@@ -2,7 +2,7 @@ class Branch {
   int branchId, sequence;
   String name;
 
-  Branch({this.name, this.branchId, this.sequence});
+  Branch({required this.name, required this.branchId, required this.sequence});
 
   factory Branch.fromJson(Map<String, dynamic> json) {
     return Branch(

@@ -5,7 +5,7 @@ class NotFound extends StatelessWidget {
   final bool showButton;
   final Function refresh;
 
-  NotFound({this.title, this.description, this.drawable, this.button, this.refresh, this.showButton});
+  NotFound({required this.title, required this.description, required this.drawable, required this.button, required this.refresh, required this.showButton});
 
   @override
   Widget build(BuildContext context) {

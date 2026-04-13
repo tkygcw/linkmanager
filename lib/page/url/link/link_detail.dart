@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,16 +18,15 @@ import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
-import 'package:smart_select/smart_select.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 //testing
 class LinkDetailPage extends StatefulWidget {
-  final Link link;
+  final Link? link;
   final Url url;
   final Function refresh;
 
-  LinkDetailPage({this.link, this.url, this.refresh});
+  LinkDetailPage({this.link, required this.url, required this.refresh});
 
   @override
   _ListState createState() => _ListState();
@@ -37,7 +36,7 @@ class _ListState extends State<LinkDetailPage> {
   final key = new GlobalKey<ScaffoldState>();
   List<Channel> channel = [];
   String channelLabel = 'WhatsApp';
-  Channel selectedChannel;
+  late Channel selectedChannel;
 
   var labelController = TextEditingController();
   var url = TextEditingController();
@@ -46,14 +45,14 @@ class _ListState extends State<LinkDetailPage> {
   /*
      * network checking purpose
      * */
-  StreamSubscription<ConnectivityResult> connectivity;
+  late StreamSubscription<List<ConnectivityResult>> connectivity;
   bool networkConnection = true;
   String type = 'WhatsApp';
-  int allowDayTime;
+  late int allowDayTime;
   List workingDay = [0, 0, 0, 0, 0, 0, 0];
   List<String> workingTime = [];
 
-  int allowBranch;
+  late int allowBranch;
   List<int> selectedBranch = [];
   List<Branch> branch = [];
 
@@ -61,9 +60,9 @@ class _ListState extends State<LinkDetailPage> {
   void initState() {
     super.initState();
     getPreData();
-    connectivity = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    connectivity = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
+        networkConnection = (result.contains(ConnectivityResult.mobile) || result.contains(ConnectivityResult.wifi));
 
         fetchChannel();
         fetchBranch();
@@ -71,13 +70,13 @@ class _ListState extends State<LinkDetailPage> {
     });
     if (widget.link != null) {
       //channel
-      channelLabel = widget.link.type;
-      url.text = widget.link.url;
-      preMessage.text = widget.link.preMessage;
-      labelController.text = widget.link.label;
-      workingDay = widget.link.workingDay;
-      workingTime = widget.link.workingTime;
-      selectedBranch = widget.link.branch;
+      channelLabel = widget.link!.type;
+      url.text = widget.link!.url;
+      preMessage.text = widget.link!.preMessage;
+      labelController.text = widget.link!.label;
+      workingDay = widget.link!.workingDay;
+      workingTime = widget.link!.workingTime;
+      selectedBranch = widget.link!.branch;
     }
     fetchChannel();
   }
@@ -96,7 +95,7 @@ class _ListState extends State<LinkDetailPage> {
         appBar: AppBar(
           centerTitle: true,
           elevation: 2,
-          title: Text(AppLocalizations.of(context).translate(widget.link == null ? 'new_channel' : 'edit_channel'),
+          title: Text(AppLocalizations.of(context)!.translate(widget.link == null ? 'new_channel' : 'edit_channel'),
               textAlign: TextAlign.center,
               style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
@@ -108,7 +107,7 @@ class _ListState extends State<LinkDetailPage> {
                 color: Colors.blueGrey,
               ),
               label: Text(
-                AppLocalizations.of(context).translate('preview'),
+                AppLocalizations.of(context)!.translate('preview'),
                 style: TextStyle(fontSize: 14),
               ),
               onPressed: () {
@@ -139,10 +138,10 @@ class _ListState extends State<LinkDetailPage> {
                     textAlign: TextAlign.start,
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
-                      labelText: AppLocalizations.of(context).translate('label'),
+                      labelText: AppLocalizations.of(context)!.translate('label'),
                       floatingLabelBehavior: FloatingLabelBehavior.always,
                       labelStyle: TextStyle(fontSize: 20, color: Colors.blueGrey),
-                      hintText: AppLocalizations.of(context).translate('label_hint'),
+                      hintText: AppLocalizations.of(context)!.translate('label_hint'),
                       hintStyle: TextStyle(color: Colors.black26, fontSize: 15),
                       border: new OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: new BorderSide(color: Colors.teal)),
                     ),
@@ -155,7 +154,7 @@ class _ListState extends State<LinkDetailPage> {
                       Expanded(
                           flex: 2,
                           child: Text(
-                            AppLocalizations.of(context).translate('select_channel'),
+                            AppLocalizations.of(context)!.translate('select_channel'),
                             style: TextStyle(fontSize: 15),
                           )),
                       Expanded(
@@ -189,16 +188,16 @@ class _ListState extends State<LinkDetailPage> {
                                 )
                             ],
                             onChanged: (channel) async {
-                              channelLabel = channel;
+                              channelLabel = 'channel';
                               selectedChannel = await getSelectChannel();
                               //clear data if change channel
                               if (widget.link != null) {
-                                if (channelLabel != widget.link.type) {
+                                if (channelLabel != widget.link!.type) {
                                   url.clear();
                                   preMessage.clear();
                                 } else {
-                                  url.text = widget.link.url;
-                                  preMessage.text = widget.link.preMessage;
+                                  url.text = widget.link!.url;
+                                  preMessage.text = widget.link!.preMessage;
                                 }
                               }
                               setState(() {});
@@ -209,7 +208,7 @@ class _ListState extends State<LinkDetailPage> {
                   Container(
                     alignment: Alignment.topLeft,
                     child: Text(
-                      AppLocalizations.of(context).translate('channel_description'),
+                      AppLocalizations.of(context)!.translate('channel_description'),
                       style: TextStyle(fontSize: 12, color: Colors.grey),
                     ),
                   ),
@@ -235,10 +234,10 @@ class _ListState extends State<LinkDetailPage> {
                           elevation: 5,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5))),
                       onPressed: () {
-                        checkingInput(null);
+                        checkingInput('');
                       },
                       child: Text(
-                        '${AppLocalizations.of(context).translate(widget.link == null ? 'create_channel' : 'update_channel')}',
+                        '${AppLocalizations.of(context)!.translate(widget.link == null ? 'create_channel' : 'update_channel')}',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -253,10 +252,10 @@ class _ListState extends State<LinkDetailPage> {
                       height: 50.0,
                       child: OutlinedButton(
                         onPressed: () {
-                          deleteLink(widget.link);
+                          deleteLink(widget.link!);
                         },
                         child: Text(
-                          '${AppLocalizations.of(context).translate('delete_channel')}',
+                          '${AppLocalizations.of(context)!.translate('delete_channel')}',
                           style: TextStyle(color: Colors.red),
                         ),
                         style: OutlinedButton.styleFrom(
@@ -270,7 +269,7 @@ class _ListState extends State<LinkDetailPage> {
               ),
             ),
           )
-        : CustomProgressBar();
+        : CustomProgressBar(color: null,);
   }
 
   Future<Channel> getSelectChannel() async {
@@ -279,7 +278,7 @@ class _ListState extends State<LinkDetailPage> {
         return channel[i];
       }
     }
-    return Channel();
+    return Channel(channel: '', channelId: 0, url: '', icon: '', label: '', hint: '', labelMessage: '', messageHint: '', inputType: null);
   }
 
   Widget inputLayout() {
@@ -338,7 +337,7 @@ class _ListState extends State<LinkDetailPage> {
         child: ExpansionTile(
           leading: Icon(Icons.settings),
           title: Text(
-            AppLocalizations.of(context).translate('advance_setting'),
+            AppLocalizations.of(context)!.translate('advance_setting'),
             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
           children: <Widget>[
@@ -361,31 +360,31 @@ class _ListState extends State<LinkDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            AppLocalizations.of(context).translate('working_day'),
+            AppLocalizations.of(context)!.translate('working_day'),
             style: TextStyle(fontSize: 15),
           ),
           Text(
-            AppLocalizations.of(context).translate('working_day_description'),
+            AppLocalizations.of(context)!.translate('working_day_description'),
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
           SizedBox(
             height: 10,
           ),
-          DayPickers(workingDays: widget.link == null ? workingDay : widget.link.workingDay),
+          DayPickers(workingDays: widget.link == null ? workingDay : widget.link!.workingDay),
           SizedBox(
             height: 30,
           ),
           Text(
-            AppLocalizations.of(context).translate('working_time'),
+            AppLocalizations.of(context)!.translate('working_time'),
             style: TextStyle(fontSize: 15),
           ),
           Text(
-            AppLocalizations.of(context).translate('working_time_description'),
+            AppLocalizations.of(context)!.translate('working_time_description'),
             style: TextStyle(fontSize: 12, color: Colors.grey),
           ),
           TimePickers(
               workingTimes: workingTime,
-              onChanges: (List time) {
+              onChanges: (List<String> time) {
                 workingTime = time;
               }),
           SizedBox(
@@ -397,56 +396,92 @@ class _ListState extends State<LinkDetailPage> {
   }
 
   Widget branchWidget() {
-    /// usage example
-    return SmartSelect<int>.multiple(
-      title: AppLocalizations.of(context).translate('select_branch'),
-      value: selectedBranch,
-      choiceItems: S2Choice.listFrom<int, Branch>(
-        source: branch,
-        value: (index, item) => item.branchId,
-        title: (index, item) => item.name,
-      ),
-      onChange: (state) {
-        setState(() => selectedBranch = state.value);
-      },
-      modalTitle: AppLocalizations.of(context).translate('branch'),
-      modalType: S2ModalType.bottomSheet,
-      modalConfirm: true,
-      modalHeaderStyle: S2ModalHeaderStyle(centerTitle: true),
-      tileBuilder: (context, state) {
-        return S2Tile.fromState(
-          state,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
           title: RichText(
             text: TextSpan(
               children: <TextSpan>[
-                TextSpan(text: AppLocalizations.of(context).translate('select_branch'), style: TextStyle(fontSize: 15, color: Colors.black)),
+                TextSpan(text: AppLocalizations.of(context)!.translate('select_branch'), style: TextStyle(fontSize: 15, color: Colors.black)),
                 TextSpan(text: '\n'),
                 TextSpan(
-                  text: AppLocalizations.of(context).translate('select_branch_description'),
+                  text: AppLocalizations.of(context)!.translate('select_branch_description'),
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
               ],
             ),
           ),
-          isTwoLine: false,
-          value: state.valueDisplay,
-          onTap: state.showModal,
-          hideValue: true,
-          body: S2TileChips(
-            chipLength: state.valueObject.length,
-            chipLabelBuilder: (context, i) {
-              return Text(state.valueObject[i].title);
-            },
-            chipOnDelete: (i) {
-              print(state.valueObject[i]);
-              setState(() => selectedBranch.remove(state.valueObject[i].value));
-            },
-            chipColor: Colors.deepPurple,
-            chipBrightness: Brightness.dark,
-            chipBorderOpacity: .1,
-          ),
-        );
-      },
+          trailing: Icon(Icons.arrow_drop_down),
+          onTap: () async {
+            final List<int> tempSelected = List<int>.from(selectedBranch);
+            await showModalBottomSheet(
+              context: context,
+              builder: (context) {
+                return StatefulBuilder(
+                  builder: (context, setModalState) {
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            AppLocalizations.of(context)!.translate('branch'),
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: branch.length,
+                            itemBuilder: (context, i) {
+                              return CheckboxListTile(
+                                title: Text(branch[i].name),
+                                value: tempSelected.contains(branch[i].branchId),
+                                onChanged: (checked) {
+                                  setModalState(() {
+                                    if (checked == true) {
+                                      tempSelected.add(branch[i].branchId);
+                                    } else {
+                                      tempSelected.remove(branch[i].branchId);
+                                    }
+                                  });
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text(AppLocalizations.of(context)!.translate('confirm')),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            );
+            setState(() => selectedBranch = tempSelected);
+          },
+        ),
+        Wrap(
+          spacing: 8,
+          children: selectedBranch.map((id) {
+            final b = branch.firstWhere((e) => e.branchId == id, orElse: () => Branch(branchId: id, name: '', sequence: 0));
+            return Chip(
+              label: Text(b.name),
+              backgroundColor: Colors.deepPurple.shade100,
+              deleteIcon: Icon(Icons.close, size: 18),
+              onDeleted: () {
+                setState(() => selectedBranch.remove(id));
+              },
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
@@ -459,21 +494,21 @@ class _ListState extends State<LinkDetailPage> {
       builder: (BuildContext context) {
         // return alert dialog object
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('delete_request')),
+          title: Text(AppLocalizations.of(context)!.translate('delete_request')),
           content: Text(
-            AppLocalizations.of(context).translate('delete_link_desc'),
+            AppLocalizations.of(context)!.translate('delete_link_desc'),
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(AppLocalizations.of(context).translate('cancel')),
+              child: Text(AppLocalizations.of(context)!.translate('cancel')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text(
-                AppLocalizations.of(context).translate('confirm'),
+                AppLocalizations.of(context)!.translate('confirm'),
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {
@@ -569,7 +604,7 @@ class _ListState extends State<LinkDetailPage> {
   Future updateChannel() async {
     Map data = await Domain.callApi(Domain.link, {
       'update': '1',
-      'link_id': widget.link.linkId.toString(),
+      'link_id': widget.link!.linkId.toString(),
       'working_time': jsonEncode(workingTime),
       'working_day': workingDay.toString(),
       'branch_id': selectedBranch.toString(),
@@ -591,16 +626,16 @@ class _ListState extends State<LinkDetailPage> {
   Widget notFound() {
     return NotFound(
         title: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_link')}'
-            : '${AppLocalizations.of(context).translate('no_network_found')}',
+            ? '${AppLocalizations.of(context)!.translate('no_link')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found')}',
         description: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_url_description')}'
-            : '${AppLocalizations.of(context).translate('no_network_found_description')}',
+            ? '${AppLocalizations.of(context)!.translate('no_url_description')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found_description')}',
         showButton: true,
         refresh: () {
           setState(() {});
         },
-        button: '${AppLocalizations.of(context).translate('retry')}',
+        button: '${AppLocalizations.of(context)!.translate('retry')}',
         drawable: networkConnection ? 'drawable/no_link.png' : 'drawable/no_signal.png');
   }
 
@@ -616,9 +651,9 @@ class _ListState extends State<LinkDetailPage> {
 
   showSnackBar(preMessage, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(preMessage)),
+        content: new Text(AppLocalizations.of(context)!.translate(preMessage)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.

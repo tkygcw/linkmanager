@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:get_version/get_version.dart';
+// import 'package:get_version/get_version.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
@@ -22,7 +22,7 @@ class _AboutPageState extends State<AboutPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    initPlatformState();
+    initPlatformState('');
   }
 
   @override
@@ -31,7 +31,7 @@ class _AboutPageState extends State<AboutPage> {
       appBar: new AppBar(
         centerTitle: true,
         elevation: 2,
-        title: Text(AppLocalizations.of(context).translate('about'),
+        title: Text(AppLocalizations.of(context)!.translate('about'),
             textAlign: TextAlign.center,
             style: GoogleFonts.aBeeZee(
               textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
@@ -46,7 +46,7 @@ class _AboutPageState extends State<AboutPage> {
             ),
             new ListTile(
               leading: new Icon(Icons.info),
-              title: Text(AppLocalizations.of(context).translate('name')),
+              title: Text(AppLocalizations.of(context)!.translate('name')),
               subtitle: new Text('Link Manager'),
             ),
             new Container(
@@ -54,7 +54,7 @@ class _AboutPageState extends State<AboutPage> {
             ),
             new ListTile(
               leading: new Icon(Icons.info),
-              title: Text(AppLocalizations.of(context).translate('running_on')),
+              title: Text(AppLocalizations.of(context)!.translate('running_on')),
               subtitle: new Text(_platformVersion),
             ),
             new Divider(
@@ -62,7 +62,7 @@ class _AboutPageState extends State<AboutPage> {
             ),
             new ListTile(
               leading: new Icon(Icons.info),
-              title: Text(AppLocalizations.of(context).translate('version_name')),
+              title: Text(AppLocalizations.of(context)!.translate('version_name')),
               subtitle: new Text(_projectVersion),
             ),
             new Divider(
@@ -70,7 +70,7 @@ class _AboutPageState extends State<AboutPage> {
             ),
             new ListTile(
               leading: new Icon(Icons.info),
-              title: Text(AppLocalizations.of(context).translate('version_code')),
+              title: Text(AppLocalizations.of(context)!.translate('version_code')),
               subtitle: new Text(_projectCode),
             ),
             new Divider(
@@ -79,7 +79,7 @@ class _AboutPageState extends State<AboutPage> {
             new ListTile(
               onTap: () => launchUrl(Uri.parse('https://api.whatsapp.com/send?phone=60143157329&text=PmLinkManager')),
               leading: new Icon(Icons.info),
-              title: Text(AppLocalizations.of(context).translate('contact_info')),
+              title: Text(AppLocalizations.of(context)!.translate('contact_info')),
               subtitle: new Text('www.channelsoft.com.my\nchannelsoftmy@gmail.com\n+6014-315 7329'),
             ),
           ],
@@ -89,7 +89,7 @@ class _AboutPageState extends State<AboutPage> {
   }
 
   // Platform messages are asynchronous, so we initialize in an async method.
-  initPlatformState() async {
+  initPlatformState(dynamic GetVersion) async {
     String platformVersion;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {

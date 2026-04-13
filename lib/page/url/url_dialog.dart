@@ -12,16 +12,16 @@ import 'package:linkmanager/utils/sharePreference.dart';
 
 class UrlDialog extends StatefulWidget {
   final Function(String) onClick;
-  final Url url;
+  final Url? url;
 
-  UrlDialog({this.url, this.onClick});
+  UrlDialog({this.url, required this.onClick});
 
   @override
   _UrlDialogState createState() => _UrlDialogState();
 }
 
 class _UrlDialogState extends State<UrlDialog> {
-  StreamController refreshStream;
+  late StreamController refreshStream;
   bool isUpdate = false;
   var labelController = TextEditingController();
   var urlController = TextEditingController();
@@ -51,10 +51,10 @@ class _UrlDialogState extends State<UrlDialog> {
      */
     else {
       isUpdate = true;
-      urlController.text = widget.url.name;
-      labelController.text = widget.url.label;
-      urlType = widget.url.type;
-      isActive = widget.url.status == 0;
+      urlController.text = widget.url!.name;
+      labelController.text = widget.url!.label;
+      urlType = widget.url!.type;
+      isActive = widget.url!.status == 0;
       refreshStream.add('display');
     }
     super.initState();
@@ -67,17 +67,17 @@ class _UrlDialogState extends State<UrlDialog> {
         primaryColor: Colors.deepPurple,
       ),
       child: AlertDialog(
-          title: new Text('${AppLocalizations.of(context).translate(isUpdate ? 'update_url' : 'create_url')}'),
+          title: new Text('${AppLocalizations.of(context)!.translate(isUpdate ? 'update_url' : 'create_url')}'),
           actions: <Widget>[
             TextButton(
-              child: Text('${AppLocalizations.of(context).translate('cancel')}'),
+              child: Text('${AppLocalizations.of(context)!.translate('cancel')}'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text(
-                '${AppLocalizations.of(context).translate(isUpdate ? 'update' : 'create')}',
+                '${AppLocalizations.of(context)!.translate(isUpdate ? 'update' : 'create')}',
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () {
@@ -91,7 +91,7 @@ class _UrlDialogState extends State<UrlDialog> {
                 if (object.hasData && object.data.toString().length >= 1) {
                   return mainContent();
                 }
-                return Container(height: allowBranch == 1 ? 320 : 250, width: 1000, child: CustomProgressBar());
+                return Container(height: allowBranch == 1 ? 320 : 250, width: 1000, child: CustomProgressBar(color: null,));
               })),
     );
   }
@@ -109,10 +109,10 @@ class _UrlDialogState extends State<UrlDialog> {
             textAlign: TextAlign.start,
             maxLengthEnforcement: MaxLengthEnforcement.enforced,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).translate('label'),
+              labelText: AppLocalizations.of(context)!.translate('label'),
               floatingLabelBehavior: FloatingLabelBehavior.always,
               labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-              hintText: AppLocalizations.of(context).translate('label_hint'),
+              hintText: AppLocalizations.of(context)!.translate('label_hint'),
               hintStyle: TextStyle(color: Colors.black26),
               border: new OutlineInputBorder(borderRadius: BorderRadius.circular(5.0), borderSide: new BorderSide(color: Colors.red)),
             ),
@@ -122,7 +122,7 @@ class _UrlDialogState extends State<UrlDialog> {
           ),
           Container(
               padding: EdgeInsets.fromLTRB(5, 0, 0, 0),
-              child: Text(AppLocalizations.of(context).translate('your_url'),
+              child: Text(AppLocalizations.of(context)!.translate('your_url'),
                   textAlign: TextAlign.start, style: TextStyle(color: Colors.black54, fontSize: 12))),
           Container(
             padding: EdgeInsets.all(5),
@@ -177,7 +177,7 @@ class _UrlDialogState extends State<UrlDialog> {
                       children: [
                         Expanded(
                             child: Text(
-                          AppLocalizations.of(context).translate('url_type'),
+                          AppLocalizations.of(context)!.translate('url_type'),
                           style: TextStyle(color: Colors.black54),
                         )),
                         Expanded(
@@ -188,15 +188,16 @@ class _UrlDialogState extends State<UrlDialog> {
                               style: TextStyle(fontSize: 15, color: Colors.black87),
                               items: [
                                 DropdownMenuItem(
-                                  child: Text(AppLocalizations.of(context).translate('time_based')),
+                                  child: Text(AppLocalizations.of(context)!.translate('time_based')),
                                   value: 0,
                                 ),
                                 DropdownMenuItem(
-                                  child: Text(AppLocalizations.of(context).translate('location_based')),
+                                  child: Text(AppLocalizations.of(context)!.translate('location_based')),
                                   value: 1,
                                 )
                               ],
-                              onChanged: (value) {
+                              onChanged: (int? value) {
+                                if (value == null) return;
                                 urlType = value;
                                 refreshStream.add('display');
                               }),
@@ -204,7 +205,7 @@ class _UrlDialogState extends State<UrlDialog> {
                       ],
                     ),
                     Text(
-                      AppLocalizations.of(context).translate('url_type_description'),
+                      AppLocalizations.of(context)!.translate('url_type_description'),
                       style: TextStyle(color: Colors.black54, fontSize: 12),
                     ),
                     SizedBox(
@@ -217,7 +218,7 @@ class _UrlDialogState extends State<UrlDialog> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                AppLocalizations.of(context).translate('url_status'),
+                AppLocalizations.of(context)!.translate('url_status'),
                 style: TextStyle(color: Colors.black87),
               ),
               Switch(
@@ -228,7 +229,7 @@ class _UrlDialogState extends State<UrlDialog> {
                   });
                 },
                 activeTrackColor: Colors.deepPurpleAccent,
-                activeColor: Colors.deepPurple,
+                activeThumbColor: Colors.deepPurple,
               ),
             ],
           )
@@ -280,14 +281,14 @@ class _UrlDialogState extends State<UrlDialog> {
   updateURL() async {
     Map data = await Domain.callApi(Domain.url, {
       'update': '1',
-      'url_id': widget.url.id.toString(),
+      'url_id': widget.url!.id.toString(),
       'name': urlController.text,
       'label': labelController.text,
       'status': isActive ? '0' : '1',
       'type': urlType.toString()
     });
 
-    widget.url.status = isActive ? 0 : 1;
+    widget.url!.status = isActive ? 0 : 1;
 
     if (data['status'] == '1') {
       widget.onClick('update_success');
@@ -311,7 +312,7 @@ class _UrlDialogState extends State<UrlDialog> {
 
   showToast(message) {
     CustomToast(
-      '${AppLocalizations.of(context).translate(message)}',
+      '${AppLocalizations.of(context)!.translate(message)}', duration: 1, gravity: 0,
     ).show();
   }
 }

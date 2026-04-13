@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class CustomProgressBar extends StatelessWidget {
-  final Color color;
+  final Color? color;
 
-  CustomProgressBar({this.color});
+  CustomProgressBar({required this.color});
 
   @override
   Widget build(BuildContext context) {

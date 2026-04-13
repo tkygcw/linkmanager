@@ -4,7 +4,7 @@ import 'package:linkmanager/translation/AppLocalizations.dart';
 class DayPickers extends StatefulWidget {
   final List workingDays;
 
-  DayPickers({this.workingDays});
+  DayPickers({required this.workingDays});
 
   @override
   _DayPickersState createState() => _DayPickersState();
@@ -38,7 +38,7 @@ class _DayPickersState extends State<DayPickers> {
                   },
                   tileColor: widget.workingDays[i] == 0 ? Colors.purple : Colors.white,
                   title: Text(
-                    '${AppLocalizations.of(context).translate('day${i + 1}')}',
+                    '${AppLocalizations.of(context)!.translate('day${i + 1}')}',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 14,

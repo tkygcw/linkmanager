@@ -24,20 +24,20 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  Merchant merchant;
+  late Merchant merchant;
   int allowBranch = 0;
 
   final key = new GlobalKey<ScaffoldState>();
   StreamController controller = StreamController();
 
-  File _image;
+  late File _image;
   var imagePath;
-  ImageProvider provider;
+  late ImageProvider provider;
 
   final picker = ImagePicker();
   var compressedFileSource;
 
-  String prefix;
+  late String prefix;
   TextEditingController name = TextEditingController();
   TextEditingController email = TextEditingController();
   TextEditingController domain = TextEditingController();
@@ -63,7 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           centerTitle: false,
           elevation: 2,
-          title: Text(AppLocalizations.of(context).translate('profile'),
+          title: Text(AppLocalizations.of(context)!.translate('profile'),
               textAlign: TextAlign.left,
               style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
@@ -76,7 +76,7 @@ class _ProfilePageState extends State<ProfilePage> {
               if (object.data == 'display') {
                 return mainContent();
               }
-              return CustomProgressBar();
+              return CustomProgressBar(color: null,);
             }));
   }
 
@@ -125,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context).translate('profile'),
+              AppLocalizations.of(context)!.translate('profile'),
               style: TextStyle(color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),
             ),
             SizedBox(
@@ -141,9 +141,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 textAlign: TextAlign.start,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: '${AppLocalizations.of(context).translate('username')}',
+                  labelText: '${AppLocalizations.of(context)!.translate('username')}',
                   labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  hintText: '${AppLocalizations.of(context).translate('username')}',
+                  hintText: '${AppLocalizations.of(context)!.translate('username')}',
                   border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                 )),
             SizedBox(
@@ -156,9 +156,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(color: Colors.black54),
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email),
-                  labelText: '${AppLocalizations.of(context).translate('email')}',
+                  labelText: '${AppLocalizations.of(context)!.translate('email')}',
                   labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  hintText: '${AppLocalizations.of(context).translate('email')}',
+                  hintText: '${AppLocalizations.of(context)!.translate('email')}',
                   border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                 )),
             SizedBox(
@@ -171,9 +171,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 style: TextStyle(color: Colors.black54),
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.link),
-                  labelText: '${AppLocalizations.of(context).translate('domain')}',
+                  labelText: '${AppLocalizations.of(context)!.translate('domain')}',
                   labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                  hintText: '${AppLocalizations.of(context).translate('domain')}',
+                  hintText: '${AppLocalizations.of(context)!.translate('domain')}',
                   border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                 )),
             SizedBox(
@@ -191,13 +191,14 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                     ),
                     child: CountryCodePicker(
-                        onChanged: (country) => prefix = country.dialCode,
+                        onChanged: (country) => prefix = country.dialCode!,
                         // Initial selection and favorite can be one of code ('IT') OR dial_code('+39')
                         initialSelection: prefix,
                         favorite: ['+60'],
-                        comparator: (a, b) => b.name.compareTo(a.name),
+                        comparator: (a, b) => (b.name ?? '').compareTo(a.name ?? ''),
                         //Get the country information relevant to the initial selection
-                        onInit: (code) => prefix = code.dialCode),
+                        onInit: (code) => prefix = code!.dialCode!
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -210,9 +211,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       keyboardType: TextInputType.phone,
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
-                        labelText: '${AppLocalizations.of(context).translate('phone')}',
+                        labelText: '${AppLocalizations.of(context)!.translate('phone')}',
                         labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                        hintText: '${AppLocalizations.of(context).translate('phone_hint')}',
+                        hintText: '${AppLocalizations.of(context)!.translate('phone_hint')}',
                         border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                       )),
                 ),
@@ -240,7 +241,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                 ),
                 label: Text(
-                  '${AppLocalizations.of(context).translate('update_profile')}',
+                  '${AppLocalizations.of(context)!.translate('update_profile')}',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -270,11 +271,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              AppLocalizations.of(context).translate('branch_setting'),
+                              AppLocalizations.of(context)!.translate('branch_setting'),
                               style: TextStyle(color: Colors.black54, fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              AppLocalizations.of(context).translate('branch_info_description'),
+                              AppLocalizations.of(context)!.translate('branch_info_description'),
                               style: TextStyle(color: Colors.blueGrey, fontSize: 12),
                             ),
                           ],
@@ -285,7 +286,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: OutlinedButton(
                             onPressed: preview,
                             child: Text(
-                              AppLocalizations.of(context).translate('preview'),
+                              AppLocalizations.of(context)!.translate('preview'),
                               style: TextStyle(fontSize: 12, color: Colors.deepPurpleAccent),
                             )),
                       )
@@ -299,9 +300,9 @@ class _ProfilePageState extends State<ProfilePage> {
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.title),
-                        labelText: '${AppLocalizations.of(context).translate('title')}',
+                        labelText: '${AppLocalizations.of(context)!.translate('title')}',
                         labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                        hintText: '${AppLocalizations.of(context).translate('title')}',
+                        hintText: '${AppLocalizations.of(context)!.translate('title')}',
                         border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                       )),
                   SizedBox(
@@ -314,16 +315,16 @@ class _ProfilePageState extends State<ProfilePage> {
                       minLines: 2,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.description),
-                        labelText: '${AppLocalizations.of(context).translate('description')}',
+                        labelText: '${AppLocalizations.of(context)!.translate('description')}',
                         labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
-                        hintText: '${AppLocalizations.of(context).translate('description')}',
+                        hintText: '${AppLocalizations.of(context)!.translate('description')}',
                         border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                       )),
                   SizedBox(
                     height: 10,
                   ),
                   Text(
-                    AppLocalizations.of(context).translate('background_color'),
+                    AppLocalizations.of(context)!.translate('background_color'),
                     style: TextStyle(color: Colors.blueGrey, fontSize: 12),
                   ),
                   SizedBox(
@@ -332,7 +333,11 @@ class _ProfilePageState extends State<ProfilePage> {
                   ColorPicker(
                     pickerColor: pickerColor,
                     onColorChanged: changeColor,
-                    labelTypes: [null],
+                    labelTypes: const [
+                      ColorLabelType.rgb,
+                      ColorLabelType.hsv,
+                      ColorLabelType.hsl,
+                    ],
                     pickerAreaHeightPercent: 0.4,
                   ),
                   SizedBox(
@@ -357,7 +362,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                       ),
                       label: Text(
-                        '${AppLocalizations.of(context).translate('update')}',
+                        '${AppLocalizations.of(context)!.translate('update')}',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -464,14 +469,14 @@ class _ProfilePageState extends State<ProfilePage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-              title: Text("${AppLocalizations.of(context).translate('take_photo_from_where')}"),
+              title: Text("${AppLocalizations.of(context)!.translate('take_photo_from_where')}"),
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SizedBox(
                     height: 40,
                     child: ElevatedButton.icon(
-                      label: Text('${AppLocalizations.of(context).translate('gallery')}', style: TextStyle(color: Colors.white)),
+                      label: Text('${AppLocalizations.of(context)!.translate('gallery')}', style: TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.orangeAccent),
                       icon: Icon(
                         Icons.perm_media,
@@ -487,7 +492,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     height: 40,
                     child: ElevatedButton.icon(
                       label: Text(
-                        '${AppLocalizations.of(context).translate('camera')}',
+                        '${AppLocalizations.of(context)!.translate('camera')}',
                         style: TextStyle(color: Colors.white),
                       ),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
@@ -529,38 +534,25 @@ class _ProfilePageState extends State<ProfilePage> {
     _cropImage();
   }
 
-  Future<Null> _cropImage() async {
-    File croppedFile = await ImageCropper.cropImage(
-        sourcePath: imagePath.path,
-        aspectRatioPresets: Platform.isAndroid
-            ? [
-                CropAspectRatioPreset.square,
-                CropAspectRatioPreset.ratio3x2,
-                CropAspectRatioPreset.original,
-                CropAspectRatioPreset.ratio4x3,
-                CropAspectRatioPreset.ratio16x9
-              ]
-            : [
-                CropAspectRatioPreset.original,
-                CropAspectRatioPreset.square,
-                CropAspectRatioPreset.ratio3x2,
-                CropAspectRatioPreset.ratio4x3,
-                CropAspectRatioPreset.ratio5x3,
-                CropAspectRatioPreset.ratio5x4,
-                CropAspectRatioPreset.ratio7x5,
-                CropAspectRatioPreset.ratio16x9
-              ],
-        androidUiSettings: AndroidUiSettings(
-            toolbarTitle: 'Cropper',
-            toolbarColor: Colors.deepPurple,
-            toolbarWidgetColor: Colors.white,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false),
-        iosUiSettings: IOSUiSettings(
+  Future<void> _cropImage() async {
+    final CroppedFile? croppedFile = await ImageCropper().cropImage(
+      sourcePath: imagePath.path,
+
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Cropper',
+          toolbarColor: Colors.deepPurple,
+          toolbarWidgetColor: Colors.white,
+          lockAspectRatio: false,
+        ),
+        IOSUiSettings(
           title: 'Cropper',
-        ));
+        ),
+      ],
+    );
+
     if (croppedFile != null) {
-      _image = croppedFile;
+      _image = File(croppedFile.path);
       compressFileMethod();
     }
   }
@@ -587,7 +579,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return file;
   }
 
-  Future<Uint8List> compressFile(File file) async {
+  Future<Uint8List?> compressFile(File file) async {
     final result = await FlutterImageCompress.compressWithFile(
       file.absolute.path,
       quality: countQuality(file.lengthSync()),
@@ -610,13 +602,17 @@ class _ProfilePageState extends State<ProfilePage> {
 
   showSnackBar(preMessage, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(preMessage)),
+        content: new Text(AppLocalizations.of(context)!.translate(preMessage)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.
           },
         )));
   }
+}
+
+extension on ImagePicker {
+  Future<dynamic> getImage({required ImageSource source}) async {}
 }

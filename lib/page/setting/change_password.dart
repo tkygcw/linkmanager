@@ -11,7 +11,7 @@ class ChangePasswordPage extends StatefulWidget {
 }
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
-  Merchant merchant;
+  late Merchant merchant;
   final key = new GlobalKey<ScaffoldState>();
 
   TextEditingController currentPassword = TextEditingController();
@@ -29,7 +29,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         appBar: AppBar(
           centerTitle: false,
           elevation: 2,
-          title: Text(AppLocalizations.of(context).translate('change_password'),
+          title: Text(AppLocalizations.of(context)!.translate('change_password'),
               textAlign: TextAlign.left,
               style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
@@ -54,14 +54,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    AppLocalizations.of(context).translate('change_password'),
+                    AppLocalizations.of(context)!.translate('change_password'),
                     style: TextStyle(color: Colors.blueGrey, fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 2,
                   ),
                   Text(
-                    AppLocalizations.of(context).translate('change_password_description'),
+                    AppLocalizations.of(context)!.translate('change_password_description'),
                     style: TextStyle(color: Colors.black26, fontSize: 14),
                   ),
                   SizedBox(
@@ -74,7 +74,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_open),
-                        labelText: '${AppLocalizations.of(context).translate('current_password')}',
+                        labelText: '${AppLocalizations.of(context)!.translate('current_password')}',
                         labelStyle: TextStyle(fontSize: 14, color: Colors.blueGrey),
                         border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                         suffixIcon: IconButton(
@@ -96,7 +96,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_open),
-                        labelText: '${AppLocalizations.of(context).translate('new_password')}',
+                        labelText: '${AppLocalizations.of(context)!.translate('new_password')}',
                         labelStyle: TextStyle(fontSize: 14, color: Colors.blueGrey),
                         border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                         suffixIcon: IconButton(
@@ -118,7 +118,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       textAlign: TextAlign.start,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock_open),
-                        labelText: '${AppLocalizations.of(context).translate('confirm_password')}',
+                        labelText: '${AppLocalizations.of(context)!.translate('confirm_password')}',
                         labelStyle: TextStyle(fontSize: 14, color: Colors.blueGrey),
                         border: new OutlineInputBorder(borderSide: new BorderSide(color: Colors.teal)),
                         suffixIcon: IconButton(
@@ -152,7 +152,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                       ),
                       label: Text(
-                        '${AppLocalizations.of(context).translate('update_password')}',
+                        '${AppLocalizations.of(context)!.translate('update_password')}',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -184,9 +184,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   showSnackBar(preMessage, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(preMessage)),
+        content: new Text(AppLocalizations.of(context)!.translate(preMessage)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
@@ -8,7 +8,8 @@ import 'package:linkmanager/page/setting/language_setting.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
-import 'package:package_info/package_info.dart';
+// import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart' as pinfo;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:linkmanager/page/loading.dart';
@@ -32,13 +33,15 @@ class _SettingPageState extends State<SettingPage> {
   var connectivity;
   bool networkConnection = true;
 
+  get PackageInfo => null;
+
   @override
   void initState() {
     super.initState();
     //network detector
-    connectivity = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    connectivity = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
+        networkConnection = (result.contains(ConnectivityResult.mobile) || result.contains(ConnectivityResult.wifi));
       });
     });
     getVersionNumber();
@@ -51,7 +54,7 @@ class _SettingPageState extends State<SettingPage> {
         appBar: AppBar(
           centerTitle: false,
           elevation: 2,
-          title: Text(AppLocalizations.of(context).translate('setting'),
+          title: Text(AppLocalizations.of(context)!.translate('setting'),
               textAlign: TextAlign.left,
               style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
@@ -73,7 +76,7 @@ class _SettingPageState extends State<SettingPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context).translate('account_setting'),
+              AppLocalizations.of(context)!.translate('account_setting'),
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
             ),
             SizedBox(
@@ -83,7 +86,7 @@ class _SettingPageState extends State<SettingPage> {
               elevation: 2,
               child: ListTile(
                 onTap: () => openPage('profile'),
-                title: Text(AppLocalizations.of(context).translate('profile')),
+                title: Text(AppLocalizations.of(context)!.translate('profile')),
                 leading: Icon(
                   Icons.person_outline,
                   color: Colors.deepPurpleAccent,
@@ -96,7 +99,7 @@ class _SettingPageState extends State<SettingPage> {
               elevation: 2,
               child: ListTile(
                 onTap: () => openPage('password'),
-                title: Text(AppLocalizations.of(context).translate('change_password')),
+                title: Text(AppLocalizations.of(context)!.translate('change_password')),
                 leading: Icon(
                   Icons.lock_outline,
                   color: Colors.blue,
@@ -109,7 +112,7 @@ class _SettingPageState extends State<SettingPage> {
               elevation: 2,
               child: ListTile(
                 onTap: () => openPage('language'),
-                title: Text(AppLocalizations.of(context).translate('language')),
+                title: Text(AppLocalizations.of(context)!.translate('language')),
                 leading: Icon(
                   Icons.language,
                   color: Colors.green,
@@ -122,7 +125,7 @@ class _SettingPageState extends State<SettingPage> {
               height: 10,
             ),
             Text(
-              AppLocalizations.of(context).translate('other'),
+              AppLocalizations.of(context)!.translate('other'),
               style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
             ),
             SizedBox(
@@ -132,7 +135,7 @@ class _SettingPageState extends State<SettingPage> {
               elevation: 2,
               child: ListTile(
                 onTap: showLogOutDialog,
-                title: Text(AppLocalizations.of(context).translate('log_out'), style: TextStyle(color: Colors.red)),
+                title: Text(AppLocalizations.of(context)!.translate('log_out'), style: TextStyle(color: Colors.red)),
                 leading: Icon(
                   Icons.login_outlined,
                   color: Colors.redAccent,
@@ -174,7 +177,7 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   void getVersionNumber() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    pinfo.PackageInfo packageInfo = await pinfo.PackageInfo.fromPlatform();
     String version = packageInfo.version;
     setState(() {
       _platformVersion = version;
@@ -213,24 +216,24 @@ class _SettingPageState extends State<SettingPage> {
       barrierDismissible: false, // user must tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('${AppLocalizations.of(context).translate('sign_out_request')}'),
+          title: Text('${AppLocalizations.of(context)!.translate('sign_out_request')}'),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('${AppLocalizations.of(context).translate('sign_out_message')}'),
+                Text('${AppLocalizations.of(context)?.translate('sign_out_message')}'),
               ],
             ),
           ),
           actions: <Widget>[
             TextButton(
-              child: Text('${AppLocalizations.of(context).translate('cancel')}'),
+              child: Text('${AppLocalizations.of(context)?.translate('cancel')}'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text(
-                '${AppLocalizations.of(context).translate('confirm')}',
+                '${AppLocalizations.of(context)?.translate('confirm')}',
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () {
@@ -251,23 +254,23 @@ class _SettingPageState extends State<SettingPage> {
   Widget notFound() {
     if (!networkConnection)
       return NotFound(
-          title: '${AppLocalizations.of(context).translate('no_network_found')}',
-          description: '${AppLocalizations.of(context).translate('no_network_found_description')}',
+          title: '${AppLocalizations.of(context)!.translate('no_network_found')}',
+          description: '${AppLocalizations.of(context)!.translate('no_network_found_description')}',
           showButton: true,
           refresh: () {
             setState(() {});
           },
-          button: '${AppLocalizations.of(context).translate('retry')}',
+          button: '${AppLocalizations.of(context)!.translate('retry')}',
           drawable: 'drawable/no_signal.png');
     else
-      return CustomProgressBar();
+      return CustomProgressBar(color: null);
   }
 
   showSnackBar(preMessage, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(preMessage)),
+        content: new Text(AppLocalizations.of(context)!.translate(preMessage)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.

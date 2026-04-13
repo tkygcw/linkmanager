@@ -1,7 +1,7 @@
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
-import 'package:grouped_buttons/grouped_buttons.dart';
+import 'package:group_button/group_button.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/translation/appLanguage.dart';
 import 'package:provider/provider.dart';
@@ -29,10 +29,8 @@ class _LanguageDialogState extends State<LanguageDialog> {
     setState(() {
       if (prefs.getString('language_code') == null) {
         selectedLanguage = 'English';
-        return Null;
       }
       selectedLanguage = getLanguage(prefs.getString('language_code'));
-      return Null;
     });
   }
 
@@ -41,7 +39,7 @@ class _LanguageDialogState extends State<LanguageDialog> {
     var appLanguage = Provider.of<AppLanguage>(context);
     return AlertDialog(
       title: Text(
-        AppLocalizations.of(context).translate('language'),
+        AppLocalizations.of(context)!.translate('language'),
         style: GoogleFonts.cantoraOne(
           textStyle: TextStyle(
               color: Colors.deepPurpleAccent,
@@ -52,31 +50,28 @@ class _LanguageDialogState extends State<LanguageDialog> {
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            RadioButtonGroup(
-                labels: <String>[
-                  "English",
-                  "中文",
-                  "Malay",
-                ],
-                picked: selectedLanguage,
-                onSelected: (String selectedLanguage) {
-                  setState(() {
-                    this.selectedLanguage = selectedLanguage;
-                  });
-                }),
+            GroupButton(
+              buttons: ["English", "中文", "Malay"],
+              isRadio: true,
+              onSelected: (value, index, isSelected) {
+                setState(() {
+                  selectedLanguage = value;
+                });
+              },
+            )
           ],
         ),
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('${AppLocalizations.of(context).translate('cancel')}'),
+          child: Text('${AppLocalizations.of(context)!.translate('cancel')}'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
           child: Text(
-            '${AppLocalizations.of(context).translate('update')}',
+            '${AppLocalizations.of(context)!.translate('update')}',
             style: TextStyle(color: Colors.red),
           ),
           onPressed: () {

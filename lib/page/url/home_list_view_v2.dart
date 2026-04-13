@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:linkmanager/object/url.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
-import 'package:share/share.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HomeListView extends StatelessWidget {
   final Url url;
@@ -10,7 +10,7 @@ class HomeListView extends StatelessWidget {
   final Function(Url, String) onClick;
   final String domain;
 
-  HomeListView({this.domain, this.url, this.showToast, this.onClick});
+  HomeListView({required this.domain, required this.url, required this.showToast, required this.onClick});
 
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class HomeListView extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              '${AppLocalizations.of(context).translate('link_lick')}',
+                              '${AppLocalizations.of(context)!.translate('link_lick')}',
                               style: TextStyle(
                                   fontSize: 12, color: Colors.black87),
                             ),
@@ -91,7 +91,7 @@ class HomeListView extends StatelessWidget {
                         child: Column(
                           children: [
                             Text(
-                              '${AppLocalizations.of(context).translate('total_link')}',
+                              '${AppLocalizations.of(context)!.translate('total_link')}',
                               style: TextStyle(
                                   fontSize: 12, color: Colors.black87),
                             ),
@@ -154,7 +154,7 @@ class HomeListView extends StatelessWidget {
               SizedBox(
                 width: 10,
               ),
-              Text(AppLocalizations.of(context).translate('edit')),
+              Text(AppLocalizations.of(context)!.translate('edit')),
             ],
           ),
         ),
@@ -169,7 +169,7 @@ class HomeListView extends StatelessWidget {
               SizedBox(
                 width: 10,
               ),
-              Text(AppLocalizations.of(context).translate('copy_link')),
+              Text(AppLocalizations.of(context)!.translate('copy_link')),
             ],
           ),
         ),
@@ -184,7 +184,7 @@ class HomeListView extends StatelessWidget {
               SizedBox(
                 width: 10,
               ),
-              Text(AppLocalizations.of(context).translate('share_link')),
+              Text(AppLocalizations.of(context)!.translate('share_link')),
             ],
           ),
         ),
@@ -199,7 +199,7 @@ class HomeListView extends StatelessWidget {
               SizedBox(
                 width: 10,
               ),
-              Text(AppLocalizations.of(context).translate('qr_code')),
+              Text(AppLocalizations.of(context)!.translate('qr_code')),
             ],
           ),
         ),
@@ -214,7 +214,7 @@ class HomeListView extends StatelessWidget {
               SizedBox(
                 width: 10,
               ),
-              Text(AppLocalizations.of(context).translate('preview')),
+              Text(AppLocalizations.of(context)!.translate('preview')),
             ],
           ),
         ),
@@ -229,7 +229,7 @@ class HomeListView extends StatelessWidget {
               SizedBox(
                 width: 10,
               ),
-              Text(AppLocalizations.of(context).translate('report')),
+              Text(AppLocalizations.of(context)!.translate('report')),
             ],
           ),
         ),
@@ -245,7 +245,7 @@ class HomeListView extends StatelessWidget {
                 width: 10,
               ),
               Text(
-                AppLocalizations.of(context).translate('delete'),
+                AppLocalizations.of(context)!.translate('delete'),
                 style: TextStyle(color: Colors.red),
               ),
             ],

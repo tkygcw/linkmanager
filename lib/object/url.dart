@@ -4,14 +4,14 @@ class Url {
   int id, status, type, linkClickedNum, linkNum;
 
   Url(
-      {this.id,
-      this.name,
-      this.label,
-      this.type,
-      this.createdAt,
-      this.status,
-      this.linkClickedNum,
-      this.linkNum});
+      {required this.id,
+      required this.name,
+      required this.label,
+      required this.type,
+      required this.createdAt,
+      required this.status,
+      required this.linkClickedNum,
+      required this.linkNum});
 
   factory Url.fromJson(Map<String, dynamic> json) {
     return Url(

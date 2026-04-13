@@ -9,7 +9,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class MonthlyGraph extends StatefulWidget {
   final String urlID;
 
-  MonthlyGraph({this.urlID});
+  MonthlyGraph({required this.urlID});
 
   @override
   _MonthlyGraphState createState() => _MonthlyGraphState();
@@ -19,7 +19,7 @@ class _MonthlyGraphState extends State<MonthlyGraph> {
   List<Report> months = [];
 
   // ignore: close_sinks
-  StreamController controller;
+  late StreamController controller;
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _MonthlyGraphState extends State<MonthlyGraph> {
                         primaryYAxis: NumericAxis(),
                         legend: Legend(
                             isVisible: true, position: LegendPosition.bottom),
-                        series: <ChartSeries>[
+                        series: <CartesianSeries>[
                       ColumnSeries<Report, String>(
                           name: getText('months'),
                           dataSource: months,
@@ -142,6 +142,6 @@ class _MonthlyGraphState extends State<MonthlyGraph> {
   }
 
   getText(text) {
-    return AppLocalizations.of(context).translate(text);
+    return AppLocalizations.of(context)!.translate(text);
   }
 }

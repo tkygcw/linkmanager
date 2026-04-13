@@ -9,7 +9,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class BrowserGraph extends StatefulWidget {
   final String urlID, startDate, endDate;
 
-  BrowserGraph({this.urlID, this.startDate, this.endDate});
+  BrowserGraph({required this.urlID, required this.startDate, required this.endDate});
 
   @override
   _BrowserGraphState createState() => _BrowserGraphState();
@@ -19,7 +19,7 @@ class _BrowserGraphState extends State<BrowserGraph> {
   List<Report> browsers = [];
 
   // ignore: close_sinks
-  StreamController controller;
+  late StreamController controller;
 
   @override
   void initState() {
@@ -68,7 +68,7 @@ class _BrowserGraphState extends State<BrowserGraph> {
                         primaryXAxis: CategoryAxis(),
                         primaryYAxis: NumericAxis(),
                         legend: Legend(isVisible: true, position: LegendPosition.bottom),
-                        series: <ChartSeries>[
+                        series: <CartesianSeries>[
                       ColumnSeries<Report, String>(
                           name: getText('browser'),
                           dataSource: browsers,
@@ -107,6 +107,6 @@ class _BrowserGraphState extends State<BrowserGraph> {
   }
 
   getText(text) {
-    return AppLocalizations.of(context).translate(text);
+    return AppLocalizations.of(context)!.translate(text);
   }
 }

@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 class Channel {
   int channelId;
   String channel, url, icon, label, hint, labelMessage, messageHint;
-  TextInputType inputType;
+  TextInputType? inputType;
 
-  Channel({this.channel, this.channelId, this.url, this.icon, this.label, this.hint, this.labelMessage, this.messageHint, this.inputType});
+  Channel({required this.channel, required this.channelId, required this.url, required this.icon, required this.label, required this.hint, required this.labelMessage, required this.messageHint, required this.inputType});
 
   factory Channel.fromJson(Map<String, dynamic> json) {
     return Channel(

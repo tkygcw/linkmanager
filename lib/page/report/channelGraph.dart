@@ -9,7 +9,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class ChannelGraph extends StatefulWidget {
   final String urlID, startDate, endDate;
 
-  ChannelGraph({this.urlID, this.startDate, this.endDate});
+  ChannelGraph({required this.urlID, required this.startDate, required this.endDate});
 
   @override
   _ChannelGraphState createState() => _ChannelGraphState();
@@ -19,7 +19,7 @@ class _ChannelGraphState extends State<ChannelGraph> {
   List<Report> channels = [];
 
   // ignore: close_sinks
-  StreamController controller;
+  late StreamController controller;
 
   @override
   void initState() {
@@ -68,7 +68,7 @@ class _ChannelGraphState extends State<ChannelGraph> {
                         primaryXAxis: CategoryAxis(),
                         primaryYAxis: NumericAxis(),
                         legend: Legend(isVisible: true, position: LegendPosition.bottom),
-                        series: <ChartSeries>[
+                        series: <CartesianSeries>[
                       ColumnSeries<Report, String>(
                           name: getText('channel'),
                           dataSource: channels,
@@ -110,6 +110,6 @@ class _ChannelGraphState extends State<ChannelGraph> {
   }
 
   getText(text) {
-    return AppLocalizations.of(context).translate(text);
+    return AppLocalizations.of(context)!.translate(text);
   }
 }

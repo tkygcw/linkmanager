@@ -9,7 +9,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 class DeviceGraph extends StatefulWidget {
   final String urlID, startDate, endDate;
 
-  DeviceGraph({this.urlID, this.startDate, this.endDate});
+  DeviceGraph({required this.urlID, required this.startDate, required this.endDate});
 
   @override
   _DeviceGraphState createState() => _DeviceGraphState();
@@ -19,7 +19,7 @@ class _DeviceGraphState extends State<DeviceGraph> {
   List<Report> devices = [];
 
   // ignore: close_sinks
-  StreamController controller;
+  late StreamController controller;
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _DeviceGraphState extends State<DeviceGraph> {
                         primaryYAxis: NumericAxis(),
                         legend: Legend(
                             isVisible: true, position: LegendPosition.bottom),
-                        series: <ChartSeries>[
+                        series: <CartesianSeries>[
                       ColumnSeries<Report, String>(
                           name: getText('device'),
                           dataSource: devices,
@@ -112,6 +112,6 @@ class _DeviceGraphState extends State<DeviceGraph> {
   }
 
   getText(text) {
-    return AppLocalizations.of(context).translate(text);
+    return AppLocalizations.of(context)!.translate(text);
   }
 }

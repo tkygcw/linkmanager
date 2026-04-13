@@ -8,18 +8,18 @@ class Link {
   List<int> branch;
 
   Link(
-      {this.linkId,
-      this.sequence,
-      this.label,
-      this.type,
-      this.url,
-      this.icon,
-      this.preMessage,
-      this.workingTime,
-      this.workingDay,
-      this.branch,
-      this.createAt,
-      this.linkClick});
+      {required this.linkId,
+      required this.sequence,
+      required this.label,
+      required this.type,
+      required this.url,
+      required this.icon,
+      required this.preMessage,
+      required this.workingTime,
+      required this.workingDay,
+      required this.branch,
+      required this.createAt,
+      required this.linkClick});
 
   factory Link.fromJson(Map<String, dynamic> json) {
     return Link(
@@ -33,7 +33,7 @@ class Link {
         preMessage: json['pre_message'],
         workingTime: bindWorkingTime(json['working_time']),
         workingDay: bindWorkingDay(json['working_day']),
-        branch: bindWorkingDay(json['branch_id']));
+        branch: bindWorkingDay(json['branch_id']), createAt: '');
   }
 
   static List<String> bindWorkingTime(json) {

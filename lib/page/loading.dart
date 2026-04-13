@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +9,8 @@ import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
-import 'package:package_info/package_info.dart';
+// import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart' as pinfo;
 import 'package:url_launcher/url_launcher.dart';
 
 class LoadingPage extends StatefulWidget {
@@ -19,7 +20,7 @@ class LoadingPage extends StatefulWidget {
 
 class _LoadingPageState extends State<LoadingPage> {
   final key = new GlobalKey<ScaffoldState>();
-  String status;
+  late String status;
 
   @override
   void initState() {
@@ -32,13 +33,13 @@ class _LoadingPageState extends State<LoadingPage> {
     checkMerchantInformation();
     return Scaffold(
       key: key,
-      body: CustomProgressBar(),
+      body: CustomProgressBar(color: null,),
     );
   }
 
   netWorkChecking() async {
     var connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile || connectivityResult == ConnectivityResult.wifi) {
+    if (connectivityResult.contains(ConnectivityResult.mobile) || connectivityResult.contains(ConnectivityResult.wifi)) {
       launchChecking();
     } else {
       ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
@@ -78,7 +79,7 @@ class _LoadingPageState extends State<LoadingPage> {
       * */
       if (!kIsWeb) {
         String latestVersion = data['version'][0]['version'].toString();
-        String currentVersion = await getVersionNumber();
+        String currentVersion = await getVersionNumber("linkmanager");
         if (latestVersion != currentVersion) {
           openUpdateDialog(data);
           return;
@@ -104,13 +105,13 @@ class _LoadingPageState extends State<LoadingPage> {
     String merchantStatus = status;
     if (merchantStatus == '0') {
       Merchant merchant = Merchant.fromJson(await SharePreferences().read('merchant'));
-      merchant.merchantId != null ? Navigator.pushReplacementNamed(context, '/home') : Navigator.pushReplacementNamed(context, '/login');
+      Navigator.pushReplacementNamed(context, '/home');
     } else
       openDisableDialog();
   }
 
-  getVersionNumber() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  getVersionNumber(dynamic PackageInfo) async {
+    pinfo.PackageInfo packageInfo = await pinfo.PackageInfo.fromPlatform();
     return packageInfo.version;
   }
 
@@ -126,7 +127,7 @@ class _LoadingPageState extends State<LoadingPage> {
         // return alert dialog object
         return AlertDialog(
           title: Text(
-            "${AppLocalizations.of(context).translate('something_went_wrong')}",
+            "${AppLocalizations.of(context)!.translate('something_went_wrong')}",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: Container(
@@ -139,7 +140,7 @@ class _LoadingPageState extends State<LoadingPage> {
               children: <Widget>[
                 Image.asset('drawable/error.png'),
                 Text(
-                  '${AppLocalizations.of(context).translate('account_disable_description')}',
+                  '${AppLocalizations.of(context)!.translate('account_disable_description')}',
                   style: TextStyle(fontSize: 14),
                   textAlign: TextAlign.center,
                 )
@@ -183,7 +184,7 @@ class _LoadingPageState extends State<LoadingPage> {
         // return alert dialog object
         return AlertDialog(
           title: Text(
-            "${AppLocalizations.of(context).translate('new_update')}",
+            "${AppLocalizations.of(context)!.translate('new_update')}",
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           content: SingleChildScrollView(
@@ -207,7 +208,7 @@ class _LoadingPageState extends State<LoadingPage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: Text(AppLocalizations.of(context).translate('later')),
+              child: Text(AppLocalizations.of(context)!.translate('later')),
               onPressed: () async {
                 Navigator.of(context).pop();
                 /*
@@ -218,7 +219,7 @@ class _LoadingPageState extends State<LoadingPage> {
             ),
             TextButton(
               child: Text(
-                AppLocalizations.of(context).translate('update_now'),
+                AppLocalizations.of(context)!.translate('update_now'),
                 style: TextStyle(color: Colors.red),
               ),
               onPressed: () async {

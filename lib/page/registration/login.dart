@@ -4,7 +4,8 @@ import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart' as pinfo;
+// import 'package:package_info/package_info.dart';
 
 import 'forgot_password.dart';
 
@@ -19,9 +20,11 @@ class _LoginPageState extends State<LoginPage> {
   var password = TextEditingController();
   String _platformVersion = 'Default';
 
-  FocusNode emailFocusNode, passwordFocusNode;
+  late FocusNode emailFocusNode, passwordFocusNode;
 
   bool hidePassword = true;
+
+  get PackageInfo => null;
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +51,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void getVersionNumber() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    pinfo.PackageInfo packageInfo = await pinfo.PackageInfo.fromPlatform();
     String version = packageInfo.version;
+
     setState(() {
       _platformVersion = version;
     });
@@ -102,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
             keyboardType: TextInputType.emailAddress,
             onTap: () => _requestFocus(emailFocusNode),
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).translate('email'),
+              labelText: AppLocalizations.of(context)!.translate('email'),
               prefixIcon: Icon(
                 Icons.email,
                 color: emailFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
@@ -140,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
             onTap: () => _requestFocus(passwordFocusNode),
             keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
-              labelText: AppLocalizations.of(context).translate('password'),
+              labelText: AppLocalizations.of(context)!.translate('password'),
               prefixIcon: Icon(
                 Icons.lock_open,
                 color: passwordFocusNode.hasFocus ? Colors.blueAccent : Colors.grey,
@@ -176,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                   openForgotPassword();
                 },
                 child: Text(
-                  AppLocalizations.of(context).translate('forgot_password'),
+                  AppLocalizations.of(context)!.translate('forgot_password'),
                   style: TextStyle(color: Colors.blueAccent),
                   textAlign: TextAlign.start,
                 )),
@@ -193,7 +197,7 @@ class _LoginPageState extends State<LoginPage> {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
               ),
               child: Text(
-                AppLocalizations.of(context).translate('login'),
+                AppLocalizations.of(context)!.translate('login'),
                 style: TextStyle(color: Colors.blue),
               ),
               onPressed: () async {
@@ -218,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
     Map data = await Domain.callApi(Domain.register, {'login': '1', 'email': email.text, 'password': password.text});
 
     if (data['status'] == '1') {
-      await SharePreferences().save('merchant', Merchant(merchantId: data['merchant_id']));
+      await SharePreferences().save('merchant', Merchant(merchantId: data['merchant_id'], name: '', email: '', domain: '', phonePrefix: '', phone: '', title: '', description: '', backgroundColor: '', logo: '', maxLink: 5, maxUrl: 5, manualGenerate: 0, status: 0, allowDateTime: 0, allowBranch: 0));
 
       Navigator.pushReplacementNamed(context, '/');
     } else if (data['status'] == '2') {
@@ -250,7 +254,7 @@ class _LoginPageState extends State<LoginPage> {
             style: TextStyle(color: Colors.grey, fontSize: 8),
           ),
           Text(
-            '${AppLocalizations.of(context).translate('version')} $_platformVersion',
+            '${AppLocalizations.of(context)!.translate('version')} $_platformVersion',
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey, fontSize: 8),
           ),
@@ -261,9 +265,9 @@ class _LoginPageState extends State<LoginPage> {
 
   showSnackBar(message, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(message)),
+        content: new Text(AppLocalizations.of(context)!.translate(message)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.

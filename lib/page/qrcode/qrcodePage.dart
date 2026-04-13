@@ -3,27 +3,28 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/merchant.dart';
 import 'package:linkmanager/object/url.dart';
-import 'package:linkmanager/page/navigationDrawer/navigationDrawer.dart';
 import 'package:linkmanager/shareWidget/not_found.dart';
 import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:wc_flutter_share/wc_flutter_share.dart';
+import 'dart:io';
+import 'package:share_plus/share_plus.dart';
+import 'package:path_provider/path_provider.dart';
 
 class QRCodePage extends StatefulWidget {
   static const String routeName = '/qrcode';
   final Url url;
 
-  QRCodePage({this.url});
+  QRCodePage({required this.url});
 
   @override
   _QRCodePageState createState() => _QRCodePageState();
@@ -32,11 +33,11 @@ class QRCodePage extends StatefulWidget {
 class _QRCodePageState extends State<QRCodePage> {
   final key = new GlobalKey<ScaffoldState>();
   GlobalKey _qRCodeKey = new GlobalKey();
-  String urlName;
-  String domain;
+  late String urlName;
+  late String domain;
   List<Url> urlList = [];
 
-  StreamController refreshStream;
+  late StreamController refreshStream;
   var logo;
   Color pickerColor = Colors.black;
   Color currentColor = Colors.black;
@@ -51,7 +52,7 @@ class _QRCodePageState extends State<QRCodePage> {
   @override
   void initState() {
     super.initState();
-    if (widget.url != null) this.urlName = widget.url.name;
+    this.urlName = widget.url.name;
     refreshStream = StreamController();
     networkDetector();
     fetchData();
@@ -64,14 +65,14 @@ class _QRCodePageState extends State<QRCodePage> {
         appBar: AppBar(
           centerTitle: false,
           elevation: 2,
-          title: Text(AppLocalizations.of(context).translate('qr_code'),
+          title: Text(AppLocalizations.of(context)!.translate('qr_code'),
               textAlign: TextAlign.left,
               style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
               )),
           actions: <Widget>[],
         ),
-        drawer: widget.url == null ? CustomNavigationDrawer() : null,
+        drawer: null,
         body: StreamBuilder(
             stream: refreshStream.stream,
             builder: (context, object) {
@@ -82,12 +83,12 @@ class _QRCodePageState extends State<QRCodePage> {
                 else
                   return notFound();
               }
-              return Container(height: 500, width: 1000, child: CustomProgressBar());
+              return Container(height: 500, width: 1000, child: CustomProgressBar(color: null,));
             }));
   }
 
   Widget mainContent() {
-    return networkConnection && urlName != null
+    return networkConnection
         ? SingleChildScrollView(
             child: Column(children: [urlSelection(), qrCodeLayout()]),
           )
@@ -104,11 +105,11 @@ class _QRCodePageState extends State<QRCodePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              AppLocalizations.of(context).translate('logo_size'),
+              AppLocalizations.of(context)!.translate('logo_size'),
               style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
             ),
             Text(
-              AppLocalizations.of(context).translate('logo_size_description'),
+              AppLocalizations.of(context)!.translate('logo_size_description'),
               style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 12),
             ),
             Slider(
@@ -134,7 +135,7 @@ class _QRCodePageState extends State<QRCodePage> {
               alignment: Alignment.center,
               child: RepaintBoundary(
                 key: _qRCodeKey,
-                child: QrImage(
+                child: QrImageView(
                   data: '$domain/$urlName',
                   version: QrVersions.auto,
                   backgroundColor: Colors.white,
@@ -152,7 +153,7 @@ class _QRCodePageState extends State<QRCodePage> {
               height: 5,
             ),
             Text(
-              AppLocalizations.of(context).translate('qr_code_color'),
+              AppLocalizations.of(context)!.translate('qr_code_color'),
               style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
             ),
             SizedBox(
@@ -161,7 +162,11 @@ class _QRCodePageState extends State<QRCodePage> {
             ColorPicker(
               pickerColor: pickerColor,
               onColorChanged: changeColor,
-              labelTypes: [null],
+              labelTypes: const [
+                ColorLabelType.rgb,
+                ColorLabelType.hsv,
+                ColorLabelType.hsl,
+              ],
               pickerAreaHeightPercent: 0.4,
             ),
             SizedBox(
@@ -183,7 +188,7 @@ class _QRCodePageState extends State<QRCodePage> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
                 ),
                 label: Text(
-                  '${AppLocalizations.of(context).translate('share_qr_code')}',
+                  '${AppLocalizations.of(context)!.translate('share_qr_code')}',
                   style: TextStyle(color: Colors.white),
                 ),
               ),
@@ -204,7 +209,7 @@ class _QRCodePageState extends State<QRCodePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                AppLocalizations.of(context).translate('select_url'),
+                AppLocalizations.of(context)!.translate('select_url'),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               Container(
@@ -240,11 +245,14 @@ class _QRCodePageState extends State<QRCodePage> {
                           value: urlList[i].name,
                         )
                     ],
-                    onChanged: (urlName) async {
+                    onChanged: (String? urlName) {
+                      if (urlName == null) return;
+
                       this.urlName = urlName;
                       print(urlName);
                       refreshStream.add('display');
-                    }),
+                    },
+                ),
               ),
             ],
           ),
@@ -254,10 +262,14 @@ class _QRCodePageState extends State<QRCodePage> {
   shareQrCode() async {
     var shareImageSource = await _captureQrCode();
     print(shareImageSource);
-    if (shareImageSource != null)
-      await WcFlutterShare.share(sharePopupTitle: 'share', fileName: 'share.png', mimeType: 'image/png', bytesOfFile: shareImageSource);
-    else
+    if (shareImageSource != null) {
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/share.png');
+      await file.writeAsBytes(shareImageSource);
+      await Share.shareXFiles([XFile(file.path)]);
+    } else {
       showSnackBar('invalid_qr_code', 'close');
+    }
   }
 
   // ValueChanged<Color> callback
@@ -265,16 +277,17 @@ class _QRCodePageState extends State<QRCodePage> {
     setState(() => pickerColor = color);
   }
 
-  Future<Uint8List> _captureQrCode() async {
+  Future<Uint8List?> _captureQrCode() async {
     try {
       print('inside');
-      RenderRepaintBoundary boundary = _qRCodeKey.currentContext.findRenderObject();
+      final boundary = _qRCodeKey.currentContext!
+          .findRenderObject() as RenderRepaintBoundary;
 
       ui.Image image = await boundary.toImage(pixelRatio: 3.0);
 
-      ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
 
-      var pngBytes = byteData.buffer.asUint8List();
+      var pngBytes = byteData!.buffer.asUint8List();
 
 //      var bs64 = base64Encode(pngBytes);
 
@@ -342,24 +355,24 @@ class _QRCodePageState extends State<QRCodePage> {
   Widget notFound() {
     return NotFound(
         title: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_url')}'
-            : '${AppLocalizations.of(context).translate('no_network_found')}',
+            ? '${AppLocalizations.of(context)!.translate('no_url')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found')}',
         description: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_qr_code_description')}'
-            : '${AppLocalizations.of(context).translate('no_network_found_description')}',
+            ? '${AppLocalizations.of(context)!.translate('no_qr_code_description')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found_description')}',
         showButton: true,
         refresh: () async {
           await fetchData();
           setState(() {});
         },
-        button: '${AppLocalizations.of(context).translate('retry')}',
+        button: '${AppLocalizations.of(context)!.translate('retry')}',
         drawable: networkConnection ? 'drawable/no_qr_code.png' : 'drawable/no_signal.png');
   }
 
   networkDetector() {
-    connectivity = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    connectivity = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
+        networkConnection = (result.contains(ConnectivityResult.mobile) || result.contains(ConnectivityResult.wifi));
         fetchData();
       });
     });
@@ -367,9 +380,9 @@ class _QRCodePageState extends State<QRCodePage> {
 
   showSnackBar(preMessage, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(preMessage)),
+        content: new Text(AppLocalizations.of(context)!.translate(preMessage)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.

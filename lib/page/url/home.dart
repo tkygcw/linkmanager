@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'package:easy_search_bar/easy_search_bar.dart';
 import 'package:flutter/services.dart';
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/merchant.dart';
@@ -37,6 +36,8 @@ class _ListState extends State<HomePage> {
   String domain = '';
   String query = '';
   int maxUrl = 0;
+  bool _isSearching = false;
+  final TextEditingController _searchController = TextEditingController();
 
   List<Url> urls = [];
   RefreshController _refreshController = RefreshController(initialRefresh: false);
@@ -48,7 +49,7 @@ class _ListState extends State<HomePage> {
   /*flutter pub run flutter_launcher_icons:main
      * network checking purpose
      * */
-  StreamSubscription<ConnectivityResult> connectivity;
+  late StreamSubscription<List<ConnectivityResult>> connectivity;
   bool networkConnection = true;
 
   final delayTimer = DelayTimer(milliseconds: 500);
@@ -58,9 +59,9 @@ class _ListState extends State<HomePage> {
     // TODO: implement initState
     super.initState();
     getPreData();
-    connectivity = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    connectivity = Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile || result == ConnectivityResult.wifi);
+        networkConnection = (result.contains(ConnectivityResult.mobile) || result.contains(ConnectivityResult.wifi));
       });
     });
     fetchUrl();
@@ -79,28 +80,57 @@ class _ListState extends State<HomePage> {
 
     return Scaffold(
         key: key,
-        appBar: EasySearchBar(
-          searchHintText: 'Type url or campaign name...',
-          searchCursorColor: Colors.black12,
-          searchBackIconTheme: IconThemeData(color: Colors.deepPurple),
-          searchHintStyle: TextStyle(color: Colors.blueGrey),
-          onSearch: (value) async {
-            delayTimer.run(() {
-              setState(() {
-                query = value;
-                urls.clear();
-                itemFinish = false;
-              });
-              fetchUrl();
-            });
-          },
+        appBar: AppBar(
+          centerTitle: true,
           elevation: 2,
-          title: Text(AppLocalizations.of(context).translate('home'),
-              textAlign: TextAlign.center,
-              style: GoogleFonts.aBeeZee(
-                textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
-              )),
+          title: _isSearching
+              ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  cursorColor: Colors.black12,
+                  style: TextStyle(color: Colors.blueGrey),
+                  decoration: InputDecoration(
+                    hintText: 'Type url or campaign name...',
+                    hintStyle: TextStyle(color: Colors.blueGrey),
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) {
+                    delayTimer.run(() {
+                      setState(() {
+                        query = value;
+                        urls.clear();
+                        itemFinish = false;
+                      });
+                      fetchUrl();
+                    });
+                  },
+                )
+              : Text(AppLocalizations.of(context)!.translate('home'),
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.aBeeZee(
+                    textStyle: TextStyle(color: Colors.deepPurple, fontWeight: FontWeight.bold, fontSize: 20),
+                  )),
           actions: <Widget>[
+            IconButton(
+              icon: Icon(
+                _isSearching ? Icons.close : Icons.search,
+                color: Colors.deepPurple,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (_isSearching) {
+                    _isSearching = false;
+                    _searchController.clear();
+                    query = '';
+                    urls.clear();
+                    itemFinish = false;
+                    fetchUrl();
+                  } else {
+                    _isSearching = true;
+                  }
+                });
+              },
+            ),
             IconButton(
               icon: Icon(
                 Icons.analytics,
@@ -108,7 +138,6 @@ class _ListState extends State<HomePage> {
               ),
               onPressed: () {
                 Navigator.pushReplacementNamed(context, Routes.report);
-                // do something
               },
             )
           ],
@@ -121,18 +150,18 @@ class _ListState extends State<HomePage> {
                 physics: AlwaysScrollableScrollPhysics(),
                 header: WaterDropHeader(),
                 footer: CustomFooter(
-                  builder: (BuildContext context, LoadStatus mode) {
+                  builder: (BuildContext context, LoadStatus? mode) {
                     Widget body;
                     if (mode == LoadStatus.idle) {
-                      body = Text('${AppLocalizations.of(context).translate('pull_up_load')}');
+                      body = Text('${AppLocalizations.of(context)!.translate('pull_up_load')}');
                     } else if (mode == LoadStatus.loading) {
-                      body = CustomProgressBar();
+                      body = CustomProgressBar(color: null,);
                     } else if (mode == LoadStatus.failed) {
-                      body = Text('${AppLocalizations.of(context).translate('load_failed')}');
+                      body = Text('${AppLocalizations.of(context)!.translate('load_failed')}');
                     } else if (mode == LoadStatus.canLoading) {
-                      body = Text('${AppLocalizations.of(context).translate('release_to_load_more')}');
+                      body = Text('${AppLocalizations.of(context)!.translate('release_to_load_more')}');
                     } else {
-                      body = Text('${AppLocalizations.of(context).translate('no_more_data')}');
+                      body = Text('${AppLocalizations.of(context)!.translate('no_more_data')}');
                     }
                     return Container(
                       height: 55.0,
@@ -167,7 +196,7 @@ class _ListState extends State<HomePage> {
       if (itemFinish)
         return notFound();
       else
-        return CustomProgressBar();
+        return CustomProgressBar(color: null,);
     }
   }
 
@@ -211,7 +240,7 @@ class _ListState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppLocalizations.of(context).translate('max_url'),
+                  AppLocalizations.of(context)!.translate('max_url'),
                   style: TextStyle(fontSize: 14),
                 ),
                 Text('${urls.length}/$maxUrl')
@@ -312,7 +341,7 @@ class _ListState extends State<HomePage> {
   /*
   * edit address dialog
   * */
-  openUrlDialog(mainContext, bool isUpdate, Url url) {
+  openUrlDialog(mainContext, bool isUpdate, Url? url) {
     showDialog(
       context: mainContext,
       builder: (BuildContext context) {
@@ -371,9 +400,9 @@ class _ListState extends State<HomePage> {
       builder: (BuildContext context) {
         // return alert dialog object
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('delete_request')),
+          title: Text(AppLocalizations.of(context)!.translate('delete_request')),
           content: Text(
-            AppLocalizations.of(context).translate('delete_url_desc'),
+            AppLocalizations.of(context)!.translate('delete_url_desc'),
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
@@ -412,24 +441,24 @@ class _ListState extends State<HomePage> {
   Widget notFound() {
     return NotFound(
         title: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_url')}'
-            : '${AppLocalizations.of(context).translate('no_network_found')}',
+            ? '${AppLocalizations.of(context)!.translate('no_url')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found')}',
         description: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_url_description')}'
-            : '${AppLocalizations.of(context).translate('no_network_found_description')}',
+            ? '${AppLocalizations.of(context)!.translate('no_url_description')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found_description')}',
         showButton: true,
         refresh: () {
           _onRefresh();
         },
-        button: '${AppLocalizations.of(context).translate('retry')}',
+        button: '${AppLocalizations.of(context)!.translate('retry')}',
         drawable: networkConnection ? 'drawable/no_item.png' : 'drawable/no_signal.png');
   }
 
   showSnackBar(message, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(message)),
+        content: new Text(AppLocalizations.of(context)!.translate(message)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.

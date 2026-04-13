@@ -23,8 +23,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   bool hideNewPassword = true;
   bool hideConfirmPassword = true;
 
-  StreamController pageStream;
-  String pacNumber;
+  late StreamController pageStream;
+  late String pacNumber;
 
   @override
   void initState() {
@@ -77,14 +77,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   child: Image.asset('drawable/forgot_password_icon.png', height: 200),
                 ),
                 Text(
-                  '${AppLocalizations.of(context).translate('forgot_password')}',
+                  '${AppLocalizations.of(context)!.translate('forgot_password')}',
                   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
                 SizedBox(
                   height: 15,
                 ),
                 Text(
-                  '${AppLocalizations.of(context).translate('forgot_password_description')}',
+                  '${AppLocalizations.of(context)!.translate('forgot_password_description')}',
                   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
@@ -101,7 +101,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     textAlign: TextAlign.start,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.email),
-                      labelText: '${AppLocalizations.of(context).translate('email')}',
+                      labelText: '${AppLocalizations.of(context)!.translate('email')}',
                       labelStyle: TextStyle(fontSize: 16, color: Colors.blueAccent),
                       hintText: '',
                     ),
@@ -121,7 +121,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         backgroundColor: Colors.orange),
                     onPressed: () => sendPac(context),
                     child: Text(
-                      '${AppLocalizations.of(context).translate('send_pac')}',
+                      '${AppLocalizations.of(context)!.translate('send_pac')}',
                       style: TextStyle(color: Colors.blueAccent),
                     ),
                   ),
@@ -153,14 +153,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   child: Image.asset('drawable/email_icon.png', height: 200),
                 ),
                 Text(
-                  '${AppLocalizations.of(context).translate('email_verification')}',
+                  '${AppLocalizations.of(context)!.translate('email_verification')}',
                   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
                 SizedBox(
                   height: 15,
                 ),
                 Text(
-                  '${AppLocalizations.of(context).translate('email_verification_description')}',
+                  '${AppLocalizations.of(context)!.translate('email_verification_description')}',
                   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
@@ -181,7 +181,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.verified_user),
-                      labelText: '${AppLocalizations.of(context).translate('pac_no')}',
+                      labelText: '${AppLocalizations.of(context)!.translate('pac_no')}',
                       labelStyle: TextStyle(fontSize: 16, color: Colors.blueAccent),
                       hintText: '',
                     ),
@@ -192,7 +192,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   height: 5,
                 ),
                 Text(
-                  "${AppLocalizations.of(context).translate('click_to_resend')}",
+                  "${AppLocalizations.of(context)!.translate('click_to_resend')}",
                   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueAccent),
                   textAlign: TextAlign.start,
                 ),
@@ -209,7 +209,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         backgroundColor: Colors.orange),
                     onPressed: () => checkPac(context),
                     child: Text(
-                      '${AppLocalizations.of(context).translate('verify_email')}',
+                      '${AppLocalizations.of(context)!.translate('verify_email')}',
                       style: TextStyle(color: Colors.blueAccent),
                     ),
                   ),
@@ -241,14 +241,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   child: Image.asset('drawable/change_password_icon.png', height: 200),
                 ),
                 Text(
-                  '${AppLocalizations.of(context).translate('reset_password')}',
+                  '${AppLocalizations.of(context)!.translate('reset_password')}',
                   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
                 ),
                 SizedBox(
                   height: 15,
                 ),
                 Text(
-                  '${AppLocalizations.of(context).translate('reset_password_description')}',
+                  '${AppLocalizations.of(context)!.translate('reset_password_description')}',
                   style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black54),
                   textAlign: TextAlign.center,
                 ),
@@ -267,7 +267,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.lock),
-                      labelText: '${AppLocalizations.of(context).translate('new_password')}',
+                      labelText: '${AppLocalizations.of(context)!.translate('new_password')}',
                       labelStyle: TextStyle(fontSize: 16, color: Colors.blueAccent),
                       suffixIcon: IconButton(
                           icon: Icon(Icons.remove_red_eye),
@@ -295,7 +295,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
                       prefixIcon: Icon(Icons.verified_user),
-                      labelText: '${AppLocalizations.of(context).translate('confirmation_password')}',
+                      labelText: '${AppLocalizations.of(context)!.translate('confirmation_password')}',
                       labelStyle: TextStyle(fontSize: 16, color: Colors.blueAccent),
                       hintText: '',
                       suffixIcon: IconButton(
@@ -325,7 +325,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     ),
                     onPressed: () => updatePassword(context),
                     child: Text(
-                      '${AppLocalizations.of(context).translate('update_password')}',
+                      '${AppLocalizations.of(context)!.translate('update_password')}',
                       style: TextStyle(color: Colors.blueAccent),
                     ),
                   ),
@@ -340,25 +340,25 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   * send pac via email
   * */
   sendPac(context) async {
-    CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('verify')}');
+    CustomSnackBar.show(context, '${AppLocalizations.of(context)!.translate('verify')}');
 
     pacNumber = (new Random().nextInt(900000) + 100000).toString();
 
     Map data = await Domain.callApi(Domain.register, {'forgot_password': '1', 'email': email.text, 'pac': pacNumber});
 
     if (data['status'] == '1') {
-      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('pac_sent')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context)!.translate('pac_sent')}');
       pageStream.add('pac');
     } else
-      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('invalid_email')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context)!.translate('invalid_email')}');
   }
 
   checkPac(context) {
     if (pac.text == pacNumber) {
-      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('verify_success')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context)!.translate('verify_success')}');
       pageStream.add('reset');
     } else
-      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('invalid_pac_number')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context)!.translate('invalid_pac_number')}');
   }
 
   updatePassword(context) async {
@@ -368,14 +368,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
         if (data['status'] == '1') {
           CustomToast(
-            '${AppLocalizations.of(context).translate('password_update_success')}',
+            '${AppLocalizations.of(context)!.translate('password_update_success')}', duration: 1, gravity: 1,
           ).show();
           Navigator.pushReplacementNamed(context, '/login');
         } else
-          CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('something_went_wrong')}');
+          CustomSnackBar.show(context, '${AppLocalizations.of(context)!.translate('something_went_wrong')}');
       } else
-        CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('password_not_match')}');
+        CustomSnackBar.show(context, '${AppLocalizations.of(context)!.translate('password_not_match')}');
     } else
-      CustomSnackBar.show(context, '${AppLocalizations.of(context).translate('all_field_required')}');
+      CustomSnackBar.show(context, '${AppLocalizations.of(context)!.translate('all_field_required')}');
   }
 }

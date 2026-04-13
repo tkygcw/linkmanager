@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,7 +13,7 @@ import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
-import 'package:refreshable_reorderable_list/refreshable_reorderable_list.dart';
+// import 'package:refreshable_reorderable_list/refreshable_reorderable_list.dart';
 
 class BranchPage extends StatefulWidget {
   static const String routeName = '/branch';
@@ -33,7 +33,7 @@ class _ListState extends State<BranchPage> {
   /*
      * network checking purpose
      * */
-  StreamSubscription<ConnectivityResult> connectivity;
+  late StreamSubscription<List<ConnectivityResult>> connectivity;
   bool networkConnection = true;
 
   @override
@@ -41,10 +41,10 @@ class _ListState extends State<BranchPage> {
     super.initState();
     connectivity = Connectivity()
         .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+        .listen((List<ConnectivityResult> result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile ||
-            result == ConnectivityResult.wifi);
+        networkConnection = (result.contains(ConnectivityResult.mobile) ||
+            result.contains(ConnectivityResult.wifi));
       });
     });
     fetchBranch();
@@ -64,7 +64,7 @@ class _ListState extends State<BranchPage> {
         appBar: AppBar(
           centerTitle: true,
           elevation: 2,
-          title: Text(AppLocalizations.of(context).translate('branch'),
+          title: Text(AppLocalizations.of(context)!.translate('branch'),
               textAlign: TextAlign.center,
               style: GoogleFonts.aBeeZee(
                 textStyle: TextStyle(
@@ -109,32 +109,38 @@ class _ListState extends State<BranchPage> {
       if (itemLoad)
         return notFound();
       else
-        return CustomProgressBar();
+        return CustomProgressBar(color: null,);
     }
   }
 
   Widget mainContent() {
-    return RefreshableReorderableListView(
-      physics: AlwaysScrollableScrollPhysics(),
-      children: branches
-          .asMap()
-          .map((index, link) => MapEntry(index, listView(link)))
-          .values
-          .toList(),
-      onReorder: _onReorder,
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: ReorderableListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        onReorder: _onReorder,
+        children: branches
+            .asMap()
+            .map((index, link) => MapEntry(
+          index,
+          listView(link, index),
+        ))
+            .values
+            .toList(),
+      ),
     );
   }
 
-  _onReorder(int oldIndex, int newIndex) async {
-    if (newIndex > branches.length) newIndex = branches.length;
-    if (oldIndex < newIndex) newIndex--;
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > branches.length) newIndex = branches.length;
+      if (oldIndex < newIndex) newIndex--;
 
-    Branch categoryObject = branches[oldIndex];
-    branches.removeAt(oldIndex);
-    branches.insert(newIndex, categoryObject);
+      final Branch item = branches.removeAt(oldIndex);
+      branches.insert(newIndex, item);
+    });
 
-    setState(() {});
-    await updateLinkSequence();
+    updateLinkSequence();
   }
 
   Future updateLinkSequence() async {
@@ -152,7 +158,7 @@ class _ListState extends State<BranchPage> {
     setState(() {});
   }
 
-  Widget listView(Branch branch) {
+  Widget listView(Branch branch, int index) {
     return Card(
         key: ValueKey(branch.branchId.toString()),
         elevation: 2,
@@ -193,12 +199,11 @@ class _ListState extends State<BranchPage> {
             )));
   }
 
-  _onRefresh() async {
-    setState(() {
-      itemLoad = false;
-      branches.clear();
-      fetchBranch();
-    });
+  Future<void> _onRefresh() async {
+    itemLoad = false;
+    branches.clear();
+
+    await fetchBranch();
   }
 
   Future fetchBranch() async {
@@ -227,9 +232,9 @@ class _ListState extends State<BranchPage> {
       builder: (BuildContext context) {
         // return alert dialog object
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('delete_request')),
+          title: Text(AppLocalizations.of(context)!.translate('delete_request')),
           content: Text(
-            AppLocalizations.of(context).translate('delete_branch_description'),
+            AppLocalizations.of(context)!.translate('delete_branch_description'),
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
@@ -268,7 +273,7 @@ class _ListState extends State<BranchPage> {
   /*
   * create n update branch
   * */
-  branchDetailDialog(Branch branch) {
+  branchDetailDialog(Branch? branch) {
     if (branch != null)
       branchName.text = branch.name;
     else
@@ -279,7 +284,7 @@ class _ListState extends State<BranchPage> {
       builder: (BuildContext context) {
         // return alert dialog object
         return AlertDialog(
-          title: Text(AppLocalizations.of(context)
+          title: Text(AppLocalizations.of(context)!
               .translate(branch == null ? 'create_branch' : 'edit_branch')),
           content: Theme(
             data: new ThemeData(
@@ -292,7 +297,7 @@ class _ListState extends State<BranchPage> {
               textAlign: TextAlign.start,
               maxLengthEnforcement: MaxLengthEnforcement.enforced,
               decoration: InputDecoration(
-                labelText: AppLocalizations.of(context).translate('label'),
+                labelText: AppLocalizations.of(context)!.translate('label'),
                 floatingLabelBehavior: FloatingLabelBehavior.always,
                 labelStyle: TextStyle(fontSize: 16, color: Colors.blueGrey),
                 hintText: 'Branch A',
@@ -368,16 +373,16 @@ class _ListState extends State<BranchPage> {
   Widget notFound() {
     return NotFound(
         title: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_record_found')}'
-            : '${AppLocalizations.of(context).translate('no_network_found')}',
+            ? '${AppLocalizations.of(context)!.translate('no_record_found')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found')}',
         description: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_url_description')}'
-            : '${AppLocalizations.of(context).translate('no_network_found_description')}',
+            ? '${AppLocalizations.of(context)!.translate('no_url_description')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found_description')}',
         showButton: true,
         refresh: () {
           _onRefresh();
         },
-        button: '${AppLocalizations.of(context).translate('retry')}',
+        button: '${AppLocalizations.of(context)!.translate('retry')}',
         drawable: networkConnection
             ? 'drawable/no_branch.png'
             : 'drawable/no_signal.png');
@@ -385,9 +390,9 @@ class _ListState extends State<BranchPage> {
 
   showSnackBar(message, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(message)),
+        content: new Text(AppLocalizations.of(context)!.translate(message)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.

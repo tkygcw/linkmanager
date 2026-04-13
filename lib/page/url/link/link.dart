@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:connectivity/connectivity.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkmanager/object/link.dart';
@@ -13,9 +13,9 @@ import 'package:linkmanager/shareWidget/progress_bar.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 import 'package:linkmanager/utils/domain.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:refreshable_reorderable_list/refreshable_reorderable_list.dart';
-import 'package:share/share.dart';
+// import 'package:pull_to_refresh/pull_to_refresh.dart';
+// import 'package:refreshable_reorderable_list/refreshable_reorderable_list.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:linkmanager/utils/sharePreference.dart';
 import 'package:linkmanager/object/merchant.dart';
@@ -25,7 +25,7 @@ import 'link_list_view.dart';
 class LinkPage extends StatefulWidget {
   final Url url;
 
-  LinkPage({this.url});
+  LinkPage({required this.url});
 
   @override
   _ListState createState() => _ListState();
@@ -38,8 +38,8 @@ class _ListState extends State<LinkPage> {
   bool itemLoad = false;
   int maxLink = 0;
 
-  RefreshController _refreshController =
-      RefreshController(initialRefresh: false);
+  // RefreshController _refreshController =
+  //     RefreshController(initialRefresh: false);
 
   final ScrollController listScrollController = ScrollController();
 
@@ -48,7 +48,7 @@ class _ListState extends State<LinkPage> {
   /*
      * network checking purpose
      * */
-  StreamSubscription<ConnectivityResult> connectivity;
+  late StreamSubscription<List<ConnectivityResult>> connectivity;
   bool networkConnection = true;
 
   @override
@@ -56,10 +56,10 @@ class _ListState extends State<LinkPage> {
     super.initState();
     connectivity = Connectivity()
         .onConnectivityChanged
-        .listen((ConnectivityResult result) {
+        .listen((List<ConnectivityResult> result) {
       setState(() {
-        networkConnection = (result == ConnectivityResult.mobile ||
-            result == ConnectivityResult.wifi);
+        networkConnection = (result.contains(ConnectivityResult.mobile) ||
+            result.contains(ConnectivityResult.wifi));
       });
     });
     getPreData();
@@ -144,45 +144,48 @@ class _ListState extends State<LinkPage> {
       if (itemLoad)
         return notFound();
       else
-        return CustomProgressBar();
+        return CustomProgressBar(color: null,);
     }
   }
 
   Widget customListView() {
-    return RefreshableReorderableListView(
-      physics: AlwaysScrollableScrollPhysics(),
-      children: links
-          .asMap()
-          .map((index, link) => MapEntry(
-              index,
-              LinkListView(
-                link: link,
-                urlType: widget.url.type,
-                branches: branches,
-                key: ValueKey(link.linkId),
-                onClick: (Link link, type) {
-                  switch (type) {
-                    case 'delete':
-                      deleteLink(link);
-                      break;
-                    case 'share':
-                      Share.share(link.url, subject: link.label);
-                      break;
-                    case 'launch':
-                      previewChannel(link);
-                      break;
-                    case 'duplicate':
-                      duplicate(link.linkId);
-                      break;
-                    case 'edit':
-                      openLinkDetailPage(link);
-                      break;
-                  }
-                },
-              )))
-          .values
-          .toList(),
-      onReorder: _onReorder,
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: ReorderableListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: links.length,
+        onReorder: _onReorder,
+        itemBuilder: (context, index) {
+          final link = links[index];
+
+          return LinkListView(
+            link: link,
+            urlType: widget.url.type,
+            branches: branches,
+            key: ValueKey(link.linkId), // ⭐关键
+            onClick: (Link link, type) {
+              switch (type) {
+                case 'delete':
+                  deleteLink(link);
+                  break;
+                case 'share':
+                  Share.share(link.url, subject: link.label);
+                  break;
+                case 'launch':
+                  previewChannel(link);
+                  break;
+                case 'duplicate':
+                  duplicate(link.linkId);
+                  break;
+                case 'edit':
+                  openLinkDetailPage(link);
+                  break;
+              }
+            },
+            showToast: (String p1) {},
+          );
+        },
+      ),
     );
   }
 
@@ -200,7 +203,7 @@ class _ListState extends State<LinkPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  AppLocalizations.of(context).translate('max_url'),
+                  AppLocalizations.of(context)!.translate('max_url'),
                   style: TextStyle(fontSize: 14),
                 ),
                 Text('${links.length}/$maxLink')
@@ -304,32 +307,42 @@ class _ListState extends State<LinkPage> {
     setState(() {});
   }
 
-  _onRefresh() async {
-    // monitor network fetch
-    if (mounted)
-      setState(() {
-        itemLoad = false;
-        links.clear();
-        fetchLink();
-        _refreshController.resetNoData();
-      });
-    // if failed,use refreshFailed()
-    _refreshController.refreshCompleted();
+  Future<void> _onRefresh() async {
+    setState(() {
+      itemLoad = false;
+      links.clear();
+    });
+
+    await fetchLink();
   }
 
+  bool hasMore = true;
+
   Future fetchLink() async {
-    Map data = await Domain.callApi(Domain.link,
-        {'read': '1', 'url_id': widget.url.id.toString(), 'query': ''});
+    Map data = await Domain.callApi(
+      Domain.link,
+      {
+        'read': '1',
+        'url_id': widget.url.id.toString(),
+        'query': ''
+      },
+    );
 
     if (data['status'] == '1') {
       List responseJson = data['link'];
-      links.addAll(responseJson.map((e) => Link.fromJson(e)));
+
+      setState(() {
+        links.addAll(responseJson.map((e) => Link.fromJson(e)).toList());
+        itemLoad = true;
+        hasMore = true;
+      });
+
     } else {
-      _refreshController.loadNoData();
+      setState(() {
+        itemLoad = true;
+        hasMore = false;
+      });
     }
-    setState(() {
-      itemLoad = true;
-    });
   }
 
   Future fetchBranch() async {
@@ -351,7 +364,7 @@ class _ListState extends State<LinkPage> {
   /*
   * edit link detail dialog
   * */
-  openLinkDetailPage(Link link) {
+  openLinkDetailPage(Link? link) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -374,9 +387,9 @@ class _ListState extends State<LinkPage> {
       builder: (BuildContext context) {
         // return alert dialog object
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('delete_request')),
+          title: Text(AppLocalizations.of(context)!.translate('delete_request')),
           content: Text(
-            AppLocalizations.of(context).translate('delete_link_desc'),
+            AppLocalizations.of(context)!.translate('delete_link_desc'),
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
@@ -421,9 +434,9 @@ class _ListState extends State<LinkPage> {
       builder: (BuildContext context) {
         // return alert dialog object
         return AlertDialog(
-          title: Text(AppLocalizations.of(context).translate('clear_history')),
+          title: Text(AppLocalizations.of(context)!.translate('clear_history')),
           content: Text(
-            AppLocalizations.of(context).translate('clear_history_description'),
+            AppLocalizations.of(context)!.translate('clear_history_description'),
             style: TextStyle(color: Colors.black87, fontSize: 15),
           ),
           actions: <Widget>[
@@ -460,16 +473,16 @@ class _ListState extends State<LinkPage> {
   Widget notFound() {
     return NotFound(
         title: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_link')}'
-            : '${AppLocalizations.of(context).translate('no_network_found')}',
+            ? '${AppLocalizations.of(context)!.translate('no_link')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found')}',
         description: networkConnection
-            ? '${AppLocalizations.of(context).translate('no_url_description')}'
-            : '${AppLocalizations.of(context).translate('no_network_found_description')}',
+            ? '${AppLocalizations.of(context)!.translate('no_url_description')}'
+            : '${AppLocalizations.of(context)!.translate('no_network_found_description')}',
         showButton: true,
         refresh: () {
           setState(() {});
         },
-        button: '${AppLocalizations.of(context).translate('retry')}',
+        button: '${AppLocalizations.of(context)!.translate('retry')}',
         drawable: networkConnection
             ? 'drawable/no_item.png'
             : 'drawable/no_signal.png');
@@ -484,9 +497,9 @@ class _ListState extends State<LinkPage> {
 
   showSnackBar(message, button) {
     ScaffoldMessenger.of(context).showSnackBar(new SnackBar(
-        content: new Text(AppLocalizations.of(context).translate(message)),
+        content: new Text(AppLocalizations.of(context)!.translate(message)),
         action: SnackBarAction(
-          label: AppLocalizations.of(context).translate(button),
+          label: AppLocalizations.of(context)!.translate(button),
           onPressed: () {
             setState(() {});
             // Some code to undo the change.

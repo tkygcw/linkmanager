@@ -5,9 +5,9 @@ class CustomToast {
   final int duration;
   final int gravity;
 
-  const CustomToast(this.message, {this.duration, this.gravity});
+  const CustomToast(this.message, {required this.duration, required this.gravity});
 
   show() {
-    Toast.show(message, duration: duration, gravity: gravity == null ? Toast.bottom : gravity);
+    Toast.show(message, duration: duration, gravity: gravity);
   }
 }

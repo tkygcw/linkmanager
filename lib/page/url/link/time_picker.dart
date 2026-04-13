@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:linkmanager/translation/AppLocalizations.dart';
 
 class TimePickers extends StatefulWidget {
-  final List workingTimes;
+  final List<String> workingTimes;
   final Function(List<String>) onChanges;
 
-  TimePickers({this.workingTimes, this.onChanges});
+  TimePickers({required this.workingTimes, required this.onChanges});
 
   @override
   _TimePickersState createState() => _TimePickersState();
 }
 
 class _TimePickersState extends State<TimePickers> {
-  List workingTime = [];
+  List<String> workingTime = [];
 
   @override
   void initState() {
@@ -38,27 +37,27 @@ class _TimePickersState extends State<TimePickers> {
                   padding: const EdgeInsets.all(5.0),
                   child: Row(
                     children: [
-                      Text(AppLocalizations.of(context).translate('from_time')),
+                      Text(AppLocalizations.of(context)!.translate('from_time')),
                       TextButton(
                         onPressed: () {
-                          showDatePicker(null, i, true);
+                          showTimePicker_(DateTime.now(), i, true);
                         },
                         child: Text(
                           getTime(workingTime[i], true) == ''
-                              ? AppLocalizations.of(context).translate('label_from_time')
+                              ? AppLocalizations.of(context)!.translate('label_from_time')
                               : getTime(workingTime[i], true),
                           style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                         ),
                       ),
                       SizedBox(width: 10),
-                      Text(AppLocalizations.of(context).translate('to_time')),
+                      Text(AppLocalizations.of(context)!.translate('to_time')),
                       TextButton(
                         onPressed: () {
-                          showDatePicker(null, i, false);
+                          showTimePicker_(DateTime.now(), i, false);
                         },
                         child: Text(
                           getTime(workingTime[i], true) == ''
-                              ? AppLocalizations.of(context).translate('label_to_time')
+                              ? AppLocalizations.of(context)!.translate('label_to_time')
                               : getTime(workingTime[i], false),
                           style: TextStyle(fontSize: 16, color: Colors.blueGrey),
                         ),
@@ -97,7 +96,7 @@ class _TimePickersState extends State<TimePickers> {
               color: Colors.deepPurpleAccent,
             ),
             label: Text(
-              '${AppLocalizations.of(context).translate('add_time')}',
+              '${AppLocalizations.of(context)!.translate('add_time')}',
               style: TextStyle(color: Colors.deepPurpleAccent),
             ),
           ),
@@ -118,15 +117,20 @@ class _TimePickersState extends State<TimePickers> {
     }
   }
 
-  showDatePicker(DateTime date, int position, bool startDate) {
-    print(getTime(workingTime[position], startDate));
-    DateTime currentTime = new DateFormat("HH:mm").parse(getTime(workingTime[position], startDate));
+  showTimePicker_(DateTime date, int position, bool startDate) async {
+    String timeStr = getTime(workingTime[position], startDate);
+    DateTime currentTime = DateFormat("HH:mm").parse(timeStr);
 
-    DatePicker.showTimePicker(context, showTitleActions: true, currentTime: currentTime, onChanged: (date) {}, onConfirm: (date) async {
-      setNewRange(DateFormat("HH:mm").format(date), position, startDate);
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay(hour: currentTime.hour, minute: currentTime.minute),
+    );
+    if (picked != null) {
+      final formatted = '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+      setNewRange(formatted, position, startDate);
       widget.onChanges(workingTime);
       setState(() {});
-    });
+    }
   }
 
   setNewRange(selectTime, int position, bool isStartDate) {

@@ -1,20 +1,7 @@
-buildscript {
-    ext.kotlin_version = '1.6.21'
-    repositories {
-        google()
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -26,6 +13,54 @@ subprojects {
     project.evaluationDependsOn(':app')
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+// Force Kotlin version for all subprojects (fixes wc_flutter_share using 1.3.50)
+subprojects {
+    buildscript {
+        configurations.all {
+            resolutionStrategy {
+                force "org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0"
+                force "org.jetbrains.kotlin:kotlin-stdlib:2.1.0"
+                force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.0"
+                force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0"
+            }
+        }
+    }
+    configurations.all {
+        resolutionStrategy {
+            force "org.jetbrains.kotlin:kotlin-stdlib:2.1.0"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.0"
+            force "org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0"
+        }
+    }
+}
+
+// Disable -Werror and upgrade Java source/target for old plugins
+subprojects {
+    tasks.whenTaskAdded { task ->
+        if (task instanceof JavaCompile) {
+            task.options.compilerArgs.remove('-Werror')
+            task.sourceCompatibility = JavaVersion.VERSION_11
+            task.targetCompatibility = JavaVersion.VERSION_11
+        }
+    }
+}
+
+// Fix namespace for old plugins that don't declare it (required by AGP 8+)
+subprojects {
+    plugins.withId("com.android.library") {
+        if (project.android.namespace == null) {
+            def manifest = project.file("src/main/AndroidManifest.xml")
+            if (manifest.exists()) {
+                def parsed = new XmlSlurper().parse(manifest)
+                def packageName = parsed.@package.toString()
+                if (packageName) {
+                    project.android.namespace = packageName
+                }
+            }
+        }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.layout.buildDirectory
 }
